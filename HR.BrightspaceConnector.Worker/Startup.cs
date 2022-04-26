@@ -3,6 +3,7 @@ using HR.BrightspaceConnector.Security;
 
 using Microsoft.Extensions.Options;
 
+using System.Net.Mime;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -36,7 +37,7 @@ internal class Startup
         {
             var oAuthSettings = serviceProvider.GetRequiredService<IOptions<OAuthSettings>>().Value;
             httpClient.BaseAddress = new Uri(oAuthSettings.TokenEndpointUrl!.TrimEnd('/'));
-            httpClient.DefaultRequestHeaders.Accept.TryParseAdd("application/json");
+            httpClient.DefaultRequestHeaders.Accept.TryParseAdd(MediaTypeNames.Application.Json);
             httpClient.DefaultRequestHeaders.UserAgent.TryParseAdd("HR.BrightspaceConnector.Client/1.0");
         });
 
