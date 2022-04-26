@@ -2,6 +2,7 @@
 
 using Microsoft.Extensions.Options;
 
+using System.Net.Mime;
 using System.Text.Json;
 
 namespace HR.BrightspaceConnector.Security
@@ -55,7 +56,7 @@ namespace HR.BrightspaceConnector.Security
         {
             CacheableTokenResponse? tokenResponse = null;
             var serializedTokenData = string.Empty;
-            var tokenCacheFilePath = oAuthSettings.TokenCacheFilePath ?? throw new InvalidOperationException("No cache file for OAuth token storage configured.");
+            var tokenCacheFilePath = oAuthSettings.TokenCacheFilePath ?? throw new InvalidOperationException("OAuth token cache file not configured.");
 
             using (await mutex.WaitAndReleaseAsync(cancellationToken).WithoutCapturingContext())
             {
@@ -78,7 +79,7 @@ namespace HR.BrightspaceConnector.Security
         public async Task StoreInCacheAsync(CacheableTokenResponse cacheableTokenResponse, CancellationToken cancellationToken = default)
         {
             var serializedTokenData = JsonSerializer.Serialize(cacheableTokenResponse, jsonOptions);
-            var tokenCacheFilePath = oAuthSettings.TokenCacheFilePath ?? throw new InvalidOperationException("No cache file for OAuth token storage configured.");
+            var tokenCacheFilePath = oAuthSettings.TokenCacheFilePath ?? throw new InvalidOperationException("OAuth token cache file not configured.");
 
             using (await mutex.WaitAndReleaseAsync(cancellationToken).WithoutCapturingContext())
             {
@@ -99,11 +100,16 @@ namespace HR.BrightspaceConnector.Security
             }
 
             var errorMessage = $"HTTP {(int)httpResponse.StatusCode} - {httpResponse.ReasonPhrase}";
-            var errorResponse = JsonSerializer.Deserialize<ErrorResponse>(jsonData, jsonOptions);
-            if (!(string.IsNullOrEmpty(errorResponse?.ErrorCode) || string.IsNullOrEmpty(errorResponse.ErrorDescription)))
+
+            if (httpResponse.Content.Headers.ContentType?.MediaType == MediaTypeNames.Application.Json)
             {
-                errorMessage = $"{errorResponse.ErrorDescription} ({errorResponse.ErrorCode})";
+                var errorResponse = JsonSerializer.Deserialize<ErrorResponse>(jsonData, jsonOptions);
+                if (!(string.IsNullOrEmpty(errorResponse?.ErrorCode) || string.IsNullOrEmpty(errorResponse.ErrorDescription)))
+                {
+                    errorMessage = $"{errorResponse.ErrorDescription} ({errorResponse.ErrorCode})";
+                }
             }
+
             throw new InvalidOperationException(errorMessage);
         }
     }
