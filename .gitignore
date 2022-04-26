@@ -361,3 +361,6 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# OAuth token cache
+/HR.BrightspaceConnector.Worker/.oauthtoken.json
