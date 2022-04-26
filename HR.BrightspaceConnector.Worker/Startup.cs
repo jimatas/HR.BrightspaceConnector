@@ -1,5 +1,5 @@
-﻿using HR.BrightspaceConnector.Security;
-using HR.BrightspaceConnector;
+﻿using HR.BrightspaceConnector;
+using HR.BrightspaceConnector.Security;
 
 using Microsoft.Extensions.Options;
 
