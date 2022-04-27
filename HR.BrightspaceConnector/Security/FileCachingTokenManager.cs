@@ -93,8 +93,10 @@ namespace HR.BrightspaceConnector.Security
                 return tokenResponse!;
             }
 
+            // Default error message is HTTP status code and description.
             var errorMessage = $"HTTP {(int)httpResponse.StatusCode} - {httpResponse.ReasonPhrase}";
 
+            // Try to obtain a more meaningful one...
             if (httpResponse.Content.Headers.ContentType?.MediaType == MediaTypeNames.Application.Json)
             {
                 var errorResponse = JsonSerializer.Deserialize<ErrorResponse>(jsonData, jsonOptions);
