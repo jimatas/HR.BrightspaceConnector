@@ -6,7 +6,7 @@
     public class SystemClock : IClock
     {
         /// <summary>
-        /// Default publicly accessible, static instance of the <see cref="SystemClock"/> class.
+        /// Default shared instance of the <see cref="SystemClock"/> class.
         /// </summary>
         public static readonly IClock Instance = new SystemClock();
 
