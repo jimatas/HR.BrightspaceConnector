@@ -15,17 +15,11 @@ namespace HR.BrightspaceConnector.Security
         private readonly IClock clock;
         private readonly SemaphoreSlim mutex = new(1, 1);
 
-        public FileCachingTokenManager(
-            IHttpClientFactory httpClientFactory,
-            IOptions<JsonSerializerOptions> jsonOptions,
-            IOptions<OAuthSettings> oAuthSettings,
-            IClock clock) : this(httpClientFactory.CreateClient(OAuthSettings.HttpClientName), jsonOptions.Value, oAuthSettings.Value, clock) { }
-
-        public FileCachingTokenManager(HttpClient httpClient, JsonSerializerOptions jsonOptions, OAuthSettings oAuthSettings, IClock clock)
+        public FileCachingTokenManager(HttpClient httpClient, IOptions<JsonSerializerOptions> jsonOptions, IOptions<OAuthSettings> oAuthSettings, IClock clock)
         {
             this.httpClient = httpClient;
-            this.jsonOptions = jsonOptions;
-            this.oAuthSettings = oAuthSettings;
+            this.jsonOptions = jsonOptions.Value;
+            this.oAuthSettings = oAuthSettings.Value;
             this.clock = clock;
         }
 

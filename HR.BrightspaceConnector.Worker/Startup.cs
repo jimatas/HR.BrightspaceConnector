@@ -33,7 +33,7 @@ internal class Startup
 
         services.Configure<OAuthSettings>(Configuration.GetSection(nameof(OAuthSettings)));
 
-        services.AddHttpClient(OAuthSettings.HttpClientName, (IServiceProvider serviceProvider, HttpClient httpClient) =>
+        services.AddHttpClient<ICachingTokenManager, FileCachingTokenManager>((IServiceProvider serviceProvider, HttpClient httpClient) =>
         {
             var oAuthSettings = serviceProvider.GetRequiredService<IOptions<OAuthSettings>>().Value;
             httpClient.BaseAddress = new Uri(oAuthSettings.TokenEndpointUrl!.TrimEnd('/'));
@@ -41,7 +41,6 @@ internal class Startup
             httpClient.DefaultRequestHeaders.UserAgent.TryParseAdd("HR.BrightspaceConnector.Client/1.0");
         });
 
-        services.AddScoped<ICachingTokenManager, FileCachingTokenManager>();
         services.AddScoped<ITokenManager>(serviceProvider => serviceProvider.GetRequiredService<ICachingTokenManager>());
 
         services.AddSingleton<IClock, SystemClock>();

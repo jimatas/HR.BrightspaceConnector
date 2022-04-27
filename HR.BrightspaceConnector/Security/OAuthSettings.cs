@@ -2,11 +2,6 @@
 {
     public class OAuthSettings
     {
-        /// <summary>
-        /// The logical name of the HTTP client to use for authorization purposes.
-        /// </summary>
-        public const string HttpClientName = "oauth";
-
         public string? ClientId { get; set; }
         public string? ClientSecret { get; set; }
         public string? TokenEndpointUrl { get; set; }
