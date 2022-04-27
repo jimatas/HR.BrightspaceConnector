@@ -19,7 +19,7 @@ namespace HR.BrightspaceConnector.Security
         {
             this.httpClient = httpClient;
             this.jsonOptions = jsonOptions.Value;
-            this.oAuthSettings = oAuthSettings.Value;
+            this.oAuthSettings = oAuthSettings.Value.Clone();
             this.clock = clock;
         }
 
