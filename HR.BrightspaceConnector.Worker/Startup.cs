@@ -41,7 +41,7 @@ internal class Startup
             httpClient.DefaultRequestHeaders.UserAgent.TryParseAdd("HR.BrightspaceConnector.Client/1.0");
         });
 
-        services.AddScoped<ICachingTokenManager, CachingTokenManager>();
+        services.AddScoped<ICachingTokenManager, FileCachingTokenManager>();
         services.AddScoped<ITokenManager>(serviceProvider => serviceProvider.GetRequiredService<ICachingTokenManager>());
 
         services.AddSingleton<IClock, SystemClock>();

@@ -1,11 +1,8 @@
-﻿using HR.Common.Utilities;
-
-namespace HR.BrightspaceConnector.Security
+﻿namespace HR.BrightspaceConnector.Security
 {
     public interface ICachingTokenManager : ITokenManager
     {
-        bool HasExpired(CacheableTokenResponse cacheableTokenResponse);
-        Task<AsyncOutResult<bool, CacheableTokenResponse?>> ReadFromCacheAsync(CancellationToken cancellationToken = default);
-        Task StoreInCacheAsync(CacheableTokenResponse cacheableTokenResponse, CancellationToken cancellationToken = default);
+        Task<AsyncOutResult<bool, CacheableTokenResponse?>> TryGetTokenFromCacheAsync(CancellationToken cancellationToken = default);
+        Task StoreTokenInCacheAsync(CacheableTokenResponse cacheableTokenResponse, CancellationToken cancellationToken = default);
     }
 }

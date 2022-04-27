@@ -7,7 +7,7 @@ using System.Text.Json;
 
 namespace HR.BrightspaceConnector.Security
 {
-    public class CachingTokenManager : ICachingTokenManager
+    public class FileCachingTokenManager : ICachingTokenManager
     {
         private readonly HttpClient httpClient;
         private readonly JsonSerializerOptions jsonOptions;
@@ -15,13 +15,13 @@ namespace HR.BrightspaceConnector.Security
         private readonly IClock clock;
         private readonly SemaphoreSlim mutex = new(1, 1);
 
-        public CachingTokenManager(
+        public FileCachingTokenManager(
             IHttpClientFactory httpClientFactory,
             IOptions<JsonSerializerOptions> jsonOptions,
             IOptions<OAuthSettings> oAuthSettings,
             IClock clock) : this(httpClientFactory.CreateClient(OAuthSettings.HttpClientName), jsonOptions.Value, oAuthSettings.Value, clock) { }
 
-        public CachingTokenManager(HttpClient httpClient, JsonSerializerOptions jsonOptions, OAuthSettings oAuthSettings, IClock clock)
+        public FileCachingTokenManager(HttpClient httpClient, JsonSerializerOptions jsonOptions, OAuthSettings oAuthSettings, IClock clock)
         {
             this.httpClient = httpClient;
             this.jsonOptions = jsonOptions;
@@ -31,7 +31,7 @@ namespace HR.BrightspaceConnector.Security
 
         public async Task<TokenResponse> GetTokenAsync(CancellationToken cancellationToken = default)
         {
-            if ((await ReadFromCacheAsync(cancellationToken).WithoutCapturingContext()).Out(out var tokenResponse) && !HasExpired(tokenResponse))
+            if ((await TryGetTokenFromCacheAsync(cancellationToken).WithoutCapturingContext()).Out(out var tokenResponse) && !IsTokenExpired(tokenResponse))
             {
                 return tokenResponse;
             }
@@ -42,17 +42,12 @@ namespace HR.BrightspaceConnector.Security
             }
 
             tokenResponse = await RefreshTokenAsync(cancellationToken).WithoutCapturingContext();
-            await StoreInCacheAsync(tokenResponse, cancellationToken).WithoutCapturingContext();
+            await StoreTokenInCacheAsync(tokenResponse, cancellationToken).WithoutCapturingContext();
 
             return tokenResponse;
         }
 
-        public bool HasExpired(CacheableTokenResponse cacheableTokenResponse)
-        {
-            return clock.Now + oAuthSettings.ExpirationDelta > cacheableTokenResponse.ExpiresAt;
-        }
-
-        public async Task<AsyncOutResult<bool, CacheableTokenResponse?>> ReadFromCacheAsync(CancellationToken cancellationToken = default)
+        public async Task<AsyncOutResult<bool, CacheableTokenResponse?>> TryGetTokenFromCacheAsync(CancellationToken cancellationToken = default)
         {
             CacheableTokenResponse? tokenResponse = null;
             var serializedTokenData = string.Empty;
@@ -76,7 +71,7 @@ namespace HR.BrightspaceConnector.Security
             return (tokenResponse is not null, tokenResponse);
         }
 
-        public async Task StoreInCacheAsync(CacheableTokenResponse cacheableTokenResponse, CancellationToken cancellationToken = default)
+        public async Task StoreTokenInCacheAsync(CacheableTokenResponse cacheableTokenResponse, CancellationToken cancellationToken = default)
         {
             var serializedTokenData = JsonSerializer.Serialize(cacheableTokenResponse, jsonOptions);
             var tokenCacheFilePath = oAuthSettings.TokenCacheFilePath ?? throw new InvalidOperationException("OAuth token cache file not configured.");
@@ -86,6 +81,11 @@ namespace HR.BrightspaceConnector.Security
                 new FileInfo(tokenCacheFilePath).Directory?.Create();
                 await File.WriteAllTextAsync(tokenCacheFilePath, serializedTokenData, cancellationToken).WithoutCapturingContext();
             }
+        }
+
+        private bool IsTokenExpired(CacheableTokenResponse cacheableTokenResponse)
+        {
+            return clock.Now + oAuthSettings.ExpirationDelta > cacheableTokenResponse.ExpiresAt;
         }
 
         private async Task<CacheableTokenResponse> RefreshTokenAsync(CancellationToken cancellationToken)
