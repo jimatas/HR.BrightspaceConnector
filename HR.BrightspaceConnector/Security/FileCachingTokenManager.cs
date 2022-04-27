@@ -106,7 +106,7 @@ namespace HR.BrightspaceConnector.Security
                 }
             }
 
-            throw new InvalidOperationException(errorMessage);
+            throw new HttpRequestException(errorMessage, inner: null, httpResponse.StatusCode);
         }
     }
 }
