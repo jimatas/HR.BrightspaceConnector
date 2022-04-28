@@ -89,5 +89,16 @@ namespace HR.BrightspaceConnector.Tests
             await readerWriterLock.EnterWriteLockAsync();
             await readerWriterLock.EnterReadLockAsync(cancellationTokenSource.Token);
         }
+
+        [TestMethod]
+        [ExpectedException(typeof(OperationCanceledException))]
+        public async Task EnterWriteLock_WhenWriteLocked_PreventsLock()
+        {
+            var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(1));
+            var readerWriterLock = new AsyncReaderWriterLockSlim();
+
+            await readerWriterLock.EnterWriteLockAsync();
+            await readerWriterLock.EnterWriteLockAsync(cancellationTokenSource.Token);
+        }
     }
 }
