@@ -1,4 +1,5 @@
-﻿using HR.Common.Utilities;
+﻿using HR.BrightspaceConnector.Utilities;
+using HR.Common.Utilities;
 
 using Microsoft.Extensions.Options;
 
@@ -9,12 +10,12 @@ namespace HR.BrightspaceConnector.Security
 {
     public class FileCachingTokenManager : ICachingTokenManager
     {
+        private static readonly AsyncReaderWriterLockSlim fileLock = new();
         private readonly HttpClient httpClient;
         private readonly JsonSerializerOptions jsonOptions;
         private readonly OAuthSettings oAuthSettings;
         private readonly IClock clock;
-        private readonly SemaphoreSlim mutex = new(1, 1);
-
+        
         public FileCachingTokenManager(HttpClient httpClient, IOptions<JsonSerializerOptions> jsonOptions, IOptions<OAuthSettings> oAuthSettings, IClock clock)
         {
             this.httpClient = httpClient;
@@ -47,7 +48,7 @@ namespace HR.BrightspaceConnector.Security
             var serializedTokenData = string.Empty;
             var tokenCacheFilePath = oAuthSettings.TokenCacheFilePath ?? throw new InvalidOperationException("OAuth token cache file not configured.");
 
-            using (await mutex.WaitAndReleaseAsync(cancellationToken).WithoutCapturingContext())
+            using (await fileLock.EnterReadLockAndExitAsync(cancellationToken).WithoutCapturingContext())
             {
                 try
                 {
@@ -70,7 +71,7 @@ namespace HR.BrightspaceConnector.Security
             var serializedTokenData = JsonSerializer.Serialize(cacheableTokenResponse, jsonOptions);
             var tokenCacheFilePath = oAuthSettings.TokenCacheFilePath ?? throw new InvalidOperationException("OAuth token cache file not configured.");
 
-            using (await mutex.WaitAndReleaseAsync(cancellationToken).WithoutCapturingContext())
+            using (await fileLock.EnterWriteLockAndExitAsync(cancellationToken).WithoutCapturingContext())
             {
                 new FileInfo(tokenCacheFilePath).Directory?.Create();
                 await File.WriteAllTextAsync(tokenCacheFilePath, serializedTokenData, cancellationToken).WithoutCapturingContext();

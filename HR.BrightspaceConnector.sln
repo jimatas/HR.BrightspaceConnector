@@ -5,7 +5,9 @@ VisualStudioVersion = 17.1.32228.430
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HR.BrightspaceConnector", "HR.BrightspaceConnector\HR.BrightspaceConnector.csproj", "{F0E9278E-A42B-4B8F-86EB-BEB588C3A2E9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HR.BrightspaceConnector.Worker", "HR.BrightspaceConnector.Worker\HR.BrightspaceConnector.Worker.csproj", "{9CEC5F54-6CD1-443A-B74D-E5B3801819D9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HR.BrightspaceConnector.Worker", "HR.BrightspaceConnector.Worker\HR.BrightspaceConnector.Worker.csproj", "{9CEC5F54-6CD1-443A-B74D-E5B3801819D9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HR.BrightspaceConnector.Tests", "HR.BrightspaceConnector.Tests\HR.BrightspaceConnector.Tests.csproj", "{7D81176B-4015-4CE6-80CA-93D12979D8CE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{9CEC5F54-6CD1-443A-B74D-E5B3801819D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9CEC5F54-6CD1-443A-B74D-E5B3801819D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9CEC5F54-6CD1-443A-B74D-E5B3801819D9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7D81176B-4015-4CE6-80CA-93D12979D8CE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7D81176B-4015-4CE6-80CA-93D12979D8CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7D81176B-4015-4CE6-80CA-93D12979D8CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7D81176B-4015-4CE6-80CA-93D12979D8CE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
