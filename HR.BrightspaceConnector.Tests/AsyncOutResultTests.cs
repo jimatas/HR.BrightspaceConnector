@@ -1,4 +1,4 @@
-﻿using HR.BrightspaceConnector.Security;
+﻿using HR.BrightspaceConnector.Utilities;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 

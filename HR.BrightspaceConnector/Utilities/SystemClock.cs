@@ -1,4 +1,4 @@
-﻿namespace HR.BrightspaceConnector.Security
+﻿namespace HR.BrightspaceConnector.Utilities
 {
     /// <summary>
     /// Default implementation of the <see cref="IClock"/> interface that simply returns the current time on the computer.

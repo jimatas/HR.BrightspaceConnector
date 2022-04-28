@@ -1,4 +1,6 @@
-﻿namespace HR.BrightspaceConnector.Security
+﻿using HR.BrightspaceConnector.Utilities;
+
+namespace HR.BrightspaceConnector.Security
 {
     public interface ICachingTokenManager : ITokenManager
     {

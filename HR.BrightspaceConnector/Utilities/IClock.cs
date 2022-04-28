@@ -1,4 +1,4 @@
-﻿namespace HR.BrightspaceConnector.Security
+﻿namespace HR.BrightspaceConnector.Utilities
 {
     /// <summary>
     /// Abstracts the system clock for testing purposes.

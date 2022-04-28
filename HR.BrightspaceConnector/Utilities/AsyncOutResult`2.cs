@@ -1,4 +1,4 @@
-﻿namespace HR.BrightspaceConnector.Security
+﻿namespace HR.BrightspaceConnector.Utilities
 {
     /// <summary>
     /// Provides support for returning both a value and out parameter from an async method for the purpose of implementing the Try-method pattern.

@@ -1,4 +1,6 @@
-﻿using System.Text.Json.Serialization;
+﻿using HR.BrightspaceConnector.Utilities;
+
+using System.Text.Json.Serialization;
 
 namespace HR.BrightspaceConnector.Security
 {
