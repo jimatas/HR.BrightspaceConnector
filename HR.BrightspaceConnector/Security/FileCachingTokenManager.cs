@@ -46,7 +46,7 @@ namespace HR.BrightspaceConnector.Security
         {
             CacheableTokenResponse? tokenResponse = null;
             var serializedTokenData = string.Empty;
-            var tokenCacheFilePath = oAuthSettings.TokenCacheFilePath ?? throw new InvalidOperationException("OAuth token cache file not configured.");
+            var tokenCacheFilePath = oAuthSettings.TokenCacheFile ?? throw new InvalidOperationException("OAuth token cache file not configured.");
 
             using (await fileLock.EnterReadLockAndExitAsync(cancellationToken).WithoutCapturingContext())
             {
@@ -69,7 +69,7 @@ namespace HR.BrightspaceConnector.Security
         public async Task StoreTokenInCacheAsync(CacheableTokenResponse cacheableTokenResponse, CancellationToken cancellationToken = default)
         {
             var serializedTokenData = JsonSerializer.Serialize(cacheableTokenResponse, jsonOptions);
-            var tokenCacheFilePath = oAuthSettings.TokenCacheFilePath ?? throw new InvalidOperationException("OAuth token cache file not configured.");
+            var tokenCacheFilePath = oAuthSettings.TokenCacheFile ?? throw new InvalidOperationException("OAuth token cache file not configured.");
 
             using (await fileLock.EnterWriteLockAndExitAsync(cancellationToken).WithoutCapturingContext())
             {

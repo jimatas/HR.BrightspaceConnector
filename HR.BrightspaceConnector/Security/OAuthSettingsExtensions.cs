@@ -21,8 +21,8 @@
                 ClientSecret = settings.ClientSecret,
                 ExpirationDelta = settings.ExpirationDelta,
                 RefreshToken = settings.RefreshToken,
-                TokenCacheFilePath = settings.TokenCacheFilePath,
-                TokenEndpointUrl = settings.TokenEndpointUrl
+                TokenCacheFile = settings.TokenCacheFile,
+                TokenEndpoint = settings.TokenEndpoint
             };
         }
     }

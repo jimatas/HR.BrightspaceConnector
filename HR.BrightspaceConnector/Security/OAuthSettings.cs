@@ -1,19 +1,31 @@
-﻿namespace HR.BrightspaceConnector.Security
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace HR.BrightspaceConnector.Security
 {
     public class OAuthSettings
     {
+        [Required]
         public string? ClientId { get; set; }
+
+        [Required]
         public string? ClientSecret { get; set; }
-        public string? TokenEndpointUrl { get; set; }
 
         /// <summary>
-        /// Fully qualified path to the file in which the OAuth tokens are cached.
+        /// URI containing the address of the OAuth token endpoint.
         /// </summary>
-        public string? TokenCacheFilePath { get; set; }
+        [Required]
+        public Uri? TokenEndpoint { get; set; }
+
+        /// <summary>
+        /// Fully qualified path to the file in which the OAuth token is cached.
+        /// </summary>
+        [Required]
+        public string? TokenCacheFile { get; set; }
 
         /// <summary>
         /// The initial refresh token.
         /// </summary>
+        [Required]
         public string? RefreshToken { get; set; }
 
         /// <summary>

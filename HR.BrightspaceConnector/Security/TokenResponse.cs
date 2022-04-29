@@ -4,6 +4,8 @@ namespace HR.BrightspaceConnector.Security
 {
     public class TokenResponse
     {
+        public const string DefaultTokenType = "Bearer";
+
         /// <summary>
         /// The access token string as issued by the authorization server.
         /// </summary>
