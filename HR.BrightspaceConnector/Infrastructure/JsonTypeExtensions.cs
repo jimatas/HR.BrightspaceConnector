@@ -2,7 +2,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace HR.BrightspaceConnector.Utilities
+namespace HR.BrightspaceConnector.Infrastructure
 {
     internal static class JsonTypeExtensions
     {

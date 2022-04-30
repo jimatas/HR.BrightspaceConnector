@@ -1,5 +1,4 @@
-﻿using HR.BrightspaceConnector.Utilities;
-using HR.Common.Utilities;
+﻿using HR.Common.Utilities;
 
 using System.Text.Json;
 using System.Text.Json.Serialization;
