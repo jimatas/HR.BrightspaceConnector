@@ -1,4 +1,4 @@
-﻿using HR.BrightspaceConnector.Features.Roles;
+﻿using HR.BrightspaceConnector.Features.Users;
 
 namespace HR.BrightspaceConnector
 {
