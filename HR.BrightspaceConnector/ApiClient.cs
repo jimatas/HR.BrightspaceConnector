@@ -59,7 +59,7 @@ namespace HR.BrightspaceConnector
                 {
                     if (httpResponse.StatusCode == HttpStatusCode.NotFound)
                     {
-                        return new PagedResultSet<UserData>();
+                        return Enumerable.Empty<UserData>();
                     }
                     else if (httpResponse.IsSuccessStatusCode)
                     {
