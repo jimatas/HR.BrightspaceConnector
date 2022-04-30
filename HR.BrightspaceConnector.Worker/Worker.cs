@@ -1,3 +1,4 @@
+using HR.BrightspaceConnector.Features.Users;
 using HR.BrightspaceConnector.Security;
 using HR.Common.Utilities;
 
@@ -20,7 +21,8 @@ namespace HR.BrightspaceConnector
         {
             logger.LogInformation("Starting new batch run.");
 
-            var roles = await apiClient.GetRolesAsync(stoppingToken).WithoutCapturingContext();
+            var users = await apiClient.GetUsersAsync(queryParameters: new UserQueryParameters { Bookmark = "195" }, stoppingToken).WithoutCapturingContext();
+            //var roles = await apiClient.GetRolesAsync(stoppingToken).WithoutCapturingContext();
             //var token = await tokenManager.GetTokenAsync(stoppingToken).WithoutCapturingContext();
 
             //await commandDispatcher.DispatchAsync(new ProcessUsers(), stoppingToken).WithoutCapturingContext();

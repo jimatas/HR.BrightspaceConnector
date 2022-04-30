@@ -5,6 +5,7 @@ using HR.Common.Utilities;
 
 using Microsoft.Extensions.Options;
 
+using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Net.Mime;
@@ -37,6 +38,52 @@ namespace HR.BrightspaceConnector
 
             var roles = await httpResponse.Content.ReadFromJsonAsync<IEnumerable<Role>>(jsonOptions, cancellationToken).WithoutCapturingContext();
             return roles!;
+        }
+
+        public async Task<PagedResultSet<UserData>> GetUsersAsync(UserQueryParameters? queryParameters, CancellationToken cancellationToken = default)
+        {
+            using var httpRequest = new HttpRequestMessage(HttpMethod.Get, $"lp/{apiSettings.LearningPlatformVersion}/users/{queryParameters?.ToQueryString(jsonOptions.PropertyNamingPolicy)}");
+            await SetAuthorizationHeader(httpRequest, cancellationToken).WithoutCapturingContext();
+
+            using var httpResponse = await httpClient.SendAsync(httpRequest, cancellationToken).WithoutCapturingContext();
+
+            var users = await TryParseUserResponseAsync(queryParameters, httpResponse, cancellationToken).WithoutCapturingContext();
+            return users!;
+        }
+
+        private async Task<PagedResultSet<UserData>> TryParseUserResponseAsync(UserQueryParameters? queryParameters, HttpResponseMessage httpResponse, CancellationToken cancellationToken)
+        {
+            if (queryParameters is not null)
+            {
+                if (!string.IsNullOrEmpty(queryParameters.UserName))
+                {
+                    if (httpResponse.StatusCode == HttpStatusCode.NotFound)
+                    {
+                        return new PagedResultSet<UserData>();
+                    }
+                    else if (httpResponse.IsSuccessStatusCode)
+                    {
+                        var user = await httpResponse.Content.ReadFromJsonAsync<UserData>(jsonOptions, cancellationToken).WithoutCapturingContext();
+                        return new PagedResultSet<UserData> { Items = new[] { user! } };
+                    }
+                    // else, error status received
+
+                    await CheckErrorResponseAsync(httpResponse, cancellationToken).WithoutCapturingContext();
+                }
+
+                if (!string.IsNullOrEmpty(queryParameters.OrgDefinedId) || !string.IsNullOrEmpty(queryParameters.ExternalEmail))
+                {
+                    await CheckErrorResponseAsync(httpResponse, cancellationToken).WithoutCapturingContext();
+
+                    var users = await httpResponse.Content.ReadFromJsonAsync<IEnumerable<UserData>>(jsonOptions, cancellationToken).WithoutCapturingContext();
+                    return new PagedResultSet<UserData> { Items = users! };
+                }
+            }
+
+            await CheckErrorResponseAsync(httpResponse, cancellationToken).WithoutCapturingContext();
+
+            var pagedUsers = await httpResponse.Content.ReadFromJsonAsync<PagedResultSet<UserData>>(jsonOptions, cancellationToken).WithoutCapturingContext();
+            return pagedUsers!;
         }
 
         private async Task SetAuthorizationHeader(HttpRequestMessage httpRequest, CancellationToken cancellationToken)
