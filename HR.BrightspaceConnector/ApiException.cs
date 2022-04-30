@@ -1,4 +1,6 @@
-﻿using System.Net;
+﻿using HR.BrightspaceConnector.Infrastructure;
+
+using System.Net;
 
 namespace HR.BrightspaceConnector
 {

@@ -1,4 +1,4 @@
-﻿namespace HR.BrightspaceConnector
+﻿namespace HR.BrightspaceConnector.Infrastructure
 {
     /// <summary>
     /// A machine-readable format for specifying errors in HTTP API responses.
