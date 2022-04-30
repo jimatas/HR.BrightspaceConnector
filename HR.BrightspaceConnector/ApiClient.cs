@@ -1,4 +1,5 @@
 ﻿using HR.BrightspaceConnector.Features.Roles;
+using HR.BrightspaceConnector.Infrastructure;
 using HR.BrightspaceConnector.Security;
 using HR.Common.Utilities;
 
@@ -6,6 +7,7 @@ using Microsoft.Extensions.Options;
 
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using System.Net.Mime;
 using System.Text.Json;
 
 namespace HR.BrightspaceConnector
@@ -31,8 +33,9 @@ namespace HR.BrightspaceConnector
             await SetAuthorizationHeader(httpRequest, cancellationToken).WithoutCapturingContext();
 
             using var httpResponse = await httpClient.SendAsync(httpRequest, cancellationToken).WithoutCapturingContext();
-            var roles = await httpResponse.Content.ReadFromJsonAsync<IEnumerable<Role>>(jsonOptions, cancellationToken).WithoutCapturingContext();
+            await CheckErrorResponseAsync(httpResponse, cancellationToken).WithoutCapturingContext();
 
+            var roles = await httpResponse.Content.ReadFromJsonAsync<IEnumerable<Role>>(jsonOptions, cancellationToken).WithoutCapturingContext();
             return roles!;
         }
 
@@ -40,6 +43,26 @@ namespace HR.BrightspaceConnector
         {
             var oAuthToken = await tokenManager.GetTokenAsync(cancellationToken).WithoutCapturingContext();
             httpRequest.Headers.Authorization = new AuthenticationHeaderValue(oAuthToken.TokenType ?? TokenResponse.DefaultTokenType, oAuthToken.AccessToken);
+        }
+
+        private async Task CheckErrorResponseAsync(HttpResponseMessage httpResponse, CancellationToken cancellationToken)
+        {
+            if (httpResponse.IsSuccessStatusCode)
+            {
+                return;
+            }
+
+            ProblemDetails? problemDetails = null;
+            if (httpResponse.Content.Headers.ContentType?.MediaType == SupplementaryMediaTypeNames.Application.Problem.Json)
+            {
+                problemDetails = await httpResponse.Content.ReadFromJsonAsync<ProblemDetails>(jsonOptions, cancellationToken).WithoutCapturingContext();
+            }
+
+            throw new ApiException(httpResponse.GetStatusMessage())
+            {
+                StatusCode = httpResponse.StatusCode,
+                ProblemDetails = problemDetails
+            };
         }
     }
 }

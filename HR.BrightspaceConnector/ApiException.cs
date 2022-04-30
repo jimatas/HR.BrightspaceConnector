@@ -2,6 +2,10 @@
 
 namespace HR.BrightspaceConnector
 {
+    /// <summary>
+    /// Represents an error that was returned by the server in response to an unsuccessful API request. 
+    /// Any further information about the error that was provided by the server will be available through the <see cref="ProblemDetails"/> property.
+    /// </summary>
     public class ApiException : Exception
     {
         #region Constructors

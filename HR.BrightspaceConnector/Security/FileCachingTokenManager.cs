@@ -1,4 +1,5 @@
-﻿using HR.BrightspaceConnector.Utilities;
+﻿using HR.BrightspaceConnector.Infrastructure;
+using HR.BrightspaceConnector.Utilities;
 using HR.Common.Utilities;
 
 using Microsoft.Extensions.Options;
@@ -95,7 +96,7 @@ namespace HR.BrightspaceConnector.Security
             }
 
             // Default error message is HTTP status code and description.
-            var errorMessage = $"HTTP {(int)httpResponse.StatusCode} - {httpResponse.ReasonPhrase}";
+            var errorMessage = httpResponse.GetStatusMessage();
 
             // Try to obtain a more meaningful one...
             if (httpResponse.Content.Headers.ContentType?.MediaType == MediaTypeNames.Application.Json)
