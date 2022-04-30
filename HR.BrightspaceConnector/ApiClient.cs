@@ -34,7 +34,7 @@ namespace HR.BrightspaceConnector
             await SetAuthorizationHeader(httpRequest, cancellationToken).WithoutCapturingContext();
 
             using var httpResponse = await httpClient.SendAsync(httpRequest, cancellationToken).WithoutCapturingContext();
-            await CheckErrorResponseAsync(httpResponse, cancellationToken).WithoutCapturingContext();
+            await CheckResponseForErrorAsync(httpResponse, cancellationToken).WithoutCapturingContext();
 
             var roles = await httpResponse.Content.ReadFromJsonAsync<IEnumerable<Role>>(jsonOptions, cancellationToken).WithoutCapturingContext();
             return roles!;
@@ -68,19 +68,19 @@ namespace HR.BrightspaceConnector
                     }
                     // else, error status received
 
-                    await CheckErrorResponseAsync(httpResponse, cancellationToken).WithoutCapturingContext();
+                    await CheckResponseForErrorAsync(httpResponse, cancellationToken).WithoutCapturingContext();
                 }
 
                 if (!string.IsNullOrEmpty(queryParameters.OrgDefinedId) || !string.IsNullOrEmpty(queryParameters.ExternalEmail))
                 {
-                    await CheckErrorResponseAsync(httpResponse, cancellationToken).WithoutCapturingContext();
+                    await CheckResponseForErrorAsync(httpResponse, cancellationToken).WithoutCapturingContext();
 
                     var users = await httpResponse.Content.ReadFromJsonAsync<IEnumerable<UserData>>(jsonOptions, cancellationToken).WithoutCapturingContext();
                     return new PagedResultSet<UserData> { Items = users! };
                 }
             }
 
-            await CheckErrorResponseAsync(httpResponse, cancellationToken).WithoutCapturingContext();
+            await CheckResponseForErrorAsync(httpResponse, cancellationToken).WithoutCapturingContext();
 
             var pagedUsers = await httpResponse.Content.ReadFromJsonAsync<PagedResultSet<UserData>>(jsonOptions, cancellationToken).WithoutCapturingContext();
             return pagedUsers!;
@@ -92,7 +92,7 @@ namespace HR.BrightspaceConnector
             httpRequest.Headers.Authorization = new AuthenticationHeaderValue(oAuthToken.TokenType ?? TokenResponse.DefaultTokenType, oAuthToken.AccessToken);
         }
 
-        private async Task CheckErrorResponseAsync(HttpResponseMessage httpResponse, CancellationToken cancellationToken)
+        private async Task CheckResponseForErrorAsync(HttpResponseMessage httpResponse, CancellationToken cancellationToken)
         {
             if (httpResponse.IsSuccessStatusCode)
             {
