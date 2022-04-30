@@ -43,12 +43,14 @@ internal class Startup
             Validator.ValidateObject(oAuthSettings, new ValidationContext(oAuthSettings), validateAllProperties: true);
         });
 
+        string? userAgentString = Configuration["UserAgentString"];
+
         services.AddHttpClient<ICachingTokenManager, FileCachingTokenManager>((IServiceProvider serviceProvider, HttpClient httpClient) =>
         {
             var oAuthSettings = serviceProvider.GetRequiredService<IOptions<OAuthSettings>>().Value;
             httpClient.BaseAddress = oAuthSettings.TokenEndpoint;
             httpClient.DefaultRequestHeaders.Accept.TryParseAdd(MediaTypeNames.Application.Json);
-            httpClient.DefaultRequestHeaders.UserAgent.TryParseAdd("HR.BrightspaceConnector.Client/1.0");
+            httpClient.DefaultRequestHeaders.UserAgent.TryParseAdd(userAgentString);
         });
 
         services.AddScoped<ITokenManager>(serviceProvider => serviceProvider.GetRequiredService<ICachingTokenManager>());
@@ -58,7 +60,7 @@ internal class Startup
             var apiSettings = serviceProvider.GetRequiredService<IOptions<ApiSettings>>().Value;
             httpClient.BaseAddress = apiSettings.BaseAddress;
             httpClient.DefaultRequestHeaders.Accept.TryParseAdd(MediaTypeNames.Application.Json);
-            httpClient.DefaultRequestHeaders.UserAgent.TryParseAdd("HR.BrightspaceConnector.Client/1.0");
+            httpClient.DefaultRequestHeaders.UserAgent.TryParseAdd(userAgentString);
         });
 
         services.AddSingleton<IClock, SystemClock>();
