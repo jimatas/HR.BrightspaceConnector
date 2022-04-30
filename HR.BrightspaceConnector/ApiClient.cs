@@ -40,7 +40,7 @@ namespace HR.BrightspaceConnector
             return roles!;
         }
 
-        public async Task<PagedResultSet<UserData>> GetUsersAsync(UserQueryParameters? queryParameters, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<UserData>> GetUsersAsync(UserQueryParameters? queryParameters, CancellationToken cancellationToken = default)
         {
             using var httpRequest = new HttpRequestMessage(HttpMethod.Get, $"lp/{apiSettings.LearningPlatformVersion}/users/{queryParameters?.ToQueryString(jsonOptions.PropertyNamingPolicy)}");
             await SetAuthorizationHeader(httpRequest, cancellationToken).WithoutCapturingContext();
@@ -51,7 +51,7 @@ namespace HR.BrightspaceConnector
             return users!;
         }
 
-        private async Task<PagedResultSet<UserData>> TryParseUserResponseAsync(UserQueryParameters? queryParameters, HttpResponseMessage httpResponse, CancellationToken cancellationToken)
+        private async Task<IEnumerable<UserData>> TryParseUserResponseAsync(UserQueryParameters? queryParameters, HttpResponseMessage httpResponse, CancellationToken cancellationToken)
         {
             if (queryParameters is not null)
             {
@@ -64,7 +64,7 @@ namespace HR.BrightspaceConnector
                     else if (httpResponse.IsSuccessStatusCode)
                     {
                         var user = await httpResponse.Content.ReadFromJsonAsync<UserData>(jsonOptions, cancellationToken).WithoutCapturingContext();
-                        return new PagedResultSet<UserData> { Items = new[] { user! } };
+                        return new[] { user! };
                     }
                     // else, error status received
 
@@ -76,7 +76,7 @@ namespace HR.BrightspaceConnector
                     await CheckResponseForErrorAsync(httpResponse, cancellationToken).WithoutCapturingContext();
 
                     var users = await httpResponse.Content.ReadFromJsonAsync<IEnumerable<UserData>>(jsonOptions, cancellationToken).WithoutCapturingContext();
-                    return new PagedResultSet<UserData> { Items = users! };
+                    return users!;
                 }
             }
 

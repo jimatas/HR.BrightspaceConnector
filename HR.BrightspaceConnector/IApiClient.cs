@@ -29,6 +29,6 @@ namespace HR.BrightspaceConnector
         /// <param name="queryParameters"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<PagedResultSet<UserData>> GetUsersAsync(UserQueryParameters? queryParameters, CancellationToken cancellationToken = default);
+        Task<IEnumerable<UserData>> GetUsersAsync(UserQueryParameters? queryParameters, CancellationToken cancellationToken = default);
     }
 }

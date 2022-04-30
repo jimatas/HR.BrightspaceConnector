@@ -1,7 +1,7 @@
-﻿using System.Reflection;
+﻿using HR.BrightspaceConnector.Utilities;
+
 using System.Text;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace HR.BrightspaceConnector.Features.Users
 {
@@ -37,10 +37,7 @@ namespace HR.BrightspaceConnector.Features.Users
                 var propertyValue = property.GetValue(this)?.ToString();
                 if (!string.IsNullOrEmpty(propertyValue))
                 {
-                    var propertyName = property.GetCustomAttribute<JsonPropertyNameAttribute>()?.Name
-                        ?? propertyNamingPolicy?.ConvertName(property.Name)
-                        ?? property.Name;
-
+                    var propertyName = GetType().GetJsonPropertyName(property.Name, propertyNamingPolicy);
                     queryStringBuilder.Append(separator).Append(propertyName).Append('=').Append(Uri.EscapeDataString(propertyValue.ToString()));
                     separator = '&';
                 }
