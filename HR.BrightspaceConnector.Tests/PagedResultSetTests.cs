@@ -56,17 +56,36 @@ namespace HR.BrightspaceConnector.Tests
         }";
         #endregion
 
-        private JsonSerializerOptions jsonOptions = new JsonSerializerOptions(JsonSerializerDefaults.General);
+        private readonly JsonSerializerOptions jsonOptions = new(JsonSerializerDefaults.General);
 
         [TestMethod]
         public void DeserializeUsingCustomConverter()
         {
-            var result = JsonSerializer.Deserialize<PagedResultSet<UserData>>(jsonString, jsonOptions);
+            var pagedResultSet = JsonSerializer.Deserialize<PagedResultSet<UserData>>(jsonString, jsonOptions);
 
-            Assert.IsNotNull(result);
-            Assert.AreEqual("172", result.PagingInfo.Bookmark);
-            Assert.IsFalse(result.PagingInfo.HasMoreItems);
-            Assert.AreEqual(2, result.Items.Count());
+            Assert.IsNotNull(pagedResultSet);
+            Assert.AreEqual("172", pagedResultSet.PagingInfo.Bookmark);
+            Assert.IsFalse(pagedResultSet.PagingInfo.HasMoreItems);
+            Assert.AreEqual(2, pagedResultSet.Items.Count());
+        }
+
+        [TestMethod]
+        public void SerializeUsingCustomConverter()
+        {
+            var pagedResultSet = new PagedResultSet<UserData>
+            {
+                Items = new[]
+                {
+                    new UserData { UserName = "Demo.Student", FirstName = "D2L.Demo", LastName = "Student" },
+                    new UserData { UserName = "Demo.Instructor", FirstName = "D2L.Demo", LastName = "Instructor" }
+                }
+            };
+
+            var jsonString = JsonSerializer.Serialize(pagedResultSet, jsonOptions);
+
+            Assert.IsNotNull(jsonString);
+            Assert.AreNotEqual(string.Empty, jsonString);
+            Assert.IsTrue(jsonString.StartsWith("{") && jsonString.EndsWith("}"));
         }
     }
 }
