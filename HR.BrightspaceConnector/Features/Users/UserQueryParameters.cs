@@ -1,4 +1,4 @@
-﻿using HR.BrightspaceConnector.Infrastructure;
+﻿using HR.BrightspaceConnector.Utilities;
 
 using System.Text;
 using System.Text.Json;

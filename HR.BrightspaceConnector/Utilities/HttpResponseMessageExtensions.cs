@@ -1,4 +1,4 @@
-﻿namespace HR.BrightspaceConnector.Infrastructure
+﻿namespace HR.BrightspaceConnector.Utilities
 {
     internal static class HttpResponseMessageExtensions
     {
