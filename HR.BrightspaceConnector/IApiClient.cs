@@ -28,7 +28,7 @@ namespace HR.BrightspaceConnector
         /// </remarks>
         /// <param name="queryParameters"></param>
         /// <param name="cancellationToken"></param>
-        /// <returns></returns>
+        /// <returns>A (possibly empty) <see cref="IEnumerable{UserData}"/> over the results. For the default and 'bookmark' cases, this IEnumerable will be of type <see cref="PagedResultSet{UserData}"/>.</returns>
         Task<IEnumerable<UserData>> GetUsersAsync(UserQueryParameters? queryParameters, CancellationToken cancellationToken = default);
     }
 }
