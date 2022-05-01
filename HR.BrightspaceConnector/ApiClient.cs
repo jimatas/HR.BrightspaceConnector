@@ -83,6 +83,18 @@ namespace HR.BrightspaceConnector
             return pagedUsers!;
         }
 
+        public async Task<UserData> CreateUserAsync(CreateUserData user, CancellationToken cancellationToken = default)
+        {
+            using var httpRequest = new HttpRequestMessage(HttpMethod.Post, $"lp/{apiSettings.LearningPlatformVersion}/users/") { Content = JsonContent.Create(user) };
+            await SetAuthorizationHeader(httpRequest, cancellationToken).WithoutCapturingContext();
+
+            using var httpResponse = await httpClient.SendAsync(httpRequest, cancellationToken).WithoutCapturingContext();
+            await CheckResponseForErrorAsync(httpResponse, cancellationToken).WithoutCapturingContext();
+
+            var newUser = await httpResponse.Content.ReadFromJsonAsync<UserData>(jsonOptions, cancellationToken).WithoutCapturingContext();
+            return newUser!;
+        }
+
         private async Task SetAuthorizationHeader(HttpRequestMessage httpRequest, CancellationToken cancellationToken)
         {
             var oAuthToken = await tokenManager.GetTokenAsync(cancellationToken).WithoutCapturingContext();

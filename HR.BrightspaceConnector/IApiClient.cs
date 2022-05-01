@@ -8,6 +8,9 @@ namespace HR.BrightspaceConnector
         /// <summary>
         /// Retrieve a list of all known user roles.
         /// </summary>
+        /// <remarks>
+        /// Requires the Oauth2 scope(s): <c>role:detail:read</c>
+        /// </remarks>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         Task<IEnumerable<Role>> GetRolesAsync(CancellationToken cancellationToken = default);
@@ -25,10 +28,24 @@ namespace HR.BrightspaceConnector
         ///   <item>bookmark. Use a paged result set to return the results. Fetch the segment of results immediately following your bookmark.</item>
         /// </list>
         /// If you provide none of these query parameters, this action behaves as if you'd passed an empty value for the bookmark parameter: it fetches the first segment of results.
+        /// <para>
+        /// Requires the Oauth2 scope(s): <c>users:userdata:read</c>
+        /// </para>
         /// </remarks>
         /// <param name="queryParameters"></param>
         /// <param name="cancellationToken"></param>
         /// <returns>A (possibly empty) <see cref="IEnumerable{UserData}"/> over the results. For the default and 'bookmark' cases, this IEnumerable will be of type <see cref="PagedResultSet{UserData}"/>.</returns>
         Task<IEnumerable<UserData>> GetUsersAsync(UserQueryParameters? queryParameters, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Create a new user entity.
+        /// </summary>
+        /// <remarks>
+        /// Requires the Oauth2 scope(s): <c>users:userdata:create</c>
+        /// </remarks>
+        /// <param name="user"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns>This action returns a UserData JSON block for the newly created user, to give you immediate access to the user's UserId property.</returns>
+        Task<UserData> CreateUserAsync(CreateUserData user, CancellationToken cancellationToken = default);
     }
 }
