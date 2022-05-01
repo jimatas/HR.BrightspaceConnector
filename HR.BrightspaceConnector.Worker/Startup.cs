@@ -1,7 +1,9 @@
 ﻿using HR.BrightspaceConnector;
+using HR.BrightspaceConnector.Infrastructure.Persistence;
 using HR.BrightspaceConnector.Security;
 using HR.BrightspaceConnector.Utilities;
 
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
 using System.ComponentModel.DataAnnotations;
@@ -21,6 +23,9 @@ internal class Startup
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddHostedService<Worker>();
+
+        services.AddScoped<IDatabase, Database>();
+        services.AddDbContext<BrightspaceDbContext>(dbContext => dbContext.UseSqlServer(Configuration.GetConnectionString(nameof(BrightspaceDbContext))));
 
         services.Configure<JsonSerializerOptions>(jsonOptions =>
         {
