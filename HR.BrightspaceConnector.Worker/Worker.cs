@@ -22,8 +22,9 @@ namespace HR.BrightspaceConnector
             logger.LogInformation("Starting new batch run.");
 
             var users = await apiClient.GetUsersAsync(queryParameters: new UserQueryParameters { Bookmark = null }, stoppingToken).WithoutCapturingContext();
-            users = await apiClient.GetUsersAsync(queryParameters: new UserQueryParameters { UserName = "Demo.Student@d2l.com" }, stoppingToken).WithoutCapturingContext();
-            users = await apiClient.GetUsersAsync(queryParameters: new UserQueryParameters { OrgDefinedId = "Demo.Instructor" }, stoppingToken).WithoutCapturingContext();
+            users = await apiClient.GetUsersAsync(queryParameters: new UserQueryParameters { ExternalEmail = "Demo.Student@d2l.com" }, stoppingToken).WithoutCapturingContext();
+            users = await apiClient.GetUsersAsync(queryParameters: new UserQueryParameters { OrgDefinedId = "Demo.Student" }, stoppingToken).WithoutCapturingContext();
+            users = await apiClient.GetUsersAsync(queryParameters: new UserQueryParameters { UserName = "Demo.Student" }, stoppingToken).WithoutCapturingContext();
             //var roles = await apiClient.GetRolesAsync(stoppingToken).WithoutCapturingContext();
             //var token = await tokenManager.GetTokenAsync(stoppingToken).WithoutCapturingContext();
 

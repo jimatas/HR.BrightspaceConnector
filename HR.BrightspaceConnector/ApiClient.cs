@@ -53,31 +53,28 @@ namespace HR.BrightspaceConnector
 
         private async Task<IEnumerable<UserData>> TryParseUserResponseAsync(UserQueryParameters? queryParameters, HttpResponseMessage httpResponse, CancellationToken cancellationToken)
         {
-            if (queryParameters is not null)
+            if (!string.IsNullOrEmpty(queryParameters?.UserName) ||
+                !string.IsNullOrEmpty(queryParameters?.OrgDefinedId) ||
+                !string.IsNullOrEmpty(queryParameters?.ExternalEmail))
             {
-                if (!string.IsNullOrEmpty(queryParameters.UserName))
+                if (httpResponse.StatusCode == HttpStatusCode.NotFound)
                 {
-                    if (httpResponse.StatusCode == HttpStatusCode.NotFound)
-                    {
-                        return Enumerable.Empty<UserData>();
-                    }
-                    else if (httpResponse.IsSuccessStatusCode)
+                    return Enumerable.Empty<UserData>();
+                }
+                else if (httpResponse.IsSuccessStatusCode)
+                {
+                    if (!string.IsNullOrEmpty(queryParameters.UserName))
                     {
                         var user = await httpResponse.Content.ReadFromJsonAsync<UserData>(jsonOptions, cancellationToken).WithoutCapturingContext();
                         return new[] { user! };
                     }
-                    // else, error status received
-
-                    await CheckResponseForErrorAsync(httpResponse, cancellationToken).WithoutCapturingContext();
+                    else
+                    {
+                        var users = await httpResponse.Content.ReadFromJsonAsync<IEnumerable<UserData>>(jsonOptions, cancellationToken).WithoutCapturingContext();
+                        return users!;
+                    }
                 }
-
-                if (!string.IsNullOrEmpty(queryParameters.OrgDefinedId) || !string.IsNullOrEmpty(queryParameters.ExternalEmail))
-                {
-                    await CheckResponseForErrorAsync(httpResponse, cancellationToken).WithoutCapturingContext();
-
-                    var users = await httpResponse.Content.ReadFromJsonAsync<IEnumerable<UserData>>(jsonOptions, cancellationToken).WithoutCapturingContext();
-                    return users!;
-                }
+                // else, error status received; fall through.
             }
 
             await CheckResponseForErrorAsync(httpResponse, cancellationToken).WithoutCapturingContext();
