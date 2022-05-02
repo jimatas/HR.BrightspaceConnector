@@ -86,6 +86,8 @@ namespace HR.BrightspaceConnector.Tests
             Assert.IsNotNull(jsonString);
             Assert.AreNotEqual(string.Empty, jsonString);
             Assert.IsTrue(jsonString.StartsWith("{") && jsonString.EndsWith("}"));
+            Assert.IsTrue(jsonString.Contains("\"PagingInfo\":"));
+            Assert.IsTrue(jsonString.Contains("\"Items\":"));
         }
     }
 }
