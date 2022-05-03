@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\HR.BrightspaceConnector.Worker\HR.BrightspaceConnector.Worker.csproj" />
     <ProjectReference Include="..\HR.BrightspaceConnector\HR.BrightspaceConnector.csproj" />
   </ItemGroup>
 

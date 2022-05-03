@@ -2,6 +2,7 @@
 using HR.BrightspaceConnector.Infrastructure.Persistence;
 using HR.BrightspaceConnector.Security;
 using HR.BrightspaceConnector.Utilities;
+using HR.Common.Cqrs.Infrastructure;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -23,6 +24,7 @@ internal class Startup
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddHostedService<Worker>();
+        services.AddDispatcher().AddHandlersFromAssembly(GetType().Assembly);
 
         services.AddScoped<IDatabase, Database>();
         services.AddDbContext<BrightspaceDbContext>(dbContext => dbContext.UseSqlServer(Configuration.GetConnectionString(nameof(BrightspaceDbContext))));
