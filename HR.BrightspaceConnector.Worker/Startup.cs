@@ -38,6 +38,8 @@ internal class Startup
             jsonOptions.NumberHandling = JsonNumberHandling.AllowReadingFromString; // Web default
         });
 
+        services.Configure<BatchSettings>(Configuration.GetSection(nameof(BatchSettings)));
+
         services.Configure<ApiSettings>(Configuration.GetSection(nameof(ApiSettings))).PostConfigure<ApiSettings>(apiSettings =>
         {
             Validator.ValidateObject(apiSettings, new ValidationContext(apiSettings), validateAllProperties: true);
