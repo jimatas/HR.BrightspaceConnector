@@ -16,7 +16,7 @@ namespace HR.BrightspaceConnector.Infrastructure.Persistence
             return users.SingleOrDefault();
         }
 
-        public async Task MarkAsHandledAsync(bool success, string? message, int? id, int? eventId, CancellationToken cancellationToken = default)
+        public async Task MarkAsHandledAsync(int? eventId, bool success, int? id, string? message, CancellationToken cancellationToken = default)
         {
             await dbContext.Database.ExecuteSqlInterpolatedAsync($"sync_event_MarkHandled {eventId}, {success}, {id?.ToString()}, {message}", cancellationToken).WithoutCapturingContext();
         }

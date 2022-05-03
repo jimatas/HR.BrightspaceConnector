@@ -10,10 +10,10 @@ namespace HR.BrightspaceConnector.Infrastructure.Persistence
         Task<UserRecord?> GetNextUserAsync(CancellationToken cancellationToken = default);
 
         Task MarkAsHandledAsync(
-            bool success,
-            string? message,
-            int? id,
             int? eventId,
+            bool success,
+            int? id,
+            string? message,
             CancellationToken cancellationToken = default);
     }
 }

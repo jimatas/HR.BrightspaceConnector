@@ -5,6 +5,7 @@
     /// </summary>
     public class CreateUserData
     {
+        public string? OrgDefinedId { get; set; }
         public string? FirstName { get; set; }
         public string? MiddleName { get; set; }
         public string? LastName { get; set; }

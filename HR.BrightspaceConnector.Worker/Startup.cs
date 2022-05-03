@@ -31,13 +31,10 @@ internal class Startup
 
         services.Configure<JsonSerializerOptions>(jsonOptions =>
         {
-            jsonOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
-            jsonOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
+            jsonOptions.Converters.Add(new JsonStringEnumConverter());
             jsonOptions.AllowTrailingCommas = true;
-            jsonOptions.PropertyNameCaseInsensitive = true; // Web default
-            jsonOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase; // Web default
-            jsonOptions.DictionaryKeyPolicy = JsonNamingPolicy.CamelCase;
-            jsonOptions.NumberHandling = JsonNumberHandling.AllowReadingFromString; // Web default
+            jsonOptions.PropertyNameCaseInsensitive = true;
+            jsonOptions.NumberHandling = JsonNumberHandling.AllowReadingFromString;
         });
 
         services.Configure<BatchSettings>(Configuration.GetSection(nameof(BatchSettings)));

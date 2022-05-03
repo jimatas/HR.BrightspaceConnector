@@ -86,7 +86,7 @@ namespace HR.BrightspaceConnector
 
         public async Task<UserData> CreateUserAsync(CreateUserData user, CancellationToken cancellationToken = default)
         {
-            using var httpRequest = new HttpRequestMessage(HttpMethod.Post, $"lp/{apiSettings.LearningPlatformVersion}/users/") { Content = JsonContent.Create(user) };
+            using var httpRequest = new HttpRequestMessage(HttpMethod.Post, $"lp/{apiSettings.LearningPlatformVersion}/users/") { Content = JsonContent.Create(user, mediaType: null, jsonOptions) };
             await SetAuthorizationHeader(httpRequest, cancellationToken).WithoutCapturingContext();
 
             using var httpResponse = await httpClient.SendAsync(httpRequest, cancellationToken).WithoutCapturingContext();
