@@ -45,6 +45,7 @@ namespace HR.BrightspaceConnector.Security
         /// If the scope the user granted is identical to the scope the app requested, this parameter is optional. 
         /// If the granted scope is different from the requested scope, such as if the user modified the scope, then this parameter is required.
         /// </summary>
+        [JsonPropertyName("scope")] // Don't assume JsonNamingPolicy.CamelCase, explicitly lower-case.
         public string? Scope { get; set; }
     }
 }
