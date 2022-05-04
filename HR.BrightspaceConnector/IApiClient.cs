@@ -9,7 +9,7 @@ namespace HR.BrightspaceConnector
         /// Retrieve a list of all known user roles.
         /// </summary>
         /// <remarks>
-        /// Requires the Oauth2 scope(s): <c>role:detail:read</c>
+        /// Requires the OAuth2 scope(s): <c>role:detail:read</c>
         /// </remarks>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
@@ -29,7 +29,7 @@ namespace HR.BrightspaceConnector
         /// </list>
         /// If you provide none of these query parameters, this action behaves as if you'd passed an empty value for the bookmark parameter: it fetches the first segment of results.
         /// <para>
-        /// Requires the Oauth2 scope(s): <c>users:userdata:read</c>
+        /// Requires the OAuth2 scope(s): <c>users:userdata:read</c>
         /// </para>
         /// </remarks>
         /// <param name="queryParameters"></param>
@@ -41,11 +41,34 @@ namespace HR.BrightspaceConnector
         /// Create a new user entity.
         /// </summary>
         /// <remarks>
-        /// Requires the Oauth2 scope(s): <c>users:userdata:create</c>
+        /// Requires the OAuth2 scope(s): <c>users:userdata:create</c>
         /// </remarks>
         /// <param name="user"></param>
         /// <param name="cancellationToken"></param>
         /// <returns>This action returns a UserData JSON block for the newly created user, to give you immediate access to the user's UserId property.</returns>
         Task<UserData> CreateUserAsync(CreateUserData user, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Retrieve legal, preferred, and sort names for a particular user.
+        /// </summary>
+        /// <remarks>
+        /// Requires the OAuth2 scope(s): <c>users:userdata:read</c>
+        /// </remarks>
+        /// <param name="userId"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        Task<LegalPreferredNames> GetLegalPreferredNamesAsync(int userId, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Update legal, preferred, and sort name data for a particular user.
+        /// </summary>
+        /// <remarks>
+        /// Requires the OAuth2 scope(s): <c>users:userdata:update</c>
+        /// </remarks>
+        /// <param name="userId"></param>
+        /// <param name="userNames"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns>This action returns a LegalPreferredNames JSON block for the user's updated name data.</returns>
+        Task<LegalPreferredNames> UpdateLegalPreferredNamesAsync(int userId, LegalPreferredNames userNames, CancellationToken cancellationToken = default);
     }
 }
