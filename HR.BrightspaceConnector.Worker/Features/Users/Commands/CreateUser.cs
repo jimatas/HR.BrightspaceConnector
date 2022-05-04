@@ -37,11 +37,14 @@ namespace HR.BrightspaceConnector.Features.Users.Commands
             try
             {
                 var userData = await apiClient.CreateUserAsync(user.ToCreateUserData(), cancellationToken).WithoutCapturingContext();
+                logger.LogInformation("User was successfully created.");
+
                 await eventDispatcher.DispatchAsync(new UserCreated(user, userData), cancellationToken).WithoutCapturingContext();
             }
             catch (ApiException exception)
             {
-                logger.LogWarning(exception.GetErrorMessage());
+                logger.LogWarning("Error while creating User: {ErrorMessage}", exception.GetErrorMessage());
+
                 await eventDispatcher.DispatchAsync(new UserCreated(user, exception), cancellationToken).WithoutCapturingContext();
             }
         }
