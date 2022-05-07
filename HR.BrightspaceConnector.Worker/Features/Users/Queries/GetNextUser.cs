@@ -24,7 +24,7 @@ namespace HR.BrightspaceConnector.Features.Users.Queries
             var user = await database.GetNextUserAsync(cancellationToken).WithoutCapturingContext();
             if (user is not null)
             {
-                logger.LogInformation("Retrieved {User} from database.", user);
+                logger.LogInformation("Retrieved user with username \"{UserName}\" for sync action '{SyncAction}' from database.", user.UserName, user.SyncAction);
             }
 
             return user;

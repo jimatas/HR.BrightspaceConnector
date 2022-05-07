@@ -1,7 +1,6 @@
-﻿using HR.BrightspaceConnector.Features.Users.Events;
+﻿using HR.BrightspaceConnector.Features.Common.Commands;
 using HR.BrightspaceConnector.Utilities;
 using HR.Common.Cqrs.Commands;
-using HR.Common.Cqrs.Events;
 using HR.Common.Utilities;
 
 namespace HR.BrightspaceConnector.Features.Users.Commands
@@ -19,33 +18,33 @@ namespace HR.BrightspaceConnector.Features.Users.Commands
     public class CreateUserHandler : ICommandHandler<CreateUser>
     {
         private readonly IApiClient apiClient;
-        private readonly IEventDispatcher eventDispatcher;
+        private readonly ICommandDispatcher commandDispatcher;
         private readonly ILogger logger;
 
-        public CreateUserHandler(IApiClient apiClient, IEventDispatcher eventDispatcher, ILogger<CreateUser> logger)
+        public CreateUserHandler(IApiClient apiClient, ICommandDispatcher commandDispatcher, ILogger<CreateUser> logger)
         {
             this.apiClient = apiClient;
-            this.eventDispatcher = eventDispatcher;
+            this.commandDispatcher = commandDispatcher;
             this.logger = logger;
         }
 
         public async Task HandleAsync(CreateUser command, CancellationToken cancellationToken)
         {
             UserRecord user = command.User;
-            logger.LogInformation("Creating new User with UserName \"{UserName}\" in Brightspace.", user.UserName);
+            logger.LogInformation("Creating user with username \"{UserName}\" in Brightspace.", user.UserName);
 
             try
             {
                 var userData = await apiClient.CreateUserAsync(user.ToCreateUserData(), cancellationToken).WithoutCapturingContext();
                 logger.LogInformation("User was successfully created.");
 
-                await eventDispatcher.DispatchAsync(new UserCreated(user, userData), cancellationToken).WithoutCapturingContext();
+                await commandDispatcher.DispatchAsync(MarkAsHandled.WithSuccess((int)user.SyncEventId!, (int)userData.UserId!), cancellationToken).WithoutCapturingContext();
             }
             catch (ApiException exception)
             {
-                logger.LogWarning("Error while creating User: {ErrorMessage}", exception.GetErrorMessage());
+                logger.LogWarning("Error while creating user. {ErrorMessage}", exception.GetErrorMessage());
 
-                await eventDispatcher.DispatchAsync(new UserCreated(user, exception), cancellationToken).WithoutCapturingContext();
+                await commandDispatcher.DispatchAsync(MarkAsHandled.WithoutSuccess((int)user.SyncEventId!, exception.GetErrorMessage()), cancellationToken).WithoutCapturingContext();
             }
         }
     }

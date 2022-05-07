@@ -13,10 +13,5 @@ namespace HR.BrightspaceConnector.Features.Users
         public string? ExternalEmail { get; set; }
         public bool? IsActive { get; set; }
         public bool? SendCreationEmail { get; set; }
-
-        public override string ToString()
-        {
-            return $"{nameof(UserRecord)} with {nameof(UserName)} \"{UserName}\" and {nameof(SyncAction)} '{SyncAction}'";
-        }
     }
 }
