@@ -14,8 +14,9 @@ namespace HR.BrightspaceConnector.Features.Common.Commands
             Message = message;
         }
 
-        public static MarkAsHandled WithSuccess(int eventId, int id) => new(eventId, success: true, id, message: null);
-        public static MarkAsHandled WithoutSuccess(int eventId, string? message = null) => new(eventId, success: true, id: null, message);
+        public static MarkAsHandled Successfully(int eventId, int id) => new(eventId, success: true, id, message: null);
+        public static MarkAsHandled Unsuccessfully(int eventId, string? message = null) => new(eventId, success: true, id: null, message);
+        public static MarkAsHandled Unsuccessfully(int eventId, int id, string? message = null) => new(eventId, success: true, id, message);
 
         public int EventId { get; }
         public bool Success { get; }
@@ -52,7 +53,7 @@ namespace HR.BrightspaceConnector.Features.Common.Commands
                 command.Message,
                 cancellationToken).WithoutCapturingContext();
 
-            logger.LogInformation("Marked sync event with id {EventId} as handled {Success} in database.",
+            logger.LogInformation("Marked sync event with id {EventId} as {Success} handled in database.",
                 command.EventId, command.Success ? "successfully" : "unsuccessfully");
         }
     }
