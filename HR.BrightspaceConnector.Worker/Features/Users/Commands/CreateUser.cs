@@ -42,7 +42,7 @@ namespace HR.BrightspaceConnector.Features.Users.Commands
             }
             catch (ApiException exception)
             {
-                logger.LogWarning("Error while creating user. {ErrorMessage}", exception.GetErrorMessage());
+                logger.LogWarning(exception, "Error while creating user. {ErrorMessage}", exception.GetErrorMessage());
 
                 await commandDispatcher.DispatchAsync(MarkAsHandled.Unsuccessfully((int)user.SyncEventId!, exception.GetErrorMessage()), cancellationToken).WithoutCapturingContext();
             }
