@@ -53,7 +53,7 @@ namespace HR.BrightspaceConnector.Features.Common.Commands
                 command.Message,
                 cancellationToken).WithoutCapturingContext();
 
-            logger.LogInformation("Marked sync event with id {EventId} as {Success} handled in database.",
+            logger.LogInformation("Marked sync event with id {EventId} as handled {Success} in database.",
                 command.EventId, command.Success ? "successfully" : "unsuccessfully");
         }
     }
