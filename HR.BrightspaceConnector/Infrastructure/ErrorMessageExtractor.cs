@@ -20,10 +20,10 @@ namespace HR.BrightspaceConnector.Infrastructure
                 var errorResponse = await httpResponse.Content.ReadFromJsonAsync<ErrorResponse>(jsonOptions, cancellationToken).WithoutCapturingContext();
                 if (errorResponse!.Errors.Any())
                 {
-                    var message = string.Join(Environment.NewLine,
+                    var errorMessage = string.Join(Environment.NewLine,
                         errorResponse.Errors.Select(e => e.Message));
 
-                    return (true, message);
+                    return (true, errorMessage);
                 }
             }
 
@@ -33,10 +33,10 @@ namespace HR.BrightspaceConnector.Infrastructure
                 if (contentBody.Contains("Errors:"))
                 {
                     const string pattern = @"Message:\s?""([^""]+)""";
-                    var message = string.Join(Environment.NewLine,
+                    var errorMessage = string.Join(Environment.NewLine,
                         Regex.Matches(contentBody, pattern).Select(match => match.Groups[1].Value));
 
-                    return (true, message);
+                    return (true, errorMessage);
                 }
             }
 

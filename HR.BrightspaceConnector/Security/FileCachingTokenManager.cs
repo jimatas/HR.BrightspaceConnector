@@ -94,7 +94,7 @@ namespace HR.BrightspaceConnector.Security
             }
 
             // Default error message is the HTTP status description.
-            var message = httpResponse.ReasonPhrase;
+            var errorMessage = httpResponse.ReasonPhrase;
 
             // Try to obtain a more meaningful one...
             if (httpResponse.Content.Headers.ContentType?.MediaType == MediaTypeNames.Application.Json)
@@ -102,11 +102,11 @@ namespace HR.BrightspaceConnector.Security
                 var errorResponse = await httpResponse.Content.ReadFromJsonAsync<ErrorResponse>(jsonOptions, cancellationToken).WithoutCapturingContext();
                 if (!(string.IsNullOrEmpty(errorResponse?.ErrorCode) || string.IsNullOrEmpty(errorResponse.ErrorDescription)))
                 {
-                    message = $"{errorResponse.ErrorCode}: {errorResponse.ErrorDescription}";
+                    errorMessage = $"{errorResponse.ErrorCode}: {errorResponse.ErrorDescription}";
                 }
             }
 
-            throw new HttpRequestException(message, inner: null, httpResponse.StatusCode);
+            throw new HttpRequestException(errorMessage, inner: null, httpResponse.StatusCode);
         }
     }
 }
