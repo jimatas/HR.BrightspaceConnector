@@ -23,7 +23,7 @@ namespace HR.BrightspaceConnector
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            // var names = await apiClient.GetLegalPreferredNamesAsync(1, stoppingToken).WithoutCapturingContext();
+            //var userNames = await apiClient.GetLegalPreferredNamesAsync(1, stoppingToken).WithoutCapturingContext();
 
             var isDeleteContext = false;
             while (!stoppingToken.IsCancellationRequested)

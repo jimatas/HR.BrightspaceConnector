@@ -1,9 +1,9 @@
-﻿using HR.BrightspaceConnector.Infrastructure;
-using HR.BrightspaceConnector.Utilities;
+﻿using HR.BrightspaceConnector.Utilities;
 using HR.Common.Utilities;
 
 using Microsoft.Extensions.Options;
 
+using System.Net.Http.Json;
 using System.Net.Mime;
 using System.Text.Json;
 
@@ -87,11 +87,9 @@ namespace HR.BrightspaceConnector.Security
         private async Task<CacheableTokenResponse> RefreshTokenAsync(CancellationToken cancellationToken)
         {
             using var httpResponse = await httpClient.PostAsync(string.Empty, new FormUrlEncodedContent(oAuthSettings.AsFormData()), cancellationToken).WithoutCapturingContext();
-            var jsonData = await httpResponse.Content.ReadAsStringAsync(cancellationToken).WithoutCapturingContext();
-
             if (httpResponse.IsSuccessStatusCode)
             {
-                var tokenResponse = JsonSerializer.Deserialize<CacheableTokenResponse>(jsonData, jsonOptions);
+                var tokenResponse = await httpResponse.Content.ReadFromJsonAsync<CacheableTokenResponse>(jsonOptions, cancellationToken).WithoutCapturingContext();
                 return tokenResponse!;
             }
 
@@ -101,10 +99,10 @@ namespace HR.BrightspaceConnector.Security
             // Try to obtain a more meaningful one...
             if (httpResponse.Content.Headers.ContentType?.MediaType == MediaTypeNames.Application.Json)
             {
-                var errorResponse = JsonSerializer.Deserialize<ErrorResponse>(jsonData, jsonOptions);
+                var errorResponse = await httpResponse.Content.ReadFromJsonAsync<ErrorResponse>(jsonOptions, cancellationToken).WithoutCapturingContext();
                 if (!(string.IsNullOrEmpty(errorResponse?.ErrorCode) || string.IsNullOrEmpty(errorResponse.ErrorDescription)))
                 {
-                    message = $"{errorResponse.ErrorDescription} ({errorResponse.ErrorCode})";
+                    message = $"{errorResponse.ErrorCode}: {errorResponse.ErrorDescription}";
                 }
             }
 

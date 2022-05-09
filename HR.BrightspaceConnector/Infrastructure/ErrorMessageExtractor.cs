@@ -29,12 +29,12 @@ namespace HR.BrightspaceConnector.Infrastructure
 
             if (httpResponse.Content.Headers.ContentType?.MediaType == MediaTypeNames.Text.Html)
             {
-                var responseBody = await httpResponse.Content.ReadAsStringAsync(cancellationToken).WithoutCapturingContext();
-                if (responseBody.Contains("Errors:"))
+                var contentBody = await httpResponse.Content.ReadAsStringAsync(cancellationToken).WithoutCapturingContext();
+                if (contentBody.Contains("Errors:"))
                 {
                     const string pattern = @"Message:\s?""([^""]+)""";
                     var message = string.Join(Environment.NewLine,
-                        Regex.Matches(responseBody, pattern).Select(match => match.Groups[1].Value));
+                        Regex.Matches(contentBody, pattern).Select(match => match.Groups[1].Value));
 
                     return (true, message);
                 }

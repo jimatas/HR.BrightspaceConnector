@@ -1,7 +1,6 @@
 ﻿using HR.BrightspaceConnector.Features.Users;
 using HR.BrightspaceConnector.Infrastructure;
 using HR.BrightspaceConnector.Security;
-using HR.BrightspaceConnector.Utilities;
 using HR.Common.Utilities;
 
 using Microsoft.Extensions.Options;
