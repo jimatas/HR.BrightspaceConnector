@@ -95,8 +95,8 @@ namespace HR.BrightspaceConnector.Security
                 return tokenResponse!;
             }
 
-            // Default error message is HTTP status code and description.
-            var errorMessage = httpResponse.GetStatusMessage();
+            // Default error message is the HTTP status description.
+            var message = httpResponse.ReasonPhrase;
 
             // Try to obtain a more meaningful one...
             if (httpResponse.Content.Headers.ContentType?.MediaType == MediaTypeNames.Application.Json)
@@ -104,11 +104,11 @@ namespace HR.BrightspaceConnector.Security
                 var errorResponse = JsonSerializer.Deserialize<ErrorResponse>(jsonData, jsonOptions);
                 if (!(string.IsNullOrEmpty(errorResponse?.ErrorCode) || string.IsNullOrEmpty(errorResponse.ErrorDescription)))
                 {
-                    errorMessage = $"{errorResponse.ErrorDescription} ({errorResponse.ErrorCode})";
+                    message = $"{errorResponse.ErrorDescription} ({errorResponse.ErrorCode})";
                 }
             }
 
-            throw new HttpRequestException(errorMessage, inner: null, httpResponse.StatusCode);
+            throw new HttpRequestException(message, inner: null, httpResponse.StatusCode);
         }
     }
 }

@@ -139,7 +139,12 @@ namespace HR.BrightspaceConnector
                 problemDetails = await httpResponse.Content.ReadFromJsonAsync<ProblemDetails>(jsonOptions, cancellationToken).WithoutCapturingContext();
             }
 
-            throw new ApiException(httpResponse.GetStatusMessage())
+            if (!(await httpResponse.TryGetErrorMessageAsync(jsonOptions, cancellationToken).WithoutCapturingContext()).Out(out var message))
+            {
+                message = httpResponse.ReasonPhrase;
+            }
+
+            throw new ApiException(message)
             {
                 StatusCode = httpResponse.StatusCode,
                 ProblemDetails = problemDetails
