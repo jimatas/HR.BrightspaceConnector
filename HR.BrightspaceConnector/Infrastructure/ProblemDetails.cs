@@ -34,6 +34,6 @@ namespace HR.BrightspaceConnector.Infrastructure
         /// A URI reference that identifies the specific occurrence of the problem. 
         /// It may or may not yield further information if dereferenced.
         /// </summary>
-        public string? Instance { get; set; }
+        public Uri? Instance { get; set; }
     }
 }
