@@ -60,7 +60,7 @@ namespace HR.BrightspaceConnector.Features.Users.Commands
                 }
                 else if (nextUser.IsToBeDeleted())
                 {
-                    // await dispatcher.DispatchAsync(new DeleteUser(nextUser), cancellationToken).WithoutCapturingContext();
+                    await dispatcher.DispatchAsync(new DeleteUser(nextUser), cancellationToken).WithoutCapturingContext();
                     deleted++;
                 }
             }
