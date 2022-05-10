@@ -55,7 +55,7 @@ namespace HR.BrightspaceConnector.Features.Users.Commands
                 }
                 else if (nextUser.IsToBeUpdated())
                 {
-                    // await dispatcher.DispatchAsync(new UpdateUser(nextUser), cancellationToken).WithoutCapturingContext();
+                    await dispatcher.DispatchAsync(new UpdateUser(nextUser), cancellationToken).WithoutCapturingContext();
                     updated++;
                 }
                 else if (nextUser.IsToBeDeleted())

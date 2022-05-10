@@ -31,6 +31,8 @@ namespace HR.BrightspaceConnector.Features.Users.Commands
         public async Task HandleAsync(CreateUser command, CancellationToken cancellationToken)
         {
             UserRecord user = command.User;
+            int eventId = (int)user.SyncEventId!;
+
             logger.LogInformation("Creating user with username \"{UserName}\" in Brightspace.", user.UserName);
 
             try
@@ -38,13 +40,13 @@ namespace HR.BrightspaceConnector.Features.Users.Commands
                 var userData = await apiClient.CreateUserAsync(user.ToCreateUserData(), cancellationToken).WithoutCapturingContext();
                 logger.LogInformation("User was successfully created.");
 
-                await commandDispatcher.DispatchAsync(MarkAsHandled.Successfully((int)user.SyncEventId!, (int)userData.UserId!), cancellationToken).WithoutCapturingContext();
+                await commandDispatcher.DispatchAsync(MarkAsHandled.Successfully(eventId, (int)userData.UserId!), cancellationToken).WithoutCapturingContext();
             }
             catch (ApiException exception)
             {
                 logger.LogWarning(exception, "Error while creating user. {ErrorMessage}", exception.GetErrorMessage());
 
-                await commandDispatcher.DispatchAsync(MarkAsHandled.Unsuccessfully((int)user.SyncEventId!, exception.GetErrorMessage()), cancellationToken).WithoutCapturingContext();
+                await commandDispatcher.DispatchAsync(MarkAsHandled.Unsuccessfully(eventId, exception.GetErrorMessage()), cancellationToken).WithoutCapturingContext();
             }
         }
     }
