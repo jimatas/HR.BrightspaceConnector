@@ -39,5 +39,34 @@ namespace HR.BrightspaceConnector.Tests
             Assert.IsTrue(createUserData.IsActive);
             Assert.IsTrue(createUserData.SendCreationEmail);
         }
+
+        [TestMethod]
+        public void ToUpdateUserData_ByDefault_CopiesAllProperties()
+        {
+            // Arrange
+            var userRecord = new UserRecord
+            {
+                OrgDefinedId = "d2l.demo.student",
+                UserName = "Demo.Student",
+                FirstName = "D2L.Demo",
+                MiddleName = "",
+                LastName = "Student",
+                ExternalEmail = "demo.student@d2l.com",
+                IsActive = true
+            };
+
+            // Act
+            var updateUserData = userRecord.ToUpdateUserData();
+
+            // Assert
+            Assert.IsNotNull(updateUserData);
+            Assert.AreEqual("d2l.demo.student", updateUserData.OrgDefinedId);
+            Assert.AreEqual("Demo.Student", updateUserData.UserName);
+            Assert.AreEqual("D2L.Demo", updateUserData.FirstName);
+            Assert.AreEqual(string.Empty, updateUserData.MiddleName);
+            Assert.AreEqual("Student", updateUserData.LastName);
+            Assert.AreEqual("demo.student@d2l.com", updateUserData.ExternalEmail);
+            Assert.IsTrue(updateUserData.Activation!.IsActive);
+        }
     }
 }
