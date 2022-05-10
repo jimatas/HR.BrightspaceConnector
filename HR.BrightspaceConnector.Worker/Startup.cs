@@ -70,5 +70,7 @@ internal class Startup
         });
 
         services.AddSingleton<IClock, SystemClock>();
+
+        services.AddLogging(logging => logging.AddFile(Configuration.GetSection("Serilog:FileLogging")));
     }
 }
