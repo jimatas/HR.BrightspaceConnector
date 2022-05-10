@@ -95,6 +95,18 @@ namespace HR.BrightspaceConnector
             return newUser!;
         }
 
+        public async Task<UserData> UpdateUserAsync(int userId, UpdateUserData user, CancellationToken cancellationToken = default)
+        {
+            using var httpRequest = new HttpRequestMessage(HttpMethod.Put, $"lp/{apiSettings.LearningPlatformVersion}/users/{userId}") { Content = JsonContent.Create(user, mediaType: null, jsonOptions) };
+            await SetAuthorizationHeader(httpRequest, cancellationToken).WithoutCapturingContext();
+
+            using var httpResponse = await httpClient.SendAsync(httpRequest, cancellationToken).WithoutCapturingContext();
+            await CheckResponseForErrorAsync(httpResponse, cancellationToken).WithoutCapturingContext();
+
+            var updatedUser = await httpResponse.Content.ReadFromJsonAsync<UserData>(jsonOptions, cancellationToken).WithoutCapturingContext();
+            return updatedUser!;
+        }
+
         public async Task<LegalPreferredNames> GetLegalPreferredNamesAsync(int userId, CancellationToken cancellationToken = default)
         {
             using var httpRequest = new HttpRequestMessage(HttpMethod.Get, $"lp/{apiSettings.LearningPlatformVersion}/users/{userId}/names");

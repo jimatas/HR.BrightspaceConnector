@@ -49,6 +49,15 @@ namespace HR.BrightspaceConnector
         Task<UserData> CreateUserAsync(CreateUserData user, CancellationToken cancellationToken = default);
 
         /// <summary>
+        /// Update data for a particular user.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="user"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns>This action returns a UserData JSON block for the user's updated data.</returns>
+        Task<UserData> UpdateUserAsync(int userId, UpdateUserData user, CancellationToken cancellationToken = default);
+
+        /// <summary>
         /// Retrieve legal, preferred, and sort names for a particular user.
         /// </summary>
         /// <remarks>

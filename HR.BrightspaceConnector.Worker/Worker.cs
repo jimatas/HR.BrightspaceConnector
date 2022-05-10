@@ -1,3 +1,4 @@
+using HR.BrightspaceConnector.Features.Users;
 using HR.BrightspaceConnector.Features.Users.Commands;
 using HR.Common.Cqrs;
 using HR.Common.Utilities;
@@ -24,7 +25,7 @@ namespace HR.BrightspaceConnector
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             //var userNames = await apiClient.GetLegalPreferredNamesAsync(1, stoppingToken).WithoutCapturingContext();
-
+            
             var isDeleteContext = false;
             while (!stoppingToken.IsCancellationRequested)
             {
