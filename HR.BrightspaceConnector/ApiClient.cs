@@ -61,18 +61,17 @@ namespace HR.BrightspaceConnector
                 {
                     return Enumerable.Empty<UserData>();
                 }
-                else if (httpResponse.IsSuccessStatusCode)
+
+                if (httpResponse.IsSuccessStatusCode)
                 {
                     if (!string.IsNullOrEmpty(queryParameters.UserName))
                     {
                         var user = await httpResponse.Content.ReadFromJsonAsync<UserData>(jsonOptions, cancellationToken).WithoutCapturingContext();
                         return new[] { user! };
                     }
-                    else
-                    {
-                        var users = await httpResponse.Content.ReadFromJsonAsync<IEnumerable<UserData>>(jsonOptions, cancellationToken).WithoutCapturingContext();
-                        return users!;
-                    }
+
+                    var users = await httpResponse.Content.ReadFromJsonAsync<IEnumerable<UserData>>(jsonOptions, cancellationToken).WithoutCapturingContext();
+                    return users!;
                 }
                 // else, error status received; fall through.
             }
