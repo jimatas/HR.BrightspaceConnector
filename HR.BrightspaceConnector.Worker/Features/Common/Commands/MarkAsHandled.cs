@@ -50,11 +50,12 @@ namespace HR.BrightspaceConnector.Features.Common.Commands
                 command.EventId,
                 command.Success,
                 command.Id,
-                command.Message,
+                command.Success ? null : command.Message,
                 cancellationToken).WithoutCapturingContext();
 
-            logger.LogInformation("Marked sync event with id {EventId} as handled {Success} in database.",
-                command.EventId, command.Success ? "successfully" : "unsuccessfully");
+            logger.LogInformation("Marked object with id {Id} and event id {EventId} as handled in database.",
+                command.Id?.ToString() ?? "[n/a]",
+                command.EventId);
         }
     }
 }
