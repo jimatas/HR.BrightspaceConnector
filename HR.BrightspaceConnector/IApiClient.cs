@@ -1,10 +1,12 @@
-﻿using HR.BrightspaceConnector.Features.Users;
+﻿using HR.BrightspaceConnector.Features.OrgUnits;
+using HR.BrightspaceConnector.Features.Users;
 using HR.BrightspaceConnector.Infrastructure;
 
 namespace HR.BrightspaceConnector
 {
     public interface IApiClient
     {
+        #region Users
         /// <summary>
         /// Retrieve a list of all known user roles.
         /// </summary>
@@ -87,5 +89,15 @@ namespace HR.BrightspaceConnector
         /// <param name="cancellationToken"></param>
         /// <returns>This action returns a LegalPreferredNames JSON block for the user's updated name data.</returns>
         Task<LegalPreferredNames> UpdateLegalPreferredNamesAsync(int userId, LegalPreferredNames userNames, CancellationToken cancellationToken = default);
+        #endregion
+
+        #region OrgUnits
+        /// <summary>
+        /// Retrieve the organization properties information.
+        /// </summary>
+        /// <param name="cancellationToken"></param>
+        /// <returns>This action returns a Organization JSON data block containing the identifier, name, and time zone of the organization.</returns>
+        Task<Organization> GetOrganizationAsync(CancellationToken cancellationToken = default);
+        #endregion
     }
 }

@@ -1,4 +1,5 @@
-﻿using HR.BrightspaceConnector.Features.Users;
+﻿using HR.BrightspaceConnector.Features.OrgUnits;
+using HR.BrightspaceConnector.Features.Users;
 using HR.BrightspaceConnector.Infrastructure;
 using HR.BrightspaceConnector.Security;
 using HR.Common.Utilities;
@@ -28,6 +29,7 @@ namespace HR.BrightspaceConnector
             this.tokenManager = tokenManager;
         }
 
+        #region Users
         public async Task<IEnumerable<Role>> GetRolesAsync(CancellationToken cancellationToken = default)
         {
             using var httpRequest = new HttpRequestMessage(HttpMethod.Get, $"lp/{apiSettings.LearningPlatformVersion}/roles/");
@@ -138,6 +140,18 @@ namespace HR.BrightspaceConnector
             var updatedUserNames = await httpResponse.Content.ReadFromJsonAsync<LegalPreferredNames>(jsonOptions, cancellationToken).WithoutCapturingContext();
             return updatedUserNames!;
         }
+        #endregion
+
+        #region OrgUnits
+        public async Task<Organization> GetOrganizationAsync(CancellationToken cancellationToken = default)
+        {
+            var httpResponse = await httpClient.GetAsync($"lp/{apiSettings.LearningPlatformVersion}/organization/info", cancellationToken).WithoutCapturingContext();
+            await CheckResponseForErrorAsync(httpResponse, cancellationToken).WithoutCapturingContext();
+
+            var organization = await httpResponse.Content.ReadFromJsonAsync<Organization>(jsonOptions, cancellationToken).WithoutCapturingContext();
+            return organization!;
+        }
+        #endregion
 
         private async Task SetAuthorizationHeader(HttpRequestMessage httpRequest, CancellationToken cancellationToken)
         {
