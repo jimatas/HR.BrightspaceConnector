@@ -5,7 +5,7 @@
     /// </summary>
     public class Role
     {
-        public string? Identifier { get; set; }
+        public int? Identifier { get; set; }
         public string? DisplayName { get; set; }
         public string? Code { get; set; }
     }
