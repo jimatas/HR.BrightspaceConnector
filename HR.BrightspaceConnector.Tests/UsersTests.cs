@@ -24,7 +24,7 @@ namespace HR.BrightspaceConnector.Tests
         }
 
         [TestMethod]
-        public async Task CreateUserAsync_CreatesUser()
+        public async Task CompleteLifecycleIntegrationTest()
         {
             IApiClient apiClient = CreateApiClient();
 
@@ -39,6 +39,7 @@ namespace HR.BrightspaceConnector.Tests
                 ExternalEmail = "ja.hstest@hr.nl",
                 UserName = "ja.hstest",
                 RoleId = learnerRole.Identifier,
+                IsActive = true,
                 SendCreationEmail = false
             };
 
@@ -46,7 +47,21 @@ namespace HR.BrightspaceConnector.Tests
             Assert.IsNotNull(createdUser.UserId);
             Assert.IsFalse(createdUser.UserId.IsNullOrDefault());
 
-            await apiClient.DeleteUserAsync((int)createdUser.UserId!).WithoutCapturingContext();
+            var userToUpdate = new UpdateUserData
+            {
+                FirstName = "Jimbo",
+                LastName = "Atas",
+                OrgDefinedId = "ja.hstest@hro.nl",
+                ExternalEmail = "ja.hstest@hr.nl",
+                UserName = "ja.hstest",
+                Activation = new UserActivationData { IsActive = true }
+            };
+            var updatedUser = await apiClient.UpdateUserAsync((int)createdUser.UserId, userToUpdate).WithoutCapturingContext();
+            Assert.IsNotNull(updatedUser.UserId);
+            Assert.IsFalse(updatedUser.UserId.IsNullOrDefault());
+            Assert.AreEqual("Jimbo", updatedUser.FirstName);
+
+            await apiClient.DeleteUserAsync((int)updatedUser.UserId).WithoutCapturingContext();
         }
     }
 }
