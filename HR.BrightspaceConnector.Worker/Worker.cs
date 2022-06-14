@@ -11,14 +11,12 @@ namespace HR.BrightspaceConnector
         private readonly IDispatcher dispatcher;
         private readonly BatchSettings batchSettings;
         private readonly ILogger logger;
-        private readonly IApiClient apiClient;
-
-        public Worker(IDispatcher dispatcher, IOptions<BatchSettings> batchSettings, ILogger<Worker> logger, IApiClient apiClient)
+        
+        public Worker(IDispatcher dispatcher, IOptions<BatchSettings> batchSettings, ILogger<Worker> logger)
         {
             this.dispatcher = dispatcher;
             this.batchSettings = batchSettings.Value;
             this.logger = logger;
-            this.apiClient = apiClient;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
