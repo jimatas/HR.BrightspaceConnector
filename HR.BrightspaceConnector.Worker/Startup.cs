@@ -7,6 +7,9 @@ using HR.Common.Cqrs.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
+using Polly;
+using Polly.Extensions.Http;
+
 using System.ComponentModel.DataAnnotations;
 using System.Net.Mime;
 using System.Text.Json;
@@ -57,6 +60,9 @@ internal class Startup
             httpClient.BaseAddress = oAuthSettings.TokenEndpoint;
             httpClient.DefaultRequestHeaders.Accept.TryParseAdd(MediaTypeNames.Application.Json);
             httpClient.DefaultRequestHeaders.UserAgent.TryParseAdd(userAgentString);
+        }).AddPolicyHandler((serviceProvider, httpRequest) =>
+        {
+            return HttpPolicyExtensions.HandleTransientHttpError().WaitAndRetryAsync(retryCount: 4, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));
         });
 
         services.AddScoped<ITokenManager>(serviceProvider => serviceProvider.GetRequiredService<ICachingTokenManager>());
@@ -67,6 +73,9 @@ internal class Startup
             httpClient.BaseAddress = apiSettings.BaseAddress;
             httpClient.DefaultRequestHeaders.Accept.TryParseAdd(MediaTypeNames.Application.Json);
             httpClient.DefaultRequestHeaders.UserAgent.TryParseAdd(userAgentString);
+        }).AddPolicyHandler((serviceProvider, httpRequest) =>
+        {
+            return HttpPolicyExtensions.HandleTransientHttpError().WaitAndRetryAsync(retryCount: 4, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));
         });
 
         services.AddSingleton<IClock, SystemClock>();
