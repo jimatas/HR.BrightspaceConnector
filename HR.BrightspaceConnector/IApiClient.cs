@@ -98,6 +98,13 @@ namespace HR.BrightspaceConnector
         /// <param name="cancellationToken"></param>
         /// <returns>This action returns a Organization JSON data block containing the identifier, name, and time zone of the organization.</returns>
         Task<Organization> GetOrganizationAsync(CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Retrieve all the known and visible org unit types.
+        /// </summary>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        Task<IEnumerable<OrgUnitType>> GetOrgUnitTypes(CancellationToken cancellationToken = default);
         #endregion
     }
 }
