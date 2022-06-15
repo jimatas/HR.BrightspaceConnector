@@ -124,7 +124,7 @@ namespace HR.BrightspaceConnector.Tests
             var createdUser = await apiClient.CreateUserAsync(userToCreate).WithoutCapturingContext();
             Assert.IsNotNull(createdUser.UserId);
             Assert.IsFalse(createdUser.UserId.IsNullOrDefault());
-
+            
             var userToUpdate = new UpdateUserData
             {
                 FirstName = "Jimbo",
@@ -138,6 +138,13 @@ namespace HR.BrightspaceConnector.Tests
             Assert.IsNotNull(updatedUser.UserId);
             Assert.IsFalse(updatedUser.UserId.IsNullOrDefault());
             Assert.AreEqual("Jimbo", updatedUser.FirstName);
+
+            var userNames = await apiClient.GetLegalPreferredNamesAsync((int)updatedUser.UserId).WithoutCapturingContext();
+            Assert.AreEqual(updatedUser.LastName, userNames.LegalLastName);
+
+            userNames.SortLastName = "Aatas";
+            userNames = await apiClient.UpdateLegalPreferredNamesAsync((int)updatedUser.UserId, userNames).WithoutCapturingContext();
+            Assert.AreNotEqual(updatedUser.LastName, userNames.SortLastName);
 
             await apiClient.DeleteUserAsync((int)updatedUser.UserId).WithoutCapturingContext();
         }
