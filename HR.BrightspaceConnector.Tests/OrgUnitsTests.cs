@@ -33,5 +33,16 @@ namespace HR.BrightspaceConnector.Tests
             var departments = orgUnitTypes.Where(type => type.Name?.StartsWith("Instituten", StringComparison.OrdinalIgnoreCase) == true);
             Assert.IsTrue(departments.Any(), "departments.Any()");
         }
+
+        [TestMethod]
+        public async Task GetOrgUnitsDescendingFromAsync_ReturnsAllDescendants()
+        {
+            IApiClient apiClient = CreateApiClient();
+
+            var rootOrganization = await apiClient.GetOrganizationAsync();
+            
+            var descendants = await apiClient.GetOrgUnitsDescendingFromAsync((int)rootOrganization.Identifier!);
+            Assert.IsTrue(descendants.Any(), "descendants.Any()");
+        }
     }
 }
