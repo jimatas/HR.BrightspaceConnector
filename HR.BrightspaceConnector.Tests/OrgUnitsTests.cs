@@ -1,6 +1,4 @@
-﻿using HR.Common.Utilities;
-
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using System.Threading.Tasks;
 
@@ -14,7 +12,7 @@ namespace HR.BrightspaceConnector.Tests
         {
             var apiClient = CreateApiClient();
 
-            var organization = await apiClient.GetOrganizationAsync().WithoutCapturingContext();
+            var organization = await apiClient.GetOrganizationAsync();
 
             Assert.IsNotNull(organization);
             Assert.AreEqual("Hogeschool Rotterdam", organization.Name);

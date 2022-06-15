@@ -18,7 +18,7 @@ namespace HR.BrightspaceConnector.Tests
         {
             IApiClient apiClient = CreateApiClient();
 
-            var roles = await apiClient.GetRolesAsync().WithoutCapturingContext();
+            var roles = await apiClient.GetRolesAsync();
             Assert.IsTrue(roles.Any());
 
             roles = roles.Where(role => role.DisplayName == "Learner");
@@ -32,7 +32,7 @@ namespace HR.BrightspaceConnector.Tests
 
             var queryParams = new UserQueryParameters();
 
-            var users = await apiClient.GetUsersAsync(queryParams).WithoutCapturingContext();
+            var users = await apiClient.GetUsersAsync(queryParams);
             Assert.IsInstanceOfType(users, typeof(IEnumerable<UserData>));
             Assert.IsInstanceOfType(users, typeof(PagedResultSet<UserData>));
             Assert.IsTrue(users.Any(), "users.Any()");
@@ -48,7 +48,7 @@ namespace HR.BrightspaceConnector.Tests
                 Bookmark = "invalid-bookmark"
             };
 
-            var users = await apiClient.GetUsersAsync(queryParams).WithoutCapturingContext();
+            var users = await apiClient.GetUsersAsync(queryParams);
             Assert.IsInstanceOfType(users, typeof(IEnumerable<UserData>));
             Assert.IsInstanceOfType(users, typeof(PagedResultSet<UserData>));
         }
@@ -63,7 +63,7 @@ namespace HR.BrightspaceConnector.Tests
                 OrgDefinedId = "ja.hstest@hro.nl"
             };
 
-            var users = await apiClient.GetUsersAsync(queryParams).WithoutCapturingContext();
+            var users = await apiClient.GetUsersAsync(queryParams);
             Assert.IsInstanceOfType(users, typeof(IEnumerable<UserData>));
             Assert.IsNotInstanceOfType(users, typeof(PagedResultSet<UserData>));
             Assert.IsFalse(users.Any(), "users.Any()");
@@ -79,7 +79,7 @@ namespace HR.BrightspaceConnector.Tests
                 ExternalEmail = "ja.hstest@hr.nl"
             };
 
-            var users = await apiClient.GetUsersAsync(queryParams).WithoutCapturingContext();
+            var users = await apiClient.GetUsersAsync(queryParams);
             Assert.IsInstanceOfType(users, typeof(IEnumerable<UserData>));
             Assert.IsNotInstanceOfType(users, typeof(PagedResultSet<UserData>));
             Assert.IsFalse(users.Any(), "users.Any()");
@@ -95,7 +95,7 @@ namespace HR.BrightspaceConnector.Tests
                 UserName = "ja.hstest"
             };
 
-            var users = await apiClient.GetUsersAsync(queryParams).WithoutCapturingContext();
+            var users = await apiClient.GetUsersAsync(queryParams);
             Assert.IsInstanceOfType(users, typeof(IEnumerable<UserData>));
             Assert.IsNotInstanceOfType(users, typeof(PagedResultSet<UserData>));
             Assert.IsFalse(users.Any(), "users.Any()");
@@ -106,7 +106,7 @@ namespace HR.BrightspaceConnector.Tests
         {
             IApiClient apiClient = CreateApiClient();
 
-            var roles = await apiClient.GetRolesAsync().WithoutCapturingContext();
+            var roles = await apiClient.GetRolesAsync();
             var learnerRole = roles.Single(role => role.DisplayName == "Learner");
 
             var userToCreate = new CreateUserData
@@ -121,7 +121,7 @@ namespace HR.BrightspaceConnector.Tests
                 SendCreationEmail = false
             };
 
-            var createdUser = await apiClient.CreateUserAsync(userToCreate).WithoutCapturingContext();
+            var createdUser = await apiClient.CreateUserAsync(userToCreate);
             Assert.IsNotNull(createdUser.UserId);
             Assert.IsFalse(createdUser.UserId.IsNullOrDefault());
             
@@ -134,19 +134,19 @@ namespace HR.BrightspaceConnector.Tests
                 UserName = "ja.hstest",
                 Activation = new UserActivationData { IsActive = true }
             };
-            var updatedUser = await apiClient.UpdateUserAsync((int)createdUser.UserId, userToUpdate).WithoutCapturingContext();
+            var updatedUser = await apiClient.UpdateUserAsync((int)createdUser.UserId, userToUpdate);
             Assert.IsNotNull(updatedUser.UserId);
             Assert.IsFalse(updatedUser.UserId.IsNullOrDefault());
             Assert.AreEqual("Jimbo", updatedUser.FirstName);
 
-            var userNames = await apiClient.GetLegalPreferredNamesAsync((int)updatedUser.UserId).WithoutCapturingContext();
+            var userNames = await apiClient.GetLegalPreferredNamesAsync((int)updatedUser.UserId);
             Assert.AreEqual(updatedUser.LastName, userNames.LegalLastName);
 
             userNames.SortLastName = "Aatas";
-            userNames = await apiClient.UpdateLegalPreferredNamesAsync((int)updatedUser.UserId, userNames).WithoutCapturingContext();
+            userNames = await apiClient.UpdateLegalPreferredNamesAsync((int)updatedUser.UserId, userNames);
             Assert.AreNotEqual(updatedUser.LastName, userNames.SortLastName);
 
-            await apiClient.DeleteUserAsync((int)updatedUser.UserId).WithoutCapturingContext();
+            await apiClient.DeleteUserAsync((int)updatedUser.UserId);
         }
     }
 }
