@@ -107,6 +107,17 @@ namespace HR.BrightspaceConnector
         Task<IEnumerable<OrgUnitType>> GetOrgUnitTypes(CancellationToken cancellationToken = default);
 
         /// <summary>
+        /// Retrieve a list of child-units for a provided org unit.
+        /// </summary>
+        /// <remarks>
+        /// Oauth2 Scopes: <c>organizations:organization:read</c>
+        /// </remarks>
+        /// <param name="orgUnitId">The Id of the OrgUnit to retrieve the immediate children of.</param>
+        /// <param name="cancellationToken"></param>
+        /// <returns>This action returns a paged result set containing the resulting org unit blocks for the segment following your bookmark parameter (or the first segment if that parameter is empty or missing).</returns>
+        Task<PagedResultSet<OrgUnit>> GetChildOrgUnitsAsync(int orgUnitId, CancellationToken cancellationToken = default);
+
+        /// <summary>
         /// Retrieve a list of descendent-units for a provided org unit.
         /// </summary>
         /// <remarks>
@@ -114,7 +125,7 @@ namespace HR.BrightspaceConnector
         /// </remarks>
         /// <param name="orgUnitId">The Id of the OrgUnit to retrieve the descendants of.</param>
         /// <param name="cancellationToken"></param>
-        /// <returns></returns>
+        /// <returns>This action returns a paged result set containing the resulting org unit blocks for the segment following your bookmark parameter (or the first segment if that parameter is empty or missing).</returns>
         Task<PagedResultSet<OrgUnit>> GetDescendantOrgUnitsAsync(int orgUnitId, CancellationToken cancellationToken = default);
 
         /// <summary>

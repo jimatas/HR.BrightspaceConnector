@@ -35,7 +35,18 @@ namespace HR.BrightspaceConnector.Tests
         }
 
         [TestMethod]
-        public async Task GetDescendantOrgUnitsAsync_ReturnsAllDescendants()
+        public async Task GetChildOrgUnitsAsync_ReturnsChildren()
+        {
+            IApiClient apiClient = CreateApiClient();
+
+            var rootOrganization = await apiClient.GetOrganizationAsync();
+
+            var children = await apiClient.GetChildOrgUnitsAsync((int)rootOrganization.Identifier!);
+            Assert.IsTrue(children.Any(), "children.Any()");
+        }
+
+        [TestMethod]
+        public async Task GetDescendantOrgUnitsAsync_ReturnsDescendants()
         {
             IApiClient apiClient = CreateApiClient();
 
