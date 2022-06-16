@@ -112,10 +112,10 @@ namespace HR.BrightspaceConnector
         /// <remarks>
         /// Oauth2 Scopes: <c>organizations:organization:read</c>
         /// </remarks>
-        /// <param name="orgUnitId">The ID of the OrgUnit to retrieve the immediate children of.</param>
+        /// <param name="parentOrgUnitId">The ID of the OrgUnit to retrieve the immediate children of.</param>
         /// <param name="cancellationToken"></param>
         /// <returns>This action returns a paged result set containing the resulting org unit blocks for the segment following your bookmark parameter (or the first segment if that parameter is empty or missing).</returns>
-        Task<PagedResultSet<OrgUnit>> GetChildOrgUnitsAsync(int orgUnitId, CancellationToken cancellationToken = default);
+        Task<PagedResultSet<OrgUnit>> GetChildOrgUnitsAsync(int parentOrgUnitId, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Retrieve a list of descendent-units for a provided org unit.
@@ -123,10 +123,10 @@ namespace HR.BrightspaceConnector
         /// <remarks>
         /// Oauth2 Scopes: <c>organizations:organization:read</c>
         /// </remarks>
-        /// <param name="orgUnitId">The ID of the OrgUnit to retrieve the descendants of.</param>
+        /// <param name="ancestorOrgUnitId">The ID of the OrgUnit to retrieve the descendants of.</param>
         /// <param name="cancellationToken"></param>
         /// <returns>This action returns a paged result set containing the resulting org unit blocks for the segment following your bookmark parameter (or the first segment if that parameter is empty or missing).</returns>
-        Task<PagedResultSet<OrgUnit>> GetDescendantOrgUnitsAsync(int orgUnitId, CancellationToken cancellationToken = default);
+        Task<PagedResultSet<OrgUnit>> GetDescendantOrgUnitsAsync(int ancestorOrgUnitId, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Create a new custom org unit.

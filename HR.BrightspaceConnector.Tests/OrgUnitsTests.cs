@@ -60,28 +60,65 @@ namespace HR.BrightspaceConnector.Tests
         }
 
         [TestMethod]
-        public async Task CompleteLifecycleIntegrationTest()
+        public async Task CreateOrgUnitAsync_UnderRoot_CreatesOrgUnit()
         {
             IApiClient apiClient = CreateApiClient();
 
             Organization rootOrganization = await apiClient.GetOrganizationAsync();
 
             IEnumerable<OrgUnitType> orgUnitTypes = await apiClient.GetOrgUnitTypes();
-            OrgUnitType departmentType = orgUnitTypes.Single(type => type.Name?.StartsWith("Instituten", StringComparison.OrdinalIgnoreCase) == true);
+            OrgUnitType orgUnitType = orgUnitTypes.Single(type => type.Name?.StartsWith("Instituten", StringComparison.OrdinalIgnoreCase) == true);
 
-            var department = new OrgUnitCreateData
+            var orgUnitToCreate = new OrgUnitCreateData
             {
-                Code = "HR-FIT-Webcentrum",
-                Name = "Dienst FIT/Webcentrum",
-                Type = departmentType.Id,
+                Code = "HR-FIT",
+                Name = "Dienst FIT",
+                Type = orgUnitType.Id,
                 Parents = new[] { (int)rootOrganization.Identifier! }
             };
 
-            OrgUnit newDepartment = await apiClient.CreateOrgUnitAsync(department);
-            Assert.IsNotNull(newDepartment.Identifier);
-            Assert.AreEqual(department.Code, newDepartment.Code);
+            OrgUnit topLevelOrgUnit = await apiClient.CreateOrgUnitAsync(orgUnitToCreate);
+            Assert.IsNotNull(topLevelOrgUnit.Identifier);
+            Assert.AreEqual(orgUnitToCreate.Code, topLevelOrgUnit.Code);
 
-            await apiClient.DeleteOrgUnitAsync((int)newDepartment.Identifier!, (int)rootOrganization.Identifier!);
+            await apiClient.DeleteOrgUnitAsync((int)topLevelOrgUnit.Identifier, (int)rootOrganization.Identifier);
+        }
+
+        [TestMethod]
+        public async Task DeleteOrgUnitAsync_GivenOrgUnitWithChild_DeletesOrgUnit()
+        {
+            IApiClient apiClient = CreateApiClient();
+
+            Organization rootOrganization = await apiClient.GetOrganizationAsync();
+
+            IEnumerable<OrgUnitType> orgUnitTypes = await apiClient.GetOrgUnitTypes();
+            OrgUnitType orgUnitType = orgUnitTypes.Single(type => type.Name?.StartsWith("Instituten", StringComparison.OrdinalIgnoreCase) == true);
+            var orgUnitToCreate = new OrgUnitCreateData
+            {
+                Code = "HR-FIT",
+                Name = "Dienst FIT",
+                Type = orgUnitType.Id,
+                Parents = new[] { (int)rootOrganization.Identifier! }
+            };
+
+            OrgUnit topLevelOrgUnit = await apiClient.CreateOrgUnitAsync(orgUnitToCreate);
+            Assert.IsNotNull(topLevelOrgUnit.Identifier);
+            Assert.AreEqual(orgUnitToCreate.Code, topLevelOrgUnit.Code);
+
+            orgUnitType = orgUnitTypes.Single(type => type.Name?.StartsWith("Opleidingen", StringComparison.OrdinalIgnoreCase) == true);
+            orgUnitToCreate = new OrgUnitCreateData
+            {
+                Code = "HR-FIT-TAB",
+                Name = "Afdeling applicatiebeheer",
+                Type = orgUnitType.Id,
+                Parents = new[] { (int)topLevelOrgUnit.Identifier }
+            };
+
+            OrgUnit childOrgUnit = await apiClient.CreateOrgUnitAsync(orgUnitToCreate);
+            Assert.IsNotNull(childOrgUnit.Identifier);
+            Assert.AreEqual(orgUnitToCreate.Code, childOrgUnit.Code);
+
+            await apiClient.DeleteOrgUnitAsync((int)topLevelOrgUnit.Identifier!, parentOrgUnitId: (int)rootOrganization.Identifier!);
         }
     }
 }
