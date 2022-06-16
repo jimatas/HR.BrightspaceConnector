@@ -78,6 +78,8 @@ namespace HR.BrightspaceConnector.Tests
             };
 
             OrgUnit newDepartment = await apiClient.CreateOrgUnitAsync(department);
+            Assert.IsNotNull(newDepartment.Identifier);
+            Assert.AreEqual(department.Code, newDepartment.Code);
 
             await apiClient.DeleteOrgUnitAsync((int)newDepartment.Identifier!, (int)rootOrganization.Identifier!);
         }
