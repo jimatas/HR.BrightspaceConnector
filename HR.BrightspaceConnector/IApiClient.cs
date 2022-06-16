@@ -112,7 +112,7 @@ namespace HR.BrightspaceConnector
         /// <remarks>
         /// Oauth2 Scopes: <c>organizations:organization:read</c>
         /// </remarks>
-        /// <param name="orgUnitId">The Id of the OrgUnit to retrieve the immediate children of.</param>
+        /// <param name="orgUnitId">The ID of the OrgUnit to retrieve the immediate children of.</param>
         /// <param name="cancellationToken"></param>
         /// <returns>This action returns a paged result set containing the resulting org unit blocks for the segment following your bookmark parameter (or the first segment if that parameter is empty or missing).</returns>
         Task<PagedResultSet<OrgUnit>> GetChildOrgUnitsAsync(int orgUnitId, CancellationToken cancellationToken = default);
@@ -123,7 +123,7 @@ namespace HR.BrightspaceConnector
         /// <remarks>
         /// Oauth2 Scopes: <c>organizations:organization:read</c>
         /// </remarks>
-        /// <param name="orgUnitId">The Id of the OrgUnit to retrieve the descendants of.</param>
+        /// <param name="orgUnitId">The ID of the OrgUnit to retrieve the descendants of.</param>
         /// <param name="cancellationToken"></param>
         /// <returns>This action returns a paged result set containing the resulting org unit blocks for the segment following your bookmark parameter (or the first segment if that parameter is empty or missing).</returns>
         Task<PagedResultSet<OrgUnit>> GetDescendantOrgUnitsAsync(int orgUnitId, CancellationToken cancellationToken = default);
@@ -138,6 +138,15 @@ namespace HR.BrightspaceConnector
         /// <param name="cancellationToken"></param>
         /// <returns>This action returns an OrgUnit JSON data block containing the properties for the newly created org unit.</returns>
         Task<OrgUnit> CreateOrgUnitAsync(OrgUnitCreateData orgUnit, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Delete the relationship between a provided org unit and one of its parents.
+        /// </summary>
+        /// <param name="orgUnitId"></param>
+        /// <param name="parentOrgUnitId">Org unit ID for the parent to detach.</param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        Task DeleteOrgUnitAsync(int orgUnitId, int parentOrgUnitId, CancellationToken cancellationToken = default);
         #endregion
     }
 }

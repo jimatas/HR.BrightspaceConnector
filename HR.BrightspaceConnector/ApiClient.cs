@@ -199,6 +199,15 @@ namespace HR.BrightspaceConnector
             var newOrgUnit = await httpResponse.Content.ReadFromJsonAsync<OrgUnit>(jsonOptions, cancellationToken).WithoutCapturingContext();
             return newOrgUnit!;
         }
+
+        public async Task DeleteOrgUnitAsync(int orgUnitId, int parentOrgUnitId, CancellationToken cancellationToken = default)
+        {
+            using var httpRequest = new HttpRequestMessage(HttpMethod.Delete, $"lp/{apiSettings.LearningPlatformVersion}/orgstructure/{orgUnitId}/parents/{parentOrgUnitId}");
+            await SetAuthorizationHeader(httpRequest, cancellationToken).WithoutCapturingContext();
+
+            using var httpResponse = await httpClient.SendAsync(httpRequest, cancellationToken).WithoutCapturingContext();
+            await CheckResponseForErrorAsync(httpResponse, cancellationToken).WithoutCapturingContext();
+        }
         #endregion
 
         private async Task SetAuthorizationHeader(HttpRequestMessage httpRequest, CancellationToken cancellationToken)
