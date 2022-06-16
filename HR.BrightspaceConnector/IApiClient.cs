@@ -116,6 +116,17 @@ namespace HR.BrightspaceConnector
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         Task<PagedResultSet<OrgUnit>> GetDescendantOrgUnitsAsync(int orgUnitId, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Create a new custom org unit.
+        /// </summary>
+        /// <remarks>
+        /// Oauth2 Scopes: <c>organizations:organization:create</c>
+        /// </remarks>
+        /// <param name="orgUnit"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns>This action returns an OrgUnit JSON data block containing the properties for the newly created org unit.</returns>
+        Task<OrgUnit> CreateOrgUnitAsync(OrgUnitCreateData orgUnit, CancellationToken cancellationToken = default);
         #endregion
     }
 }

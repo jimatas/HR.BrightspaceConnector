@@ -175,6 +175,18 @@ namespace HR.BrightspaceConnector
             var descendants = await httpResponse.Content.ReadFromJsonAsync<PagedResultSet<OrgUnit>>(jsonOptions, cancellationToken).WithoutCapturingContext();
             return descendants!;
         }
+
+        public async Task<OrgUnit> CreateOrgUnitAsync(OrgUnitCreateData orgUnit, CancellationToken cancellationToken = default)
+        {
+            using var httpRequest = new HttpRequestMessage(HttpMethod.Post, $"lp/{apiSettings.LearningPlatformVersion}/orgstructure/") { Content = JsonContent.Create(orgUnit, mediaType: null, jsonOptions) };
+            await SetAuthorizationHeader(httpRequest, cancellationToken).WithoutCapturingContext();
+
+            using var httpResponse = await httpClient.SendAsync(httpRequest, cancellationToken).WithoutCapturingContext();
+            await CheckResponseForErrorAsync(httpResponse, cancellationToken).WithoutCapturingContext();
+
+            var newOrgUnit = await httpResponse.Content.ReadFromJsonAsync<OrgUnit>(jsonOptions, cancellationToken).WithoutCapturingContext();
+            return newOrgUnit!;
+        }
         #endregion
 
         private async Task SetAuthorizationHeader(HttpRequestMessage httpRequest, CancellationToken cancellationToken)
