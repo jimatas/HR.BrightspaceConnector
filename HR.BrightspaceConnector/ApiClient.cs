@@ -164,7 +164,7 @@ namespace HR.BrightspaceConnector
             return orgUnitTypes!;
         }
 
-        public async Task<PagedResultSet<OrgUnit>> GetOrgUnitsDescendingFromAsync(int orgUnitId, CancellationToken cancellationToken = default)
+        public async Task<PagedResultSet<OrgUnit>> GetDescendantOrgUnitsAsync(int orgUnitId, CancellationToken cancellationToken = default)
         {
             using var httpRequest = new HttpRequestMessage(HttpMethod.Get, $"lp/{apiSettings.LearningPlatformVersion}/orgstructure/{orgUnitId}/descendants/paged/");
             await SetAuthorizationHeader(httpRequest, cancellationToken).WithoutCapturingContext();

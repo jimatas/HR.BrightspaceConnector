@@ -112,10 +112,10 @@ namespace HR.BrightspaceConnector
         /// <remarks>
         /// Oauth2 Scopes: <c>organizations:organization:read</c>
         /// </remarks>
-        /// <param name="orgUnitId"></param>
+        /// <param name="orgUnitId">The Id of the OrgUnit to retrieve the descendants of.</param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<PagedResultSet<OrgUnit>> GetOrgUnitsDescendingFromAsync(int orgUnitId, CancellationToken cancellationToken = default);
+        Task<PagedResultSet<OrgUnit>> GetDescendantOrgUnitsAsync(int orgUnitId, CancellationToken cancellationToken = default);
         #endregion
     }
 }
