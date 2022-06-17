@@ -38,6 +38,10 @@ namespace HR.BrightspaceConnector.Features.Users.Commands
             try
             {
                 var userData = await apiClient.CreateUserAsync(user.ToCreateUserData(), cancellationToken).WithoutCapturingContext();
+                if (!string.IsNullOrEmpty(user.SortLastName) && !user.SortLastName.Equals(user.LastName, StringComparison.OrdinalIgnoreCase))
+                {
+                    await apiClient.UpdateLegalPreferredNamesAsync((int)userData.UserId!, user.ToLegalPreferredNames(), cancellationToken).WithoutCapturingContext();
+                }
                 logger.LogInformation("User was successfully created.");
 
                 await commandDispatcher.DispatchAsync(MarkAsHandled.Successfully(eventId, (int)userData.UserId!), cancellationToken).WithoutCapturingContext();

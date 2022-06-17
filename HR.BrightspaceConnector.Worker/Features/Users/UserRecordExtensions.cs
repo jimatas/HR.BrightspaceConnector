@@ -31,5 +31,15 @@
                 Activation = new UserActivationData { IsActive = userRecord.IsActive }
             };
         }
+
+        public static LegalPreferredNames ToLegalPreferredNames(this UserRecord userRecord)
+        {
+            return new LegalPreferredNames
+            {
+                LegalFirstName = userRecord.FirstName,
+                LegalLastName = userRecord.LastName,
+                SortLastName = userRecord.SortLastName
+            };
+        }
     }
 }

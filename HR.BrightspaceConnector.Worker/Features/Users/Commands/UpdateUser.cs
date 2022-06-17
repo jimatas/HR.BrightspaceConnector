@@ -39,6 +39,10 @@ namespace HR.BrightspaceConnector.Features.Users.Commands
             try
             {
                 var userData = await apiClient.UpdateUserAsync(userId, user.ToUpdateUserData(), cancellationToken).WithoutCapturingContext();
+                if (!string.IsNullOrEmpty(user.SortLastName) && !user.SortLastName.Equals(user.LastName, StringComparison.OrdinalIgnoreCase))
+                {
+                    await apiClient.UpdateLegalPreferredNamesAsync((int)userData.UserId!, user.ToLegalPreferredNames(), cancellationToken).WithoutCapturingContext();
+                }
                 logger.LogInformation("User was successfully updated.");
 
                 await commandDispatcher.DispatchAsync(MarkAsHandled.Successfully(eventId, userId), cancellationToken).WithoutCapturingContext();
