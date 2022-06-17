@@ -140,6 +140,21 @@ namespace HR.BrightspaceConnector
         Task<OrgUnit> CreateOrgUnitAsync(OrgUnitCreateData orgUnit, CancellationToken cancellationToken = default);
 
         /// <summary>
+        /// Update a custom org unit's properties.
+        /// </summary>
+        /// <remarks>
+        /// Note that you can only update the Name, Code, and Path properties; the values of the other proprties in the OrgUnitProperties you provide are not used to update your specified org unit.
+        /// <para>
+        /// Oauth2 Scopes: <c>organizations:organization:update</c>
+        /// </para>
+        /// </remarks>
+        /// <param name="orgUnitId"></param>
+        /// <param name="orgUnit"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns>This action returns an OrgUnitProperties JSON data block containing the properties for the updated org unit.</returns>
+        Task<OrgUnitProperties> UpdateOrgUnitAsync(int orgUnitId, OrgUnitProperties orgUnit, CancellationToken cancellationToken = default);
+
+        /// <summary>
         /// Delete the relationship between a provided org unit and one of its parents.
         /// </summary>
         /// <param name="orgUnitId"></param>

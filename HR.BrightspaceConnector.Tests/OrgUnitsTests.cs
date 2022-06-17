@@ -120,5 +120,41 @@ namespace HR.BrightspaceConnector.Tests
 
             await apiClient.DeleteOrgUnitAsync((int)topLevelOrgUnit.Identifier!, parentOrgUnitId: (int)rootOrganization.Identifier!);
         }
+
+        [TestMethod]
+        public async Task UpdateOrgUnitAsync_UpdatesOrgUnitProperties()
+        {
+            IApiClient apiClient = CreateApiClient();
+
+            Organization rootOrganization = await apiClient.GetOrganizationAsync();
+
+            IEnumerable<OrgUnitType> orgUnitTypes = await apiClient.GetOrgUnitTypes();
+            OrgUnitType orgUnitType = orgUnitTypes.Single(type => type.Name?.StartsWith("Instituten", StringComparison.OrdinalIgnoreCase) == true);
+            var orgUnitToCreate = new OrgUnitCreateData
+            {
+                Code = "HR-FIT",
+                Name = "Dienst FIT",
+                Type = orgUnitType.Id,
+                Parents = new[] { (int)rootOrganization.Identifier! }
+            };
+
+            var newOrgUnit = await apiClient.CreateOrgUnitAsync(orgUnitToCreate);
+
+            var orgUnitToUpdate = new OrgUnitProperties
+            {
+                Code = "HR-FIT",
+                Name = "Dienst Faciliteiten en Informatietechnologie",
+                Path = "/content/Hogeschool_Rotterdam/HR-FIT",
+            };
+
+            var updatedOrgUnit = await apiClient.UpdateOrgUnitAsync((int)newOrgUnit.Identifier!, orgUnitToUpdate);
+
+            Assert.IsNotNull(updatedOrgUnit);
+            Assert.AreEqual(newOrgUnit.Identifier, updatedOrgUnit.Identifier);
+            Assert.AreNotEqual(newOrgUnit.Name, updatedOrgUnit.Name);
+            Assert.IsFalse(string.IsNullOrEmpty(updatedOrgUnit.Path), "string.IsNullOrEmpty(updatedOrgUnit.Path)");
+
+            await apiClient.DeleteOrgUnitAsync((int)newOrgUnit.Identifier, (int)rootOrganization.Identifier);
+        }
     }
 }
