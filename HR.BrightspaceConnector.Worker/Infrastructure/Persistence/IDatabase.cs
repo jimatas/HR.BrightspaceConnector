@@ -1,4 +1,5 @@
-﻿using HR.BrightspaceConnector.Features.Users;
+﻿using HR.BrightspaceConnector.Features.OrgUnits;
+using HR.BrightspaceConnector.Features.Users;
 
 namespace HR.BrightspaceConnector.Infrastructure.Persistence
 {
@@ -8,6 +9,7 @@ namespace HR.BrightspaceConnector.Infrastructure.Persistence
     public interface IDatabase
     {
         Task<UserRecord?> GetNextUserAsync(CancellationToken cancellationToken = default);
+        Task<OrgUnitRecord?> GetNextOrgUnitAsync(CancellationToken cancellationToken = default);
 
         Task MarkAsHandledAsync(
             int eventId,

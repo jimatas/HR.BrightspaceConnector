@@ -11,7 +11,7 @@ namespace HR.BrightspaceConnector.Features.Users.Queries
     public class GetNextUserHandler : IQueryHandler<GetNextUser, UserRecord?>
     {
         private readonly IDatabase database;
-        private readonly ILogger<GetNextUser> logger;
+        private readonly ILogger logger;
 
         public GetNextUserHandler(IDatabase database, ILogger<GetNextUser> logger)
         {

@@ -1,4 +1,5 @@
-﻿using HR.BrightspaceConnector.Features.Users;
+﻿using HR.BrightspaceConnector.Features.OrgUnits;
+using HR.BrightspaceConnector.Features.Users;
 using HR.BrightspaceConnector.Infrastructure.Hosting;
 using HR.Common.Utilities;
 
@@ -26,6 +27,15 @@ namespace HR.BrightspaceConnector.Infrastructure.Persistence
 
             var users = await dbContext.Users.FromSqlRaw(sprocName).AsNoTracking().ToListAsync(cancellationToken).WithoutCapturingContext();
             return users.SingleOrDefault();
+        }
+
+        public async Task<OrgUnitRecord?> GetNextOrgUnitAsync(CancellationToken cancellationToken = default)
+        {
+            var sprocName = string.Format("sync_out_brightspace_{0}_customOrgUnit_GetNextEvents", environment.GetStoredProcedureEnvironmentName());
+            logger.LogDebug("Executing stored procedure '{SprocName}'.", sprocName);
+
+            var orgUnits = await dbContext.OrgUnits.FromSqlRaw(sprocName).AsNoTracking().ToListAsync(cancellationToken).WithoutCapturingContext();
+            return orgUnits.SingleOrDefault();
         }
 
         public async Task MarkAsHandledAsync(
