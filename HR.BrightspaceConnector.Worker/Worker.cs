@@ -1,6 +1,7 @@
 using HR.BrightspaceConnector.Features.OrgUnits.Commands;
 using HR.BrightspaceConnector.Features.Users.Commands;
 using HR.Common.Cqrs;
+using HR.Common.Cqrs.Commands;
 using HR.Common.Utilities;
 
 using Microsoft.Extensions.Options;
@@ -9,13 +10,13 @@ namespace HR.BrightspaceConnector
 {
     public class Worker : BackgroundService
     {
-        private readonly IDispatcher dispatcher;
+        private readonly ICommandDispatcher commandDispatcher;
         private readonly BatchSettings batchSettings;
         private readonly ILogger logger;
 
-        public Worker(IDispatcher dispatcher, IOptions<BatchSettings> batchSettings, ILogger<Worker> logger)
+        public Worker(ICommandDispatcher commandDispatcher, IOptions<BatchSettings> batchSettings, ILogger<Worker> logger)
         {
-            this.dispatcher = dispatcher;
+            this.commandDispatcher = commandDispatcher;
             this.batchSettings = batchSettings.Value;
             this.logger = logger;
         }
@@ -29,8 +30,8 @@ namespace HR.BrightspaceConnector
                 {
                     logger.LogInformation("Starting new batch run.");
 
-                    await dispatcher.DispatchAsync(new ProcessUsers(batchSettings.BatchSize, isDeleteContext), stoppingToken).WithoutCapturingContext();
-                    await dispatcher.DispatchAsync(new ProcessOrgUnits(batchSettings.BatchSize, isDeleteContext), stoppingToken).WithoutCapturingContext();
+                    await commandDispatcher.DispatchAsync(new ProcessUsers(batchSettings.BatchSize, isDeleteContext), stoppingToken).WithoutCapturingContext();
+                    await commandDispatcher.DispatchAsync(new ProcessOrgUnits(batchSettings.BatchSize, isDeleteContext), stoppingToken).WithoutCapturingContext();
                     isDeleteContext = !isDeleteContext;
 
                     logger.LogInformation("Done running batch.");
