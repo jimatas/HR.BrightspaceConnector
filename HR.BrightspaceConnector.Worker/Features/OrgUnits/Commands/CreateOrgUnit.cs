@@ -33,7 +33,7 @@ namespace HR.BrightspaceConnector.Features.OrgUnits.Commands
             OrgUnitRecord orgUnit = command.OrgUnit;
             int eventId = (int)orgUnit.SyncEventId!;
 
-            logger.LogInformation("Creating org unit with name \"{Name}\" in Brightspace.", orgUnit.Name);
+            logger.LogInformation("Creating org unit with code \"{Code}\" in Brightspace.", orgUnit.Code);
 
             try
             {

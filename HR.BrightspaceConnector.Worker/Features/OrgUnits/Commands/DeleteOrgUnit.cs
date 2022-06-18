@@ -34,7 +34,7 @@ namespace HR.BrightspaceConnector.Features.OrgUnits.Commands
             int orgUnitId = Convert.ToInt32(orgUnit.SyncExternalKey);
             int eventId = (int)orgUnit.SyncEventId!;
 
-            logger.LogInformation("Deleting org unit with name \"{Name}\" from Brightspace.", orgUnit.Name);
+            logger.LogInformation("Deleting org unit with code \"{Code}\" from Brightspace.", orgUnit.Code);
 
             try
             {

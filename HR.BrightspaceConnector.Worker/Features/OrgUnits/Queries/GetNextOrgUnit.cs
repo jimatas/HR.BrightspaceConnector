@@ -24,7 +24,7 @@ namespace HR.BrightspaceConnector.Features.OrgUnits.Queries
             var orgUnit = await database.GetNextOrgUnitAsync(cancellationToken).WithoutCapturingContext();
             if (orgUnit is not null)
             {
-                logger.LogInformation("Retrieved org unit with name \"{Name}\" for sync action '{SyncAction}' from database.", orgUnit.Name, orgUnit.SyncAction);
+                logger.LogInformation("Retrieved org unit with code \"{Code}\" for sync action '{SyncAction}' from database.", orgUnit.Code, orgUnit.SyncAction);
             }
 
             return orgUnit;
