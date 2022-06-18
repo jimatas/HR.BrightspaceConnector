@@ -40,7 +40,10 @@ internal class Startup
             jsonOptions.NumberHandling = JsonNumberHandling.AllowReadingFromString;
         });
 
-        services.Configure<BatchSettings>(Configuration.GetSection(nameof(BatchSettings)));
+        services.Configure<BatchSettings>(Configuration.GetSection(nameof(BatchSettings))).PostConfigure<BatchSettings>(batchSettings =>
+        {
+            Validator.ValidateObject(batchSettings, new ValidationContext(batchSettings), validateAllProperties: true);
+        });
 
         services.Configure<ApiSettings>(Configuration.GetSection(nameof(ApiSettings))).PostConfigure<ApiSettings>(apiSettings =>
         {
