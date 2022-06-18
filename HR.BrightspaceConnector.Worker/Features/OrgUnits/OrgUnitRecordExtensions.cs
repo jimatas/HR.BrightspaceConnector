@@ -17,5 +17,16 @@
             }
             return orgUnitCreateData;
         }
+
+        public static OrgUnitProperties ToOrgUnitProperties(this OrgUnitRecord orgUnitRecord)
+        {
+            return new OrgUnitProperties
+            {
+                Code = orgUnitRecord.Code,
+                Identifier = orgUnitRecord.SyncExternalKey is null ? null : Convert.ToInt32(orgUnitRecord.SyncExternalKey),
+                Name = orgUnitRecord.Name,
+                Type = new OrgUnitTypeInfo { Id = orgUnitRecord.Type }
+            };
+        }
     }
 }
