@@ -1,6 +1,5 @@
 using HR.BrightspaceConnector.Features.OrgUnits.Commands;
 using HR.BrightspaceConnector.Features.Users.Commands;
-using HR.Common.Cqrs;
 using HR.Common.Cqrs.Commands;
 using HR.Common.Utilities;
 
