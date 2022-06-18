@@ -212,9 +212,27 @@ namespace HR.BrightspaceConnector
             return updatedOrgUnit!;
         }
 
-        public async Task DeleteOrgUnitAsync(int orgUnitId, int parentOrgUnitId, CancellationToken cancellationToken = default)
+        public async Task DeleteOrgUnitAsync(int orgUnitId, bool permanently = false, CancellationToken cancellationToken = default)
         {
-            using var httpRequest = new HttpRequestMessage(HttpMethod.Delete, $"lp/{apiSettings.LearningPlatformVersion}/orgstructure/{orgUnitId}/parents/{parentOrgUnitId}");
+            await MoveOrgUnitToRecycleBinAsync(orgUnitId, cancellationToken).WithoutCapturingContext();
+            if (permanently)
+            {
+                await DeleteOrgUnitFromRecycleBinAsync(orgUnitId, cancellationToken).WithoutCapturingContext();
+            }
+        }
+
+        public async Task MoveOrgUnitToRecycleBinAsync(int orgUnitId, CancellationToken cancellationToken = default)
+        {
+            using var httpRequest = new HttpRequestMessage(HttpMethod.Post, $"lp/{apiSettings.LearningPlatformVersion}/orgstructure/recyclebin/{orgUnitId}/recycle");
+            await SetAuthorizationHeader(httpRequest, cancellationToken).WithoutCapturingContext();
+
+            using var httpResponse = await httpClient.SendAsync(httpRequest, cancellationToken).WithoutCapturingContext();
+            await CheckResponseForErrorAsync(httpResponse, cancellationToken).WithoutCapturingContext();
+        }
+
+        public async Task DeleteOrgUnitFromRecycleBinAsync(int orgUnitId, CancellationToken cancellationToken = default)
+        {
+            using var httpRequest = new HttpRequestMessage(HttpMethod.Delete, $"lp/{apiSettings.LearningPlatformVersion}/orgstructure/recyclebin/{orgUnitId}");
             await SetAuthorizationHeader(httpRequest, cancellationToken).WithoutCapturingContext();
 
             using var httpResponse = await httpClient.SendAsync(httpRequest, cancellationToken).WithoutCapturingContext();

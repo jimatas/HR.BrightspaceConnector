@@ -155,13 +155,19 @@ namespace HR.BrightspaceConnector
         Task<OrgUnitProperties> UpdateOrgUnitAsync(int orgUnitId, OrgUnitProperties orgUnit, CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// Delete the relationship between a provided org unit and one of its parents.
+        /// Send an org unit to the recycle bin, with an option to immediately flush it from there as well, permanently deleting it.
         /// </summary>
+        /// <remarks>
+        /// Using this action has the same effect as deleting the org unit via the OrgUnit Editor (and placing it in the recycling bin) in the Brightspace UI.
+        /// <para>
+        /// Oauth2 Scopes: <c>organizations:organization:create</c>
+        /// </para>
+        /// </remarks>
         /// <param name="orgUnitId"></param>
-        /// <param name="parentOrgUnitId">Org unit ID for the parent to detach.</param>
+        /// <param name="permanently">Permanently delete the org unit?</param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task DeleteOrgUnitAsync(int orgUnitId, int parentOrgUnitId, CancellationToken cancellationToken = default);
+        Task DeleteOrgUnitAsync(int orgUnitId, bool permanently = false, CancellationToken cancellationToken = default);
         #endregion
     }
 }
