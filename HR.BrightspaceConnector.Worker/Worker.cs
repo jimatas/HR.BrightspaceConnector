@@ -12,7 +12,7 @@ namespace HR.BrightspaceConnector
         private readonly IDispatcher dispatcher;
         private readonly BatchSettings batchSettings;
         private readonly ILogger logger;
-        
+
         public Worker(IDispatcher dispatcher, IOptions<BatchSettings> batchSettings, ILogger<Worker> logger)
         {
             this.dispatcher = dispatcher;
@@ -21,19 +21,32 @@ namespace HR.BrightspaceConnector
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
-        {       
-            var isDeleteContext = false;
-            while (!stoppingToken.IsCancellationRequested)
+        {
+            try
             {
-                logger.LogInformation("Starting new batch run.");
+                var isDeleteContext = false;
+                while (!stoppingToken.IsCancellationRequested)
+                {
+                    logger.LogInformation("Starting new batch run.");
 
-                await dispatcher.DispatchAsync(new ProcessUsers(batchSettings.BatchSize, isDeleteContext), stoppingToken).WithoutCapturingContext();
-                await dispatcher.DispatchAsync(new ProcessOrgUnits(batchSettings.BatchSize, isDeleteContext), stoppingToken).WithoutCapturingContext();
-                isDeleteContext = !isDeleteContext;
+                    await dispatcher.DispatchAsync(new ProcessUsers(batchSettings.BatchSize, isDeleteContext), stoppingToken).WithoutCapturingContext();
+                    await dispatcher.DispatchAsync(new ProcessOrgUnits(batchSettings.BatchSize, isDeleteContext), stoppingToken).WithoutCapturingContext();
+                    isDeleteContext = !isDeleteContext;
 
-                logger.LogInformation("Done running batch.");
+                    logger.LogInformation("Done running batch.");
 
-                await Task.Delay(batchSettings.TimeDelayBetweenRuns, stoppingToken).WithoutCapturingContext();
+                    await Task.Delay(batchSettings.TimeDelayBetweenRuns, stoppingToken).WithoutCapturingContext();
+                }
+            }
+            catch (TaskCanceledException)
+            {
+                logger.LogWarning("The BackgroundService is stopping because a task was canceled.");
+            }
+            catch (Exception exception)
+            {
+                logger.LogCritical(exception, "The BackgroundService failed.");
+
+                Environment.Exit(exception.HResult);
             }
         }
     }
