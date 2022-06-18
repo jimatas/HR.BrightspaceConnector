@@ -1,4 +1,5 @@
 ﻿using HR.BrightspaceConnector.Features.OrgUnits;
+using HR.BrightspaceConnector.Infrastructure.Persistence;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -13,6 +14,19 @@ namespace HR.BrightspaceConnector.Tests
     [TestClass]
     public class OrgUnitsTests : IntegrationTestsBase
     {
+        [TestMethod]
+        public async Task GetNextOrgUnitAsync_ReturnsOrgUnitOrNull()
+        {
+            IDatabase database = CreateDatabase();
+
+            OrgUnitRecord? orgUnit = await database.GetNextOrgUnitAsync();
+
+            if (orgUnit is not null)
+            {
+                Assert.IsNotNull(orgUnit.SyncEventId);
+            }
+        }
+
         [TestMethod]
         public async Task GetOrganizationAsync_ReturnsRootOrgUnit()
         {

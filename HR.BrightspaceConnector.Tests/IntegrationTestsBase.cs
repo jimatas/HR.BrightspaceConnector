@@ -1,7 +1,11 @@
-﻿using HR.BrightspaceConnector.Security;
+﻿using HR.BrightspaceConnector.Infrastructure.Persistence;
+using HR.BrightspaceConnector.Security;
 using HR.BrightspaceConnector.Utilities;
 
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting.Internal;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 
 using System;
@@ -16,6 +20,7 @@ namespace HR.BrightspaceConnector.Tests
     {
         private HttpClient? apiClientHttpClient;
         private HttpClient? tokenManagerHttpClient;
+        private DbContext? dbContext;
 
         static IntegrationTestsBase()
         {
@@ -63,6 +68,18 @@ namespace HR.BrightspaceConnector.Tests
             }
         }
 
+        protected IDatabase CreateDatabase()
+        {
+            var dbContextBuilder = new DbContextOptionsBuilder<BrightspaceDbContext>();
+            dbContextBuilder.UseSqlServer(Configuration.GetConnectionString(nameof(BrightspaceDbContext)));
+            dbContext ??= new BrightspaceDbContext(dbContextBuilder.Options);
+
+            var environment = new HostingEnvironment { EnvironmentName = "Test" };
+            var logger = NullLogger<Database>.Instance;
+
+            return new Database((BrightspaceDbContext)dbContext, environment, logger);
+        }
+
         public void Dispose()
         {
             apiClientHttpClient?.Dispose();
@@ -70,6 +87,9 @@ namespace HR.BrightspaceConnector.Tests
 
             tokenManagerHttpClient?.Dispose();
             tokenManagerHttpClient = null;
+
+            dbContext?.Dispose();
+            dbContext = null;
 
             GC.SuppressFinalize(this);
         }

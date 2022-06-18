@@ -1,5 +1,6 @@
 ﻿using HR.BrightspaceConnector.Features.Users;
 using HR.BrightspaceConnector.Infrastructure;
+using HR.BrightspaceConnector.Infrastructure.Persistence;
 using HR.Common.Utilities;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -13,6 +14,19 @@ namespace HR.BrightspaceConnector.Tests
     [TestClass]
     public class UsersTests : IntegrationTestsBase
     {
+        [TestMethod]
+        public async Task GetNextUserAsync_ReturnsNextUserOrNull()
+        {
+            IDatabase database = CreateDatabase();
+
+            UserRecord? nextUser = await database.GetNextUserAsync();
+
+            if (nextUser is not null)
+            {
+                Assert.IsNotNull(nextUser.SyncEventId);
+            }
+        }
+
         [TestMethod]
         public async Task GetRolesAsync_ReturnsRoles()
         {
