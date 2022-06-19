@@ -17,6 +17,7 @@ namespace HR.BrightspaceConnector.Tests
     [TestClass]
     public class ProcessUsersTests : DependencyInjectedTestsBase
     {
+        private const int OrgId = 6606;
         private static readonly IDictionary<string, int> RoleIds = new Dictionary<string, int>()
         {
             { "Administrator", 117 },
@@ -40,14 +41,12 @@ namespace HR.BrightspaceConnector.Tests
                 RoleId = RoleIds["Administrator"],
                 FirstName = "Jim",
                 LastName = "Atas",
-                MiddleName = null,
                 SortLastName = "Atas",
                 ExternalEmail = "ja.hstest@hr.nl",
                 IsActive = true,
                 SendCreationEmail = false,
                 SyncEventId = eventId,
                 SyncAction = 'c',
-                SyncExternalKey = null,
                 SyncInternalKey = "ja.hstest"
             };
 
@@ -62,12 +61,9 @@ namespace HR.BrightspaceConnector.Tests
                 DisplayName = "Jim Atas",
                 ExternalEmail = "ja.hstest@hr.nl",
                 FirstName = "Jim",
-                LastAccessedDate = null,
                 LastName = "Atas",
-                MiddleName = null,
                 OrgDefinedId = "ja.hstest@hro.nl",
-                OrgId = 6606,
-                Pronouns = null,
+                OrgId = OrgId,
                 UniqueIdentifier = "ja.hstest",
                 UserId = userId,
                 UserName = "ja.hstest",
@@ -100,14 +96,12 @@ namespace HR.BrightspaceConnector.Tests
                 RoleId = RoleIds["Administrator"],
                 FirstName = "Jim",
                 LastName = "Atas",
-                MiddleName = null,
                 SortLastName = "Ätas", // Note: Accented "A".
                 ExternalEmail = "ja.hstest@hr.nl",
                 IsActive = true,
                 SendCreationEmail = false,
                 SyncEventId = eventId,
                 SyncAction = 'c',
-                SyncExternalKey = null,
                 SyncInternalKey = "ja.hstest"
             };
 
@@ -122,12 +116,9 @@ namespace HR.BrightspaceConnector.Tests
                 DisplayName = "Jim Atas",
                 ExternalEmail = "ja.hstest@hr.nl",
                 FirstName = "Jim",
-                LastAccessedDate = null,
                 LastName = "Atas",
-                MiddleName = null,
                 OrgDefinedId = "ja.hstest@hro.nl",
-                OrgId = 6606,
-                Pronouns = null,
+                OrgId = OrgId,
                 UniqueIdentifier = "ja.hstest",
                 UserId = userId,
                 UserName = "ja.hstest",
@@ -177,6 +168,69 @@ namespace HR.BrightspaceConnector.Tests
 
             // Act
             await commandDispatcher.DispatchAsync(new ProcessUsers(batchSize: 1, isDeleteContext: true));
+
+            // Assert
+            mockedDatabase.Verify(database => database.GetNextUserAsync(default), Times.Once());
+            mockedDatabase.VerifyNoOtherCalls();
+
+            mockedApiClient.VerifyNoOtherCalls();
+        }
+
+        [TestMethod]
+        public async Task GivenUserToDelete_DeletesUser()
+        {
+            // Arrange
+            var eventId = Random.Shared.Next(1, int.MaxValue);
+            var userId = Random.Shared.Next(1, int.MaxValue);
+
+            var userRecord = new UserRecord
+            {
+                SyncEventId = eventId,
+                SyncAction = 'd',
+                SyncExternalKey = userId.ToString(),
+                SyncInternalKey = "ja.hstest"
+            };
+
+            mockedDatabase.Setup(database => database.GetNextUserAsync(default)).ReturnsAsync(userRecord);
+            mockedDatabase.Setup(database => database.MarkAsHandledAsync(It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<int>(), null, default));
+
+            mockedApiClient.Setup(apiClient => apiClient.DeleteUserAsync(It.IsAny<int>(), default));
+
+            IServiceProvider serviceProvider = CreateServiceProvider(mockedDatabase.Object, mockedApiClient.Object);
+            ICommandDispatcher commandDispatcher = serviceProvider.GetRequiredService<ICommandDispatcher>();
+
+            // Act
+            await commandDispatcher.DispatchAsync(new ProcessUsers(batchSize: 1, isDeleteContext: true));
+
+            // Assert
+            mockedDatabase.Verify(database => database.GetNextUserAsync(default), Times.Once());
+            mockedDatabase.Verify(database => database.MarkAsHandledAsync(eventId, true, userId, null, default), Times.Once());
+
+            mockedApiClient.Verify(apiClient => apiClient.DeleteUserAsync(userId, default), Times.Once());
+        }
+
+        [TestMethod]
+        public async Task GivenUserToDeleteInNonDeleteContext_DoesNothing()
+        {
+            // Arrange
+            var userRecord = new UserRecord
+            {
+                SyncEventId = Random.Shared.Next(1, int.MaxValue),
+                SyncAction = 'd',
+                SyncExternalKey = Random.Shared.Next(1, int.MaxValue).ToString(),
+                SyncInternalKey = "ja.hstest"
+            };
+
+            mockedDatabase.Setup(database => database.GetNextUserAsync(default)).ReturnsAsync(userRecord);
+            mockedDatabase.Setup(database => database.MarkAsHandledAsync(It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<int>(), null, default));
+
+            mockedApiClient.Setup(apiClient => apiClient.DeleteUserAsync(It.IsAny<int>(), default));
+
+            IServiceProvider serviceProvider = CreateServiceProvider(mockedDatabase.Object, mockedApiClient.Object);
+            ICommandDispatcher commandDispatcher = serviceProvider.GetRequiredService<ICommandDispatcher>();
+
+            // Act
+            await commandDispatcher.DispatchAsync(new ProcessUsers(batchSize: 1, isDeleteContext: false));
 
             // Assert
             mockedDatabase.Verify(database => database.GetNextUserAsync(default), Times.Once());
