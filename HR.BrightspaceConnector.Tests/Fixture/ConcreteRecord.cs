@@ -1,6 +1,6 @@
 ﻿using HR.BrightspaceConnector.Features.Common;
 
-namespace HR.BrightspaceConnector.Tests
+namespace HR.BrightspaceConnector.Tests.Fixture
 {
     public class ConcreteRecord : RecordBase
     {

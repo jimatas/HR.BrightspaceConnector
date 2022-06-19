@@ -1,4 +1,5 @@
 ﻿using HR.BrightspaceConnector.Features.Common;
+using HR.BrightspaceConnector.Tests.Fixture;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
