@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace HR.BrightspaceConnector
+namespace HR.BrightspaceConnector.Infrastructure
 {
     public class BatchSettings
     {

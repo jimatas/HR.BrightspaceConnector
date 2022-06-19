@@ -1,4 +1,5 @@
 ﻿using HR.BrightspaceConnector;
+using HR.BrightspaceConnector.Infrastructure;
 using HR.BrightspaceConnector.Infrastructure.Persistence;
 using HR.BrightspaceConnector.Security;
 using HR.BrightspaceConnector.Utilities;
