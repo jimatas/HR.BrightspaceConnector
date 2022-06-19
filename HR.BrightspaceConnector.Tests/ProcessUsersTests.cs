@@ -86,5 +86,65 @@ namespace HR.BrightspaceConnector.Tests
             mockedApiClient.Verify(apiClient => apiClient.CreateUserAsync(It.Is<CreateUserData>(createUserData => Assert.That.AreEqual(userRecord.ToCreateUserData(), createUserData)), default), Times.Once());
             mockedApiClient.Verify(apiClient => apiClient.UpdateLegalPreferredNamesAsync(userId, It.IsAny<LegalPreferredNames>(), default), Times.Never());
         }
+
+        [TestMethod]
+        public async Task GivenUserToCreateWithDifferentSortLastName_CreatesUserAndUpdatesLegalAndPreferredNames()
+        {
+            // Arrange
+            const int eventId = 88001;
+
+            var userRecord = new UserRecord
+            {
+                UserName = "ja.hstest",
+                OrgDefinedId = "ja.hstest@hro.nl",
+                RoleId = RoleIds["Administrator"],
+                FirstName = "Jim",
+                LastName = "Atas",
+                MiddleName = null,
+                SortLastName = "Ätas", // Note: Accented "A".
+                ExternalEmail = "ja.hstest@hr.nl",
+                IsActive = true,
+                SendCreationEmail = false,
+                SyncEventId = eventId,
+                SyncAction = 'c',
+                SyncExternalKey = null,
+                SyncInternalKey = "ja.hstest"
+            };
+
+            mockedDatabase.Setup(database => database.GetNextUserAsync(default)).ReturnsAsync(userRecord);
+            mockedDatabase.Setup(database => database.MarkAsHandledAsync(It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<int>(), null, default));
+
+            const int userId = 270;
+
+            mockedApiClient.Setup(apiClient => apiClient.CreateUserAsync(It.IsAny<CreateUserData>(), default)).ReturnsAsync(() => new UserData
+            {
+                Activation = new UserActivationData { IsActive = true },
+                DisplayName = "Jim Atas",
+                ExternalEmail = "ja.hstest@hr.nl",
+                FirstName = "Jim",
+                LastAccessedDate = null,
+                LastName = "Atas",
+                MiddleName = null,
+                OrgDefinedId = "ja.hstest@hro.nl",
+                OrgId = 6606,
+                Pronouns = null,
+                UniqueIdentifier = "ja.hstest",
+                UserId = userId,
+                UserName = "ja.hstest",
+            });
+
+            IServiceProvider serviceProvider = CreateServiceProvider(mockedDatabase.Object, mockedApiClient.Object);
+            ICommandDispatcher commandDispatcher = serviceProvider.GetRequiredService<ICommandDispatcher>();
+
+            // Act
+            await commandDispatcher.DispatchAsync(new ProcessUsers(batchSize: 1, isDeleteContext: false));
+
+            // Assert
+            mockedDatabase.Verify(database => database.GetNextUserAsync(default), Times.Once());
+            mockedDatabase.Verify(database => database.MarkAsHandledAsync(eventId, true, userId, null, default), Times.Once());
+
+            mockedApiClient.Verify(apiClient => apiClient.CreateUserAsync(It.Is<CreateUserData>(createUserData => Assert.That.AreEqual(userRecord.ToCreateUserData(), createUserData)), default), Times.Once());
+            mockedApiClient.Verify(apiClient => apiClient.UpdateLegalPreferredNamesAsync(userId, It.Is<LegalPreferredNames>(legalPreferredNames => Assert.That.AreEqual(userRecord.ToLegalPreferredNames(), legalPreferredNames)), default), Times.Once());
+        }
     }
 }
