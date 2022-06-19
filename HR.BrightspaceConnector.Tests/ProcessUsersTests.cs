@@ -362,7 +362,7 @@ namespace HR.BrightspaceConnector.Tests
                 IsActive = true,
                 SendCreationEmail = false,
                 SyncEventId = Random.Shared.Next(1, int.MaxValue),
-                SyncAction = 'c',
+                SyncAction = 'u',
                 SyncExternalKey = Random.Shared.Next(1, int.MaxValue).ToString(),
                 SyncInternalKey = "ja.hstest"
             };
