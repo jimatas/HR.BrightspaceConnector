@@ -80,14 +80,14 @@ namespace HR.BrightspaceConnector.Tests
             mockedDatabase.Verify(database => database.MarkAsHandledAsync(eventId, true, userId, null, default), Times.Once());
 
             mockedApiClient.Verify(apiClient => apiClient.CreateUserAsync(It.Is<CreateUserData>(createUserData => Assert.That.AreEqual(userRecord.ToCreateUserData(), createUserData)), default), Times.Once());
-            mockedApiClient.Verify(apiClient => apiClient.UpdateLegalPreferredNamesAsync(userId, It.IsAny<LegalPreferredNames>(), default), Times.Never());
+            mockedApiClient.VerifyNoOtherCalls();
         }
 
         [TestMethod]
         public async Task GivenUserToCreateWithDifferentSortLastName_CreatesUserAndUpdatesLegalAndPreferredNames()
         {
             // Arrange
-            int eventId = Random.Shared.Next(1, int.MaxValue); 
+            int eventId = Random.Shared.Next(1, int.MaxValue);
 
             var userRecord = new UserRecord
             {
@@ -149,19 +149,16 @@ namespace HR.BrightspaceConnector.Tests
                 RoleId = RoleIds["Administrator"],
                 FirstName = "Jim",
                 LastName = "Atas",
-                MiddleName = null,
                 SortLastName = "Atas",
                 ExternalEmail = "ja.hstest@hr.nl",
                 IsActive = true,
                 SendCreationEmail = false,
                 SyncEventId = Random.Shared.Next(1, int.MaxValue),
                 SyncAction = 'c',
-                SyncExternalKey = null,
                 SyncInternalKey = "ja.hstest"
             };
 
             mockedDatabase.Setup(database => database.GetNextUserAsync(default)).ReturnsAsync(userRecord);
-            mockedDatabase.Setup(database => database.MarkAsHandledAsync(It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<int>(), null, default));
 
             IServiceProvider serviceProvider = CreateServiceProvider(mockedDatabase.Object, mockedApiClient.Object);
             ICommandDispatcher commandDispatcher = serviceProvider.GetRequiredService<ICommandDispatcher>();
@@ -231,6 +228,152 @@ namespace HR.BrightspaceConnector.Tests
 
             // Act
             await commandDispatcher.DispatchAsync(new ProcessUsers(batchSize: 1, isDeleteContext: false));
+
+            // Assert
+            mockedDatabase.Verify(database => database.GetNextUserAsync(default), Times.Once());
+            mockedDatabase.VerifyNoOtherCalls();
+
+            mockedApiClient.VerifyNoOtherCalls();
+        }
+
+        [TestMethod]
+        public async Task GivenUserToUpdate_UpdatesUser()
+        {
+            // Arrange
+            var eventId = Random.Shared.Next(1, int.MaxValue);
+            var userId = Random.Shared.Next(1, int.MaxValue);
+
+            var userRecord = new UserRecord
+            {
+                UserName = "ja.hstest",
+                OrgDefinedId = "ja.hstest@hro.nl",
+                RoleId = RoleIds["Administrator"],
+                FirstName = "Jim",
+                LastName = "Atas",
+                SortLastName = "Atas",
+                ExternalEmail = "ja.hstest@hr.nl",
+                IsActive = true,
+                SendCreationEmail = false,
+                SyncEventId = eventId,
+                SyncAction = 'u',
+                SyncExternalKey = userId.ToString(),
+                SyncInternalKey = "ja.hstest"
+            };
+
+            mockedDatabase.Setup(database => database.GetNextUserAsync(default)).ReturnsAsync(userRecord);
+            mockedDatabase.Setup(database => database.MarkAsHandledAsync(It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<int>(), null, default));
+
+            mockedApiClient.Setup(apiClient => apiClient.UpdateUserAsync(It.IsAny<int>(), It.IsAny<UpdateUserData>(), default)).ReturnsAsync(() => new UserData
+            {
+                Activation = new UserActivationData { IsActive = true },
+                DisplayName = "Jim Atas",
+                ExternalEmail = "ja.hstest@hr.nl",
+                FirstName = "Jim",
+                LastName = "Atas",
+                OrgDefinedId = "ja.hstest@hro.nl",
+                OrgId = OrgId,
+                UniqueIdentifier = "ja.hstest",
+                UserId = userId,
+                UserName = "ja.hstest",
+            });
+
+            IServiceProvider serviceProvider = CreateServiceProvider(mockedDatabase.Object, mockedApiClient.Object);
+            ICommandDispatcher commandDispatcher = serviceProvider.GetRequiredService<ICommandDispatcher>();
+
+            // Act
+            await commandDispatcher.DispatchAsync(new ProcessUsers(batchSize: 1, isDeleteContext: false));
+
+            // Assert
+            mockedDatabase.Verify(database => database.GetNextUserAsync(default), Times.Once());
+            mockedDatabase.Verify(database => database.MarkAsHandledAsync(eventId, true, userId, null, default), Times.Once());
+
+            mockedApiClient.Verify(apiClient => apiClient.UpdateUserAsync(userId, It.Is<UpdateUserData>(updateUserData => Assert.That.AreEqual(userRecord.ToUpdateUserData(), updateUserData)), default), Times.Once());
+            mockedApiClient.VerifyNoOtherCalls();
+        }
+
+        [TestMethod]
+        public async Task GivenUserToUpdateWithDifferentSortLastName_UpdatesUserAndUpdatesLegalAndPreferredNames()
+        {
+            // Arrange
+            var eventId = Random.Shared.Next(1, int.MaxValue);
+            var userId = Random.Shared.Next(1, int.MaxValue);
+
+            var userRecord = new UserRecord
+            {
+                UserName = "ja.hstest",
+                OrgDefinedId = "ja.hstest@hro.nl",
+                RoleId = RoleIds["Administrator"],
+                FirstName = "Jim",
+                LastName = "Atas",
+                SortLastName = "Ätas", // Note: Accented "A".
+                ExternalEmail = "ja.hstest@hr.nl",
+                IsActive = true,
+                SendCreationEmail = false,
+                SyncEventId = eventId,
+                SyncAction = 'u',
+                SyncExternalKey = userId.ToString(),
+                SyncInternalKey = "ja.hstest"
+            };
+
+            mockedDatabase.Setup(database => database.GetNextUserAsync(default)).ReturnsAsync(userRecord);
+            mockedDatabase.Setup(database => database.MarkAsHandledAsync(It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<int>(), null, default));
+
+            mockedApiClient.Setup(apiClient => apiClient.UpdateUserAsync(It.IsAny<int>(), It.IsAny<UpdateUserData>(), default)).ReturnsAsync(() => new UserData
+            {
+                Activation = new UserActivationData { IsActive = true },
+                DisplayName = "Jim Atas",
+                ExternalEmail = "ja.hstest@hr.nl",
+                FirstName = "Jim",
+                LastName = "Atas",
+                OrgDefinedId = "ja.hstest@hro.nl",
+                OrgId = OrgId,
+                UniqueIdentifier = "ja.hstest",
+                UserId = userId,
+                UserName = "ja.hstest",
+            });
+
+            IServiceProvider serviceProvider = CreateServiceProvider(mockedDatabase.Object, mockedApiClient.Object);
+            ICommandDispatcher commandDispatcher = serviceProvider.GetRequiredService<ICommandDispatcher>();
+
+            // Act
+            await commandDispatcher.DispatchAsync(new ProcessUsers(batchSize: 1, isDeleteContext: false));
+
+            // Assert
+            mockedDatabase.Verify(database => database.GetNextUserAsync(default), Times.Once());
+            mockedDatabase.Verify(database => database.MarkAsHandledAsync(eventId, true, userId, null, default), Times.Once());
+
+            mockedApiClient.Verify(apiClient => apiClient.UpdateUserAsync(userId, It.Is<UpdateUserData>(updateUserData => Assert.That.AreEqual(userRecord.ToUpdateUserData(), updateUserData)), default), Times.Once());
+            mockedApiClient.Verify(apiClient => apiClient.UpdateLegalPreferredNamesAsync(userId, It.Is<LegalPreferredNames>(legalPreferredNames => Assert.That.AreEqual(userRecord.ToLegalPreferredNames(), legalPreferredNames)), default), Times.Once());
+        }
+
+        [TestMethod]
+        public async Task GivenUserToUpdateInDeleteContext_DoesNothing()
+        {
+            // Arrange
+            var userRecord = new UserRecord
+            {
+                UserName = "ja.hstest",
+                OrgDefinedId = "ja.hstest@hro.nl",
+                RoleId = RoleIds["Administrator"],
+                FirstName = "Jim",
+                LastName = "Atas",
+                SortLastName = "Atas",
+                ExternalEmail = "ja.hstest@hr.nl",
+                IsActive = true,
+                SendCreationEmail = false,
+                SyncEventId = Random.Shared.Next(1, int.MaxValue),
+                SyncAction = 'c',
+                SyncExternalKey = Random.Shared.Next(1, int.MaxValue).ToString(),
+                SyncInternalKey = "ja.hstest"
+            };
+
+            mockedDatabase.Setup(database => database.GetNextUserAsync(default)).ReturnsAsync(userRecord);
+
+            IServiceProvider serviceProvider = CreateServiceProvider(mockedDatabase.Object, mockedApiClient.Object);
+            ICommandDispatcher commandDispatcher = serviceProvider.GetRequiredService<ICommandDispatcher>();
+
+            // Act
+            await commandDispatcher.DispatchAsync(new ProcessUsers(batchSize: 1, isDeleteContext: true));
 
             // Assert
             mockedDatabase.Verify(database => database.GetNextUserAsync(default), Times.Once());

@@ -22,6 +22,20 @@ namespace HR.BrightspaceConnector.Tests
             return true;
         }
 
+        public static bool AreEqual(this Assert _, UpdateUserData expected, UpdateUserData actual)
+        {
+            Assert.AreEqual(expected.UserName, actual.UserName);
+            Assert.AreEqual(expected.OrgDefinedId, actual.OrgDefinedId);
+            Assert.AreEqual(expected.FirstName, actual.FirstName);
+            Assert.AreEqual(expected.MiddleName, actual.MiddleName);
+            Assert.AreEqual(expected.LastName, actual.LastName);
+            Assert.AreEqual(expected.Pronouns, actual.Pronouns);
+            Assert.AreEqual(expected.ExternalEmail, actual.ExternalEmail);
+            Assert.AreEqual(expected.Activation?.IsActive, actual.Activation?.IsActive);
+
+            return true;
+        }
+
         public static bool AreEqual(this Assert _, LegalPreferredNames expected, LegalPreferredNames actual)
         {
             Assert.AreEqual(expected.LegalLastName, actual.LegalLastName);
