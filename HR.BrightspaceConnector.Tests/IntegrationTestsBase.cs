@@ -43,7 +43,7 @@ namespace HR.BrightspaceConnector.Tests
             tokenManagerHttpClient ??= CreateHttpClient(oAuthSettings.TokenEndpoint!);
 
             return new ApiClient(apiClientHttpClient, Options.Create(jsonOptions), Options.Create(apiSettings),
-                new FileCachingTokenManager(tokenManagerHttpClient, Options.Create(jsonOptions), Options.Create(oAuthSettings), new SystemClock()));
+                new FileCachingTokenManager(tokenManagerHttpClient, Options.Create(jsonOptions), Options.Create(oAuthSettings), SystemClock.Instance));
 
             static HttpClient CreateHttpClient(Uri baseAddress)
             {

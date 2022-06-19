@@ -30,7 +30,9 @@ namespace HR.BrightspaceConnector.Security
 
         /// <summary>
         /// Determines how much earlier a token should be considered expired than the actual expiration date.
+        /// Valid range of values is between 00:00:00 (none) and 1.00:00:00 (1 day).
         /// </summary>
+        [Range(typeof(TimeSpan), "00:00:00", "1.00:00:00")]
         public TimeSpan ExpirationDelta { get; set; } = TimeSpan.Zero;
     }
 }

@@ -15,6 +15,7 @@ namespace HR.BrightspaceConnector
         /// Default value is 1 second.
         /// Valid range of values is between 00:00:00 (no delay) and 1.00:00:00 (1 day).
         /// </summary>
+        [Range(typeof(TimeSpan), "00:00:00", "1.00:00:00")]
         public TimeSpan TimeDelayBetweenRuns { get; set; } = TimeSpan.FromSeconds(1);
     }
 }
