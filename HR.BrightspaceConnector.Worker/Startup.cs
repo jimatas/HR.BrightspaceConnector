@@ -56,6 +56,18 @@ internal class Startup
             Validator.ValidateObject(oAuthSettings, new ValidationContext(oAuthSettings), validateAllProperties: true);
         });
 
+        services.Configure<RecoverySettings>(RecoverySettings.Names.CommandTimeoutExpired, Configuration.GetSection($"{nameof(RecoverySettings)}:{RecoverySettings.Names.CommandTimeoutExpired}"))
+            .PostConfigure<RecoverySettings>(RecoverySettings.Names.CommandTimeoutExpired, recoverySettings =>
+        {
+            Validator.ValidateObject(recoverySettings, new ValidationContext(recoverySettings), validateAllProperties: true);
+        });
+
+        services.Configure<RecoverySettings>(RecoverySettings.Names.TransientHttpFault, Configuration.GetSection($"{nameof(RecoverySettings)}:{RecoverySettings.Names.TransientHttpFault}"))
+            .PostConfigure<RecoverySettings>(RecoverySettings.Names.TransientHttpFault, recoverySettings =>
+        {
+            Validator.ValidateObject(recoverySettings, new ValidationContext(recoverySettings), validateAllProperties: true);
+        });
+
         string? userAgentString = Configuration["UserAgentString"];
 
         services.AddHttpClient<ICachingTokenManager, FileCachingTokenManager>((IServiceProvider serviceProvider, HttpClient httpClient) =>
@@ -79,7 +91,8 @@ internal class Startup
             httpClient.DefaultRequestHeaders.UserAgent.TryParseAdd(userAgentString);
         }).AddPolicyHandler((serviceProvider, httpRequest) =>
         {
-            return HttpPolicyExtensions.HandleTransientHttpError().WaitAndRetryAsync(retryCount: 4, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));
+            var recoverySettings = serviceProvider.GetRequiredService<IOptionsSnapshot<RecoverySettings>>().Get(RecoverySettings.Names.TransientHttpFault);
+            return HttpPolicyExtensions.HandleTransientHttpError().WaitAndRetryAsync(recoverySettings.RetryAttempts, attempt => recoverySettings.CalculateRetryDelay(attempt));
         });
 
         services.AddSingleton<IClock, SystemClock>();
