@@ -10,6 +10,7 @@ using Moq;
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace HR.BrightspaceConnector.Tests
@@ -33,6 +34,7 @@ namespace HR.BrightspaceConnector.Tests
         {
             // Arrange
             int eventId = Random.Shared.Next(1, int.MaxValue);
+            int userId = Random.Shared.Next(1, int.MaxValue);
 
             var userRecord = new UserRecord
             {
@@ -51,11 +53,9 @@ namespace HR.BrightspaceConnector.Tests
             };
 
             mockedDatabase.Setup(database => database.GetNextUserAsync(default)).ReturnsAsync(userRecord);
-            mockedDatabase.Setup(database => database.MarkAsHandledAsync(It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<int>(), null, default));
+            mockedDatabase.Setup(database => database.MarkAsHandledAsync(eventId, true, userId, null, default));
 
-            int userId = Random.Shared.Next(1, int.MaxValue);
-
-            mockedApiClient.Setup(apiClient => apiClient.CreateUserAsync(It.IsAny<CreateUserData>(), default)).ReturnsAsync(() => new UserData
+            mockedApiClient.Setup(apiClient => apiClient.CreateUserAsync(It.Is<CreateUserData>(createUserData => Assert.That.AreEqual(userRecord.ToCreateUserData(), createUserData)), default)).ReturnsAsync(() => new UserData
             {
                 Activation = new UserActivationData { IsActive = true },
                 DisplayName = "Jim Atas",
@@ -76,11 +76,10 @@ namespace HR.BrightspaceConnector.Tests
             await commandDispatcher.DispatchAsync(new ProcessUsers(batchSize: 1, isDeleteContext: false));
 
             // Assert
-            mockedDatabase.Verify(database => database.GetNextUserAsync(default), Times.Once());
-            mockedDatabase.Verify(database => database.MarkAsHandledAsync(eventId, true, userId, null, default), Times.Once());
+            mockedDatabase.VerifyAll();
 
-            mockedApiClient.Verify(apiClient => apiClient.CreateUserAsync(It.Is<CreateUserData>(createUserData => Assert.That.AreEqual(userRecord.ToCreateUserData(), createUserData)), default), Times.Once());
-            mockedApiClient.VerifyNoOtherCalls();
+            mockedApiClient.VerifyAll();
+            mockedApiClient.Verify(apiClient => apiClient.UpdateLegalPreferredNamesAsync(It.IsAny<int>(), It.IsAny<LegalPreferredNames>(), It.IsAny<CancellationToken>()), Times.Never());
         }
 
         [TestMethod]
@@ -88,6 +87,7 @@ namespace HR.BrightspaceConnector.Tests
         {
             // Arrange
             int eventId = Random.Shared.Next(1, int.MaxValue);
+            int userId = Random.Shared.Next(1, int.MaxValue);
 
             var userRecord = new UserRecord
             {
@@ -106,11 +106,9 @@ namespace HR.BrightspaceConnector.Tests
             };
 
             mockedDatabase.Setup(database => database.GetNextUserAsync(default)).ReturnsAsync(userRecord);
-            mockedDatabase.Setup(database => database.MarkAsHandledAsync(It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<int>(), null, default));
+            mockedDatabase.Setup(database => database.MarkAsHandledAsync(eventId, true, userId, null, default));
 
-            int userId = Random.Shared.Next(1, int.MaxValue);
-
-            mockedApiClient.Setup(apiClient => apiClient.CreateUserAsync(It.IsAny<CreateUserData>(), default)).ReturnsAsync(() => new UserData
+            mockedApiClient.Setup(apiClient => apiClient.CreateUserAsync(It.Is<CreateUserData>(createUserData => Assert.That.AreEqual(userRecord.ToCreateUserData(), createUserData)), default)).ReturnsAsync(() => new UserData
             {
                 Activation = new UserActivationData { IsActive = true },
                 DisplayName = "Jim Atas",
@@ -124,6 +122,8 @@ namespace HR.BrightspaceConnector.Tests
                 UserName = "ja.hstest",
             });
 
+            mockedApiClient.Setup(apiClient => apiClient.UpdateLegalPreferredNamesAsync(userId, It.Is<LegalPreferredNames>(legalPreferredNames => Assert.That.AreEqual(userRecord.ToLegalPreferredNames(), legalPreferredNames)), default));
+
             IServiceProvider serviceProvider = CreateServiceProvider(mockedDatabase.Object, mockedApiClient.Object);
             ICommandDispatcher commandDispatcher = serviceProvider.GetRequiredService<ICommandDispatcher>();
 
@@ -131,18 +131,15 @@ namespace HR.BrightspaceConnector.Tests
             await commandDispatcher.DispatchAsync(new ProcessUsers(batchSize: 1, isDeleteContext: false));
 
             // Assert
-            mockedDatabase.Verify(database => database.GetNextUserAsync(default), Times.Once());
-            mockedDatabase.Verify(database => database.MarkAsHandledAsync(eventId, true, userId, null, default), Times.Once());
-
-            mockedApiClient.Verify(apiClient => apiClient.CreateUserAsync(It.Is<CreateUserData>(createUserData => Assert.That.AreEqual(userRecord.ToCreateUserData(), createUserData)), default), Times.Once());
-            mockedApiClient.Verify(apiClient => apiClient.UpdateLegalPreferredNamesAsync(userId, It.Is<LegalPreferredNames>(legalPreferredNames => Assert.That.AreEqual(userRecord.ToLegalPreferredNames(), legalPreferredNames)), default), Times.Once());
+            mockedDatabase.VerifyAll();
+            mockedApiClient.VerifyAll();
         }
 
         [TestMethod]
         public async Task GivenUserToCreateInDeleteContext_DoesNothing()
         {
             // Arrange
-            var userRecord = new UserRecord
+            mockedDatabase.Setup(database => database.GetNextUserAsync(default)).ReturnsAsync(new UserRecord
             {
                 UserName = "ja.hstest",
                 OrgDefinedId = "ja.hstest@hro.nl",
@@ -156,9 +153,7 @@ namespace HR.BrightspaceConnector.Tests
                 SyncEventId = Random.Shared.Next(1, int.MaxValue),
                 SyncAction = 'c',
                 SyncInternalKey = "ja.hstest"
-            };
-
-            mockedDatabase.Setup(database => database.GetNextUserAsync(default)).ReturnsAsync(userRecord);
+            });
 
             IServiceProvider serviceProvider = CreateServiceProvider(mockedDatabase.Object, mockedApiClient.Object);
             ICommandDispatcher commandDispatcher = serviceProvider.GetRequiredService<ICommandDispatcher>();
@@ -167,7 +162,7 @@ namespace HR.BrightspaceConnector.Tests
             await commandDispatcher.DispatchAsync(new ProcessUsers(batchSize: 1, isDeleteContext: true));
 
             // Assert
-            mockedDatabase.Verify(database => database.GetNextUserAsync(default), Times.Once());
+            mockedDatabase.Verify(database => database.GetNextUserAsync(It.IsAny<CancellationToken>()), Times.Once());
             mockedDatabase.VerifyNoOtherCalls();
 
             mockedApiClient.VerifyNoOtherCalls();
@@ -180,18 +175,16 @@ namespace HR.BrightspaceConnector.Tests
             var eventId = Random.Shared.Next(1, int.MaxValue);
             var userId = Random.Shared.Next(1, int.MaxValue);
 
-            var userRecord = new UserRecord
+            mockedDatabase.Setup(database => database.GetNextUserAsync(default)).ReturnsAsync(new UserRecord
             {
                 SyncEventId = eventId,
                 SyncAction = 'd',
                 SyncExternalKey = userId.ToString(),
                 SyncInternalKey = "ja.hstest"
-            };
+            });
+            mockedDatabase.Setup(database => database.MarkAsHandledAsync(eventId, true, userId, null, default));
 
-            mockedDatabase.Setup(database => database.GetNextUserAsync(default)).ReturnsAsync(userRecord);
-            mockedDatabase.Setup(database => database.MarkAsHandledAsync(It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<int>(), null, default));
-
-            mockedApiClient.Setup(apiClient => apiClient.DeleteUserAsync(It.IsAny<int>(), default));
+            mockedApiClient.Setup(apiClient => apiClient.DeleteUserAsync(userId, default));
 
             IServiceProvider serviceProvider = CreateServiceProvider(mockedDatabase.Object, mockedApiClient.Object);
             ICommandDispatcher commandDispatcher = serviceProvider.GetRequiredService<ICommandDispatcher>();
@@ -200,28 +193,27 @@ namespace HR.BrightspaceConnector.Tests
             await commandDispatcher.DispatchAsync(new ProcessUsers(batchSize: 1, isDeleteContext: true));
 
             // Assert
-            mockedDatabase.Verify(database => database.GetNextUserAsync(default), Times.Once());
-            mockedDatabase.Verify(database => database.MarkAsHandledAsync(eventId, true, userId, null, default), Times.Once());
-
-            mockedApiClient.Verify(apiClient => apiClient.DeleteUserAsync(userId, default), Times.Once());
+            mockedDatabase.VerifyAll();
+            mockedApiClient.VerifyAll();
         }
 
         [TestMethod]
         public async Task GivenUserToDeleteInNonDeleteContext_DoesNothing()
         {
             // Arrange
-            var userRecord = new UserRecord
+            var eventId = Random.Shared.Next(1, int.MaxValue);
+            var userId = Random.Shared.Next(1, int.MaxValue);
+
+            mockedDatabase.Setup(database => database.GetNextUserAsync(default)).ReturnsAsync(new UserRecord
             {
-                SyncEventId = Random.Shared.Next(1, int.MaxValue),
+                SyncEventId = eventId,
                 SyncAction = 'd',
-                SyncExternalKey = Random.Shared.Next(1, int.MaxValue).ToString(),
+                SyncExternalKey = userId.ToString(),
                 SyncInternalKey = "ja.hstest"
-            };
+            });
+            mockedDatabase.Setup(database => database.MarkAsHandledAsync(eventId, true, userId, null, default));
 
-            mockedDatabase.Setup(database => database.GetNextUserAsync(default)).ReturnsAsync(userRecord);
-            mockedDatabase.Setup(database => database.MarkAsHandledAsync(It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<int>(), null, default));
-
-            mockedApiClient.Setup(apiClient => apiClient.DeleteUserAsync(It.IsAny<int>(), default));
+            mockedApiClient.Setup(apiClient => apiClient.DeleteUserAsync(userId, default));
 
             IServiceProvider serviceProvider = CreateServiceProvider(mockedDatabase.Object, mockedApiClient.Object);
             ICommandDispatcher commandDispatcher = serviceProvider.GetRequiredService<ICommandDispatcher>();
@@ -230,7 +222,7 @@ namespace HR.BrightspaceConnector.Tests
             await commandDispatcher.DispatchAsync(new ProcessUsers(batchSize: 1, isDeleteContext: false));
 
             // Assert
-            mockedDatabase.Verify(database => database.GetNextUserAsync(default), Times.Once());
+            mockedDatabase.Verify(database => database.GetNextUserAsync(It.IsAny<CancellationToken>()), Times.Once());
             mockedDatabase.VerifyNoOtherCalls();
 
             mockedApiClient.VerifyNoOtherCalls();
@@ -261,9 +253,9 @@ namespace HR.BrightspaceConnector.Tests
             };
 
             mockedDatabase.Setup(database => database.GetNextUserAsync(default)).ReturnsAsync(userRecord);
-            mockedDatabase.Setup(database => database.MarkAsHandledAsync(It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<int>(), null, default));
+            mockedDatabase.Setup(database => database.MarkAsHandledAsync(eventId, true, userId, null, default));
 
-            mockedApiClient.Setup(apiClient => apiClient.UpdateUserAsync(It.IsAny<int>(), It.IsAny<UpdateUserData>(), default)).ReturnsAsync(() => new UserData
+            mockedApiClient.Setup(apiClient => apiClient.UpdateUserAsync(userId, It.Is<UpdateUserData>(updateUserData => Assert.That.AreEqual(userRecord.ToUpdateUserData(), updateUserData)), default)).ReturnsAsync(() => new UserData
             {
                 Activation = new UserActivationData { IsActive = true },
                 DisplayName = "Jim Atas",
@@ -284,11 +276,10 @@ namespace HR.BrightspaceConnector.Tests
             await commandDispatcher.DispatchAsync(new ProcessUsers(batchSize: 1, isDeleteContext: false));
 
             // Assert
-            mockedDatabase.Verify(database => database.GetNextUserAsync(default), Times.Once());
-            mockedDatabase.Verify(database => database.MarkAsHandledAsync(eventId, true, userId, null, default), Times.Once());
+            mockedDatabase.VerifyAll();
 
-            mockedApiClient.Verify(apiClient => apiClient.UpdateUserAsync(userId, It.Is<UpdateUserData>(updateUserData => Assert.That.AreEqual(userRecord.ToUpdateUserData(), updateUserData)), default), Times.Once());
-            mockedApiClient.VerifyNoOtherCalls();
+            mockedApiClient.VerifyAll();
+            mockedApiClient.Verify(apiClient => apiClient.UpdateLegalPreferredNamesAsync(It.IsAny<int>(), It.IsAny<LegalPreferredNames>(), It.IsAny<CancellationToken>()), Times.Never());
         }
 
         [TestMethod]
@@ -316,9 +307,9 @@ namespace HR.BrightspaceConnector.Tests
             };
 
             mockedDatabase.Setup(database => database.GetNextUserAsync(default)).ReturnsAsync(userRecord);
-            mockedDatabase.Setup(database => database.MarkAsHandledAsync(It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<int>(), null, default));
+            mockedDatabase.Setup(database => database.MarkAsHandledAsync(eventId, true, userId, null, default));
 
-            mockedApiClient.Setup(apiClient => apiClient.UpdateUserAsync(It.IsAny<int>(), It.IsAny<UpdateUserData>(), default)).ReturnsAsync(() => new UserData
+            mockedApiClient.Setup(apiClient => apiClient.UpdateUserAsync(userId, It.Is<UpdateUserData>(updateUserData => Assert.That.AreEqual(userRecord.ToUpdateUserData(), updateUserData)), default)).ReturnsAsync(() => new UserData
             {
                 Activation = new UserActivationData { IsActive = true },
                 DisplayName = "Jim Atas",
@@ -332,6 +323,8 @@ namespace HR.BrightspaceConnector.Tests
                 UserName = "ja.hstest",
             });
 
+            mockedApiClient.Setup(apiClient => apiClient.UpdateLegalPreferredNamesAsync(userId, It.Is<LegalPreferredNames>(legalPreferredNames => Assert.That.AreEqual(userRecord.ToLegalPreferredNames(), legalPreferredNames)), default));
+
             IServiceProvider serviceProvider = CreateServiceProvider(mockedDatabase.Object, mockedApiClient.Object);
             ICommandDispatcher commandDispatcher = serviceProvider.GetRequiredService<ICommandDispatcher>();
 
@@ -339,18 +332,15 @@ namespace HR.BrightspaceConnector.Tests
             await commandDispatcher.DispatchAsync(new ProcessUsers(batchSize: 1, isDeleteContext: false));
 
             // Assert
-            mockedDatabase.Verify(database => database.GetNextUserAsync(default), Times.Once());
-            mockedDatabase.Verify(database => database.MarkAsHandledAsync(eventId, true, userId, null, default), Times.Once());
-
-            mockedApiClient.Verify(apiClient => apiClient.UpdateUserAsync(userId, It.Is<UpdateUserData>(updateUserData => Assert.That.AreEqual(userRecord.ToUpdateUserData(), updateUserData)), default), Times.Once());
-            mockedApiClient.Verify(apiClient => apiClient.UpdateLegalPreferredNamesAsync(userId, It.Is<LegalPreferredNames>(legalPreferredNames => Assert.That.AreEqual(userRecord.ToLegalPreferredNames(), legalPreferredNames)), default), Times.Once());
+            mockedDatabase.VerifyAll();
+            mockedApiClient.VerifyAll();
         }
 
         [TestMethod]
         public async Task GivenUserToUpdateInDeleteContext_DoesNothing()
         {
             // Arrange
-            var userRecord = new UserRecord
+            mockedDatabase.Setup(database => database.GetNextUserAsync(default)).ReturnsAsync(new UserRecord
             {
                 UserName = "ja.hstest",
                 OrgDefinedId = "ja.hstest@hro.nl",
@@ -365,9 +355,7 @@ namespace HR.BrightspaceConnector.Tests
                 SyncAction = 'u',
                 SyncExternalKey = Random.Shared.Next(1, int.MaxValue).ToString(),
                 SyncInternalKey = "ja.hstest"
-            };
-
-            mockedDatabase.Setup(database => database.GetNextUserAsync(default)).ReturnsAsync(userRecord);
+            });
 
             IServiceProvider serviceProvider = CreateServiceProvider(mockedDatabase.Object, mockedApiClient.Object);
             ICommandDispatcher commandDispatcher = serviceProvider.GetRequiredService<ICommandDispatcher>();
@@ -376,7 +364,7 @@ namespace HR.BrightspaceConnector.Tests
             await commandDispatcher.DispatchAsync(new ProcessUsers(batchSize: 1, isDeleteContext: true));
 
             // Assert
-            mockedDatabase.Verify(database => database.GetNextUserAsync(default), Times.Once());
+            mockedDatabase.Verify(database => database.GetNextUserAsync(It.IsAny<CancellationToken>()), Times.Once());
             mockedDatabase.VerifyNoOtherCalls();
 
             mockedApiClient.VerifyNoOtherCalls();
