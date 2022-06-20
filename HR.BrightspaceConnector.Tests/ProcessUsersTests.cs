@@ -29,6 +29,27 @@ namespace HR.BrightspaceConnector.Tests
         private readonly Mock<IDatabase> mockedDatabase = new();
         private readonly Mock<IApiClient> mockedApiClient = new();
 
+        [DataTestMethod]
+        [DataRow(true)]
+        [DataRow(false)]
+        public async Task GivenNullUserRegardlessOfContext_DoesNothing(bool isDeleteContext)
+        {
+            // Arrange
+            mockedDatabase.Setup(database => database.GetNextUserAsync(default)).ReturnsAsync(null as UserRecord);
+
+            IServiceProvider serviceProvider = CreateServiceProvider(mockedDatabase.Object, mockedApiClient.Object);
+            ICommandDispatcher commandDispatcher = serviceProvider.GetRequiredService<ICommandDispatcher>();
+
+            // Act
+            await commandDispatcher.DispatchAsync(new ProcessUsers(batchSize: 1, isDeleteContext));
+
+            // Assert
+            mockedDatabase.Verify(database => database.GetNextUserAsync(It.IsAny<CancellationToken>()), Times.Once());
+            mockedDatabase.VerifyNoOtherCalls();
+
+            mockedApiClient.VerifyNoOtherCalls();
+        }
+
         [TestMethod]
         public async Task GivenUserToCreate_CreatesUser()
         {
