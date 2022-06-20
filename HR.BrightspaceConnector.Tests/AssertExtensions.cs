@@ -1,6 +1,9 @@
-﻿using HR.BrightspaceConnector.Features.Users;
+﻿using HR.BrightspaceConnector.Features.OrgUnits;
+using HR.BrightspaceConnector.Features.Users;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+using System.Linq;
 
 namespace HR.BrightspaceConnector.Tests
 {
@@ -43,6 +46,28 @@ namespace HR.BrightspaceConnector.Tests
             Assert.AreEqual(expected.SortLastName, actual.SortLastName);
             Assert.AreEqual(expected.PreferredLastName, actual.PreferredLastName);
             Assert.AreEqual(expected.PreferredFirstName, actual.PreferredFirstName);
+
+            return true;
+        }
+
+        public static bool AreEqual(this Assert _, OrgUnitCreateData expected, OrgUnitCreateData actual)
+        {
+            Assert.AreEqual(expected.Name, actual.Name);
+            Assert.AreEqual(expected.Code, actual.Code);
+            Assert.AreEqual(expected.Type, actual.Type);
+            CollectionAssert.AreEquivalent(expected.Parents.ToList(), actual.Parents.ToList());
+
+            return true;
+        }
+
+        public static bool AreEqual(this Assert _, OrgUnitProperties expected, OrgUnitProperties actual)
+        {
+            Assert.AreEqual(expected.Name, actual.Name);
+            Assert.AreEqual(expected.Code, actual.Code);
+            Assert.AreEqual(expected.Type?.Code, actual.Type?.Code);
+            Assert.AreEqual(expected.Type?.Id, actual.Type?.Id);
+            Assert.AreEqual(expected.Type?.Name, actual.Type?.Name);
+            Assert.AreEqual(expected.Path, actual.Path);
 
             return true;
         }
