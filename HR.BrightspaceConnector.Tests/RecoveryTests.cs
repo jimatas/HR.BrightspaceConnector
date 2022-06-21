@@ -1,7 +1,9 @@
-﻿using HR.BrightspaceConnector.Features.Users;
+﻿using HR.BrightspaceConnector.Features.Common.Commands;
+using HR.BrightspaceConnector.Features.Users;
 using HR.BrightspaceConnector.Features.Users.Queries;
 using HR.BrightspaceConnector.Infrastructure.Persistence;
 using HR.BrightspaceConnector.Tests.Fixture;
+using HR.Common.Cqrs.Commands;
 using HR.Common.Cqrs.Queries;
 
 using Microsoft.Extensions.DependencyInjection;
@@ -61,6 +63,33 @@ namespace HR.BrightspaceConnector.Tests
             catch (DbException)
             {
                 Assert.Fail("The exception should have been caught and the query retried.");
+            }
+        }
+
+        [TestMethod]
+        public async Task MarkAsHandledCommandFailingOnFirstAttempt_WillBeRetried()
+        {
+            // Arrange
+            int attempt = 0;
+            mockedDatabase.Setup(database => database.MarkAsHandledAsync(It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<int?>(), It.IsAny<string?>(), It.IsAny<CancellationToken>())).Callback((int _, bool _, int? _, string _, CancellationToken _) =>
+            {
+                if (++attempt == 1)
+                {
+                    throw new SqlTimeoutException();
+                }
+            });
+
+            IServiceProvider serviceProvider = CreateServiceProvider(mockedDatabase.Object, mockedApiClient.Object);
+            ICommandDispatcher commandDispatcher = serviceProvider.GetRequiredService<ICommandDispatcher>();
+
+            // Act / Assert
+            try
+            {
+                await commandDispatcher.DispatchAsync(new MarkAsHandled(eventId: Random.Shared.Next(1, int.MaxValue), success: true, id: Random.Shared.Next(1, int.MaxValue), message: null));
+            }
+            catch (DbException)
+            {
+                Assert.Fail("The exception should have been caught and the command retried.");
             }
         }
     }
