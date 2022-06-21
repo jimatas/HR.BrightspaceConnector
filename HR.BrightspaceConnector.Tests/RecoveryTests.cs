@@ -54,7 +54,7 @@ namespace HR.BrightspaceConnector.Tests
             IServiceProvider serviceProvider = CreateServiceProvider(mockedDatabase.Object, mockedApiClient.Object);
             IQueryDispatcher queryDispatcher = serviceProvider.GetRequiredService<IQueryDispatcher>();
 
-            // Act / Assert
+            // Act & Assert
             try
             {
                 var user = await queryDispatcher.DispatchAsync(new GetNextUser());
@@ -83,7 +83,7 @@ namespace HR.BrightspaceConnector.Tests
             IServiceProvider serviceProvider = CreateServiceProvider(mockedDatabase.Object, mockedApiClient.Object);
             ICommandDispatcher commandDispatcher = serviceProvider.GetRequiredService<ICommandDispatcher>();
 
-            // Act / Assert
+            // Act & Assert
             try
             {
                 await commandDispatcher.DispatchAsync(new MarkAsHandled(eventId: Random.Shared.Next(1, int.MaxValue), success: true, id: Random.Shared.Next(1, int.MaxValue), message: null));
@@ -93,6 +93,27 @@ namespace HR.BrightspaceConnector.Tests
             {
                 Assert.Fail("The exception should have been caught and the command retried.");
             }
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(NonRecoverableErrorException))] // Assert
+        public async Task MarkAsHandledCommandFailingOnNonRecoverableError_ThrowsException()
+        {
+            // Arrange
+            int attempt = 0;
+            mockedDatabase.Setup(database => database.MarkAsHandledAsync(It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<int?>(), It.IsAny<string?>(), It.IsAny<CancellationToken>())).Callback((int _, bool _, int? _, string _, CancellationToken _) =>
+            {
+                if (++attempt == 1)
+                {
+                    throw new NonRecoverableErrorException();
+                }
+            });
+
+            IServiceProvider serviceProvider = CreateServiceProvider(mockedDatabase.Object, mockedApiClient.Object);
+            ICommandDispatcher commandDispatcher = serviceProvider.GetRequiredService<ICommandDispatcher>();
+
+            // Act
+            await commandDispatcher.DispatchAsync(new MarkAsHandled(eventId: Random.Shared.Next(1, int.MaxValue), success: true, id: Random.Shared.Next(1, int.MaxValue), message: null));
         }
     }
 }
