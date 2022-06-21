@@ -59,6 +59,7 @@ namespace HR.BrightspaceConnector.Tests
             {
                 var user = await queryDispatcher.DispatchAsync(new GetNextUser());
                 Assert.IsNotNull(user);
+                Assert.AreEqual(2, attempt);
             }
             catch (DbException)
             {
@@ -86,6 +87,7 @@ namespace HR.BrightspaceConnector.Tests
             try
             {
                 await commandDispatcher.DispatchAsync(new MarkAsHandled(eventId: Random.Shared.Next(1, int.MaxValue), success: true, id: Random.Shared.Next(1, int.MaxValue), message: null));
+                Assert.AreEqual(2, attempt);
             }
             catch (DbException)
             {
