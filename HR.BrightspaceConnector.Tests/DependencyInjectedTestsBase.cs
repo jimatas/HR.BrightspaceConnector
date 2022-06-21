@@ -1,4 +1,5 @@
-﻿using HR.BrightspaceConnector.Infrastructure.Persistence;
+﻿using HR.BrightspaceConnector.Infrastructure;
+using HR.BrightspaceConnector.Infrastructure.Persistence;
 using HR.Common.Cqrs.Infrastructure;
 
 using Microsoft.Extensions.DependencyInjection;
@@ -21,6 +22,12 @@ namespace HR.BrightspaceConnector.Tests
             {
                 logging.SetMinimumLevel(LogLevel.Trace);
                 logging.AddConsole();
+            });
+            services.Configure<RecoverySettings>(RecoverySettings.Names.CommandTimeoutExpired, settings =>
+            {
+                settings.RetryAttempts = 4;
+                settings.RetryDelay = TimeSpan.FromSeconds(1);
+                settings.BackOffRate = 2.0;
             });
             services.AddDispatcher();
             services.AddHandlersFromAssembly(typeof(Worker).Assembly);
