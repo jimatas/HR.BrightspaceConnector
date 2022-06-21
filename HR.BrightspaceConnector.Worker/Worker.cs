@@ -45,7 +45,7 @@ namespace HR.BrightspaceConnector
             }
             catch (Exception exception)
             {
-                logger.LogCritical(exception, "The BackgroundService failed.");
+                logger.LogCritical(exception, "The BackgroundService failed with the following error: {ExceptionMessage}", exception.Message);
 
                 Environment.Exit(exception.HResult);
             }
