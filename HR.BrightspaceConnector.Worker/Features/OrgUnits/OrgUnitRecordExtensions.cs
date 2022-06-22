@@ -4,18 +4,13 @@
     {
         public static OrgUnitCreateData ToOrgUnitCreateData(this OrgUnitRecord orgUnitRecord)
         {
-            var orgUnitCreateData = new OrgUnitCreateData
+            return new OrgUnitCreateData
             {
                 Code = orgUnitRecord.Code,
                 Name = orgUnitRecord.Name,
-                Type = orgUnitRecord.Type
+                Type = orgUnitRecord.Type,
+                Parents = orgUnitRecord.Parents
             };
-
-            if (orgUnitRecord.Parent != null)
-            {
-                orgUnitCreateData.Parents = new[] { (int)orgUnitRecord.Parent };
-            }
-            return orgUnitCreateData;
         }
 
         public static OrgUnitProperties ToOrgUnitProperties(this OrgUnitRecord orgUnitRecord)

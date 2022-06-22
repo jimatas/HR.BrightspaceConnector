@@ -54,7 +54,7 @@ namespace HR.BrightspaceConnector.Tests
             {
                 Code = "HR-FIT",
                 Name = "Dienst FIT",
-                Parent = RootOrgId,
+                Parents = new[] { RootOrgId },
                 SyncEventId = eventId,
                 SyncAction = 'c',
                 SyncInternalKey = Guid.NewGuid().ToString(),
@@ -96,7 +96,7 @@ namespace HR.BrightspaceConnector.Tests
             {
                 Code = "HR-FIT",
                 Name = "Dienst FIT",
-                Parent = RootOrgId,
+                Parents = new[] { RootOrgId },
                 SyncEventId = Random.Shared.Next(1, int.MaxValue),
                 SyncAction = 'c',
                 SyncInternalKey = Guid.NewGuid().ToString(),
@@ -187,7 +187,7 @@ namespace HR.BrightspaceConnector.Tests
             {
                 Code = "HR-FIT",
                 Name = "Dienst FIT",
-                Parent = RootOrgId,
+                Parents = new[] { RootOrgId },
                 SyncEventId = eventId,
                 SyncAction = 'u',
                 SyncExternalKey = orgUnitId.ToString(),
@@ -231,7 +231,7 @@ namespace HR.BrightspaceConnector.Tests
             {
                 Code = "HR-FIT",
                 Name = "Dienst FIT",
-                Parent = RootOrgId,
+                Parents = new[] { RootOrgId },
                 SyncEventId = Random.Shared.Next(1, int.MaxValue),
                 SyncAction = 'u',
                 SyncExternalKey = Random.Shared.Next(1, int.MaxValue).ToString(),
