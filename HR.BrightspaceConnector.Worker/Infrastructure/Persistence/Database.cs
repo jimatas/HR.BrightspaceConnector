@@ -22,7 +22,7 @@ namespace HR.BrightspaceConnector.Infrastructure.Persistence
 
         public async Task<UserRecord?> GetNextUserAsync(CancellationToken cancellationToken = default)
         {
-            var sprocName = string.Format("sync_out_brightspace_{0}_user_GetNextEvents", environment.GetStoredProcedureEnvironmentName());
+            var sprocName = $"sync_out_brightspace_{environment.GetStoredProcedureEnvironmentName()}_user_GetNextEvents";
             logger.LogDebug("Executing stored procedure '{SprocName}'.", sprocName);
 
             var users = await dbContext.Users.FromSqlRaw(sprocName).AsNoTracking().ToListAsync(cancellationToken).WithoutCapturingContext();
@@ -31,7 +31,7 @@ namespace HR.BrightspaceConnector.Infrastructure.Persistence
 
         public async Task<OrgUnitRecord?> GetNextCustomOrgUnitAsync(CancellationToken cancellationToken = default)
         {
-            var sprocName = string.Format("sync_out_brightspace_{0}_customOrgUnit_GetNextEvents", environment.GetStoredProcedureEnvironmentName());
+            var sprocName = $"sync_out_brightspace_{environment.GetStoredProcedureEnvironmentName()}_customOrgUnit_GetNextEvents";
             logger.LogDebug("Executing stored procedure '{SprocName}'.", sprocName);
 
             var customOrgUnits = await dbContext.OrgUnits.FromSqlRaw(sprocName).AsNoTracking().ToListAsync(cancellationToken).WithoutCapturingContext();
@@ -40,7 +40,7 @@ namespace HR.BrightspaceConnector.Infrastructure.Persistence
 
         public async Task<OrgUnitRecord?> GetNextDepartmentAsync(CancellationToken cancellationToken = default)
         {
-            var sprocName = string.Format("sync_out_brightspace_{0}_department_GetNextEvents", environment.GetStoredProcedureEnvironmentName());
+            var sprocName = $"sync_out_brightspace_{environment.GetStoredProcedureEnvironmentName()}_department_GetNextEvents";
             logger.LogDebug("Executing stored procedure '{SprocName}'.", sprocName);
 
             var departments = await dbContext.OrgUnits.FromSqlRaw(sprocName).AsNoTracking().ToListAsync(cancellationToken).WithoutCapturingContext();
