@@ -20,7 +20,11 @@
                 Code = orgUnitRecord.Code,
                 Identifier = orgUnitRecord.SyncExternalKey is null ? null : Convert.ToInt32(orgUnitRecord.SyncExternalKey),
                 Name = orgUnitRecord.Name,
-                Type = new OrgUnitTypeInfo { Id = orgUnitRecord.Type }
+                Type = new OrgUnitTypeInfo
+                {
+                    Id = orgUnitRecord.Type,
+                    Code = orgUnitRecord.TypeCode
+                }
             };
         }
     }
