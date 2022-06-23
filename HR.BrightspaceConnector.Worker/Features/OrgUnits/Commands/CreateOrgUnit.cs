@@ -37,7 +37,8 @@ namespace HR.BrightspaceConnector.Features.OrgUnits.Commands
 
             try
             {
-                var newOrgUnit = await apiClient.CreateOrgUnitAsync(orgUnit.ToOrgUnitCreateData(), cancellationToken).WithoutCapturingContext();
+                var orgUnitCreateData = await orgUnit.ToOrgUnitCreateDataAsync(apiClient, cancellationToken).WithoutCapturingContext();
+                var newOrgUnit = await apiClient.CreateOrgUnitAsync(orgUnitCreateData, cancellationToken).WithoutCapturingContext();
                 logger.LogInformation("Org unit was successfully created.");
 
                 await commandDispatcher.DispatchAsync(MarkAsHandled.Successfully(eventId, (int)newOrgUnit.Identifier!), cancellationToken).WithoutCapturingContext();
