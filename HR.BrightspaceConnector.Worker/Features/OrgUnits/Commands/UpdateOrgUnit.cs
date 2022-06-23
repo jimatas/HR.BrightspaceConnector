@@ -34,7 +34,7 @@ namespace HR.BrightspaceConnector.Features.OrgUnits.Commands
             int orgUnitId = Convert.ToInt32(orgUnit.SyncExternalKey);
             int eventId = (int)orgUnit.SyncEventId!;
 
-            logger.LogInformation("Updating org unit with code \"{Code}\" in Brightspace.", orgUnit.Code);
+            logger.LogInformation("Updating org unit with code \"{OrgUnitCode}\" in Brightspace.", orgUnit.Code);
 
             try
             {

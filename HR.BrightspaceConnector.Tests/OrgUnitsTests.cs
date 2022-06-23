@@ -15,15 +15,28 @@ namespace HR.BrightspaceConnector.Tests
     public class OrgUnitsTests : IntegrationTestsBase
     {
         [TestMethod]
-        public async Task GetNextOrgUnitAsync_ReturnsOrgUnitOrNull()
+        public async Task GetNextCustomOrgUnitAsync_ReturnsCustomOrgUnitOrNull()
         {
             IDatabase database = CreateDatabase();
 
-            OrgUnitRecord? orgUnit = await database.GetNextOrgUnitAsync();
+            OrgUnitRecord? customOrgUnit = await database.GetNextCustomOrgUnitAsync();
 
-            if (orgUnit is not null)
+            if (customOrgUnit is not null)
             {
-                Assert.IsNotNull(orgUnit.SyncEventId);
+                Assert.IsNotNull(customOrgUnit.SyncEventId);
+            }
+        }
+
+        [TestMethod]
+        public async Task GetNextDepartmentAsync_ReturnsDepartmentOrNull()
+        {
+            IDatabase database = CreateDatabase();
+
+            OrgUnitRecord? department = await database.GetNextDepartmentAsync();
+
+            if (department is not null)
+            {
+                Assert.IsNotNull(department.SyncEventId);
             }
         }
 

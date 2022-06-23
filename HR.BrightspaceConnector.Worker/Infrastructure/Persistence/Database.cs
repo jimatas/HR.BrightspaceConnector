@@ -29,13 +29,22 @@ namespace HR.BrightspaceConnector.Infrastructure.Persistence
             return users.SingleOrDefault();
         }
 
-        public async Task<OrgUnitRecord?> GetNextOrgUnitAsync(CancellationToken cancellationToken = default)
+        public async Task<OrgUnitRecord?> GetNextCustomOrgUnitAsync(CancellationToken cancellationToken = default)
         {
             var sprocName = string.Format("sync_out_brightspace_{0}_customOrgUnit_GetNextEvents", environment.GetStoredProcedureEnvironmentName());
             logger.LogDebug("Executing stored procedure '{SprocName}'.", sprocName);
 
-            var orgUnits = await dbContext.OrgUnits.FromSqlRaw(sprocName).AsNoTracking().ToListAsync(cancellationToken).WithoutCapturingContext();
-            return orgUnits.SingleOrDefault();
+            var customOrgUnits = await dbContext.OrgUnits.FromSqlRaw(sprocName).AsNoTracking().ToListAsync(cancellationToken).WithoutCapturingContext();
+            return customOrgUnits.SingleOrDefault();
+        }
+
+        public async Task<OrgUnitRecord?> GetNextDepartmentAsync(CancellationToken cancellationToken = default)
+        {
+            var sprocName = string.Format("sync_out_brightspace_{0}_department_GetNextEvents", environment.GetStoredProcedureEnvironmentName());
+            logger.LogDebug("Executing stored procedure '{SprocName}'.", sprocName);
+
+            var departments = await dbContext.OrgUnits.FromSqlRaw(sprocName).AsNoTracking().ToListAsync(cancellationToken).WithoutCapturingContext();
+            return departments.SingleOrDefault();
         }
 
         public async Task MarkAsHandledAsync(

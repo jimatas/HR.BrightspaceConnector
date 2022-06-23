@@ -8,13 +8,15 @@ namespace HR.BrightspaceConnector.Features.OrgUnits.Commands
 {
     public class ProcessOrgUnits : ICommand
     {
-        public ProcessOrgUnits(int batchSize, bool isDeleteContext = false)
+        public ProcessOrgUnits(int batchSize, bool isDepartmentType = false, bool isDeleteContext = false)
         {
             BatchSize = batchSize;
+            IsDepartmentType = isDepartmentType;
             IsDeleteContext = isDeleteContext;
         }
 
         public int BatchSize { get; }
+        public bool IsDepartmentType { get; }
         public bool IsDeleteContext { get; }
     }
 
@@ -39,7 +41,7 @@ namespace HR.BrightspaceConnector.Features.OrgUnits.Commands
 
             for (var i = 0; i < command.BatchSize; i++)
             {
-                var nextOrgUnit = await dispatcher.DispatchAsync(new GetNextOrgUnit(), cancellationToken).WithoutCapturingContext();
+                var nextOrgUnit = await dispatcher.DispatchAsync(new GetNextOrgUnit(command.IsDepartmentType), cancellationToken).WithoutCapturingContext();
                 if (nextOrgUnit is null ||
                     ((nextOrgUnit.IsToBeCreated() || nextOrgUnit.IsToBeUpdated()) && command.IsDeleteContext) ||
                     (nextOrgUnit.IsToBeDeleted() && !command.IsDeleteContext))

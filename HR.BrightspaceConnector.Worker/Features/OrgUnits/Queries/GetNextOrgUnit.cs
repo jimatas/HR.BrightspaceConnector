@@ -6,6 +6,12 @@ namespace HR.BrightspaceConnector.Features.OrgUnits.Queries
 {
     public class GetNextOrgUnit : IQuery<OrgUnitRecord?>
     {
+        public GetNextOrgUnit(bool isDepartmentType = false)
+        {
+            IsDepartmentType = isDepartmentType;
+        }
+
+        public bool IsDepartmentType { get; }
     }
 
     public class GetNextOrgUnitHandler : IQueryHandler<GetNextOrgUnit, OrgUnitRecord?>
@@ -21,10 +27,14 @@ namespace HR.BrightspaceConnector.Features.OrgUnits.Queries
 
         public async Task<OrgUnitRecord?> HandleAsync(GetNextOrgUnit query, CancellationToken cancellationToken)
         {
-            var orgUnit = await database.GetNextOrgUnitAsync(cancellationToken).WithoutCapturingContext();
+            OrgUnitRecord? orgUnit = query.IsDepartmentType
+                ? await database.GetNextDepartmentAsync(cancellationToken).WithoutCapturingContext()
+                : await database.GetNextCustomOrgUnitAsync(cancellationToken).WithoutCapturingContext();
+
             if (orgUnit is not null)
             {
-                logger.LogInformation("Retrieved org unit with code \"{Code}\" for sync action '{SyncAction}' from database.", orgUnit.Code, orgUnit.SyncAction);
+                logger.LogInformation("Retrieved org unit of type \"{OrgUnitType}\" with code \"{OrgUnitCode}\" for sync action '{SyncAction}' from database.",
+                    query.IsDepartmentType ? "department" : "customOrgUnit", orgUnit.Code, orgUnit.SyncAction);
             }
 
             return orgUnit;

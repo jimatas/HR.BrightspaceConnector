@@ -12,7 +12,7 @@ namespace HR.BrightspaceConnector.Tests
     public class PagedResultSetTests
     {
         #region Json string data
-        private string jsonString = @"{
+        private readonly string jsonString = @"{
             ""PagingInfo"": {
                 ""Bookmark"": ""172"",
                 ""HasMoreItems"": false

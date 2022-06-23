@@ -9,7 +9,8 @@ namespace HR.BrightspaceConnector.Infrastructure.Persistence
     public interface IDatabase
     {
         Task<UserRecord?> GetNextUserAsync(CancellationToken cancellationToken = default);
-        Task<OrgUnitRecord?> GetNextOrgUnitAsync(CancellationToken cancellationToken = default);
+        Task<OrgUnitRecord?> GetNextCustomOrgUnitAsync(CancellationToken cancellationToken = default);
+        Task<OrgUnitRecord?> GetNextDepartmentAsync(CancellationToken cancellationToken = default);
 
         Task MarkAsHandledAsync(
             int eventId,
