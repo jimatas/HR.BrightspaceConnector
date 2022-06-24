@@ -61,8 +61,8 @@ namespace HR.BrightspaceConnector.Tests
             Assert.IsNotNull(orgUnitTypes);
             Assert.IsTrue(orgUnitTypes.Any(), "orgUnitTypes.Any()");
 
-            var departments = orgUnitTypes.Where(type => type.Name?.StartsWith("Instituten", StringComparison.OrdinalIgnoreCase) == true);
-            Assert.IsTrue(departments.Any(), "departments.Any()");
+            var orgUnits = orgUnitTypes.Where(type => string.Equals(type.Code, "Instituut", StringComparison.OrdinalIgnoreCase));
+            Assert.IsTrue(orgUnits.Any(), "orgUnits.Any()");
         }
 
         [TestMethod]
@@ -82,7 +82,7 @@ namespace HR.BrightspaceConnector.Tests
             IApiClient apiClient = CreateApiClient();
 
             var rootOrganization = await apiClient.GetOrganizationAsync();
-            
+
             var descendants = await apiClient.GetDescendantOrgUnitsAsync((int)rootOrganization.Identifier!);
             Assert.IsTrue(descendants.Any(), "descendants.Any()");
         }
@@ -95,7 +95,7 @@ namespace HR.BrightspaceConnector.Tests
             Organization rootOrganization = await apiClient.GetOrganizationAsync();
 
             IEnumerable<OrgUnitType> orgUnitTypes = await apiClient.GetOrgUnitTypes();
-            OrgUnitType orgUnitType = orgUnitTypes.Single(type => type.Name?.StartsWith("Instituten", StringComparison.OrdinalIgnoreCase) == true);
+            OrgUnitType orgUnitType = orgUnitTypes.Single(type => string.Equals(type.Code, "Instituut", StringComparison.OrdinalIgnoreCase));
 
             var orgUnitToCreate = new OrgUnitCreateData
             {
@@ -120,7 +120,7 @@ namespace HR.BrightspaceConnector.Tests
             Organization rootOrganization = await apiClient.GetOrganizationAsync();
 
             IEnumerable<OrgUnitType> orgUnitTypes = await apiClient.GetOrgUnitTypes();
-            OrgUnitType orgUnitType = orgUnitTypes.Single(type => type.Name?.StartsWith("Instituten", StringComparison.OrdinalIgnoreCase) == true);
+            OrgUnitType orgUnitType = orgUnitTypes.Single(type => string.Equals(type.Code, "Instituut", StringComparison.OrdinalIgnoreCase));
             var orgUnitToCreate = new OrgUnitCreateData
             {
                 Code = "HR-FIT",
@@ -156,7 +156,7 @@ namespace HR.BrightspaceConnector.Tests
             Organization rootOrganization = await apiClient.GetOrganizationAsync();
 
             IEnumerable<OrgUnitType> orgUnitTypes = await apiClient.GetOrgUnitTypes();
-            OrgUnitType orgUnitType = orgUnitTypes.Single(type => type.Name?.StartsWith("Instituten", StringComparison.OrdinalIgnoreCase) == true);
+            OrgUnitType orgUnitType = orgUnitTypes.Single(type => string.Equals(type.Code, "Instituut", StringComparison.OrdinalIgnoreCase));
             var orgUnitToCreate = new OrgUnitCreateData
             {
                 Code = "HR-FIT",
@@ -180,7 +180,7 @@ namespace HR.BrightspaceConnector.Tests
             Organization rootOrganization = await apiClient.GetOrganizationAsync();
 
             IEnumerable<OrgUnitType> orgUnitTypes = await apiClient.GetOrgUnitTypes();
-            OrgUnitType orgUnitType = orgUnitTypes.Single(type => type.Name?.StartsWith("Instituten", StringComparison.OrdinalIgnoreCase) == true);
+            OrgUnitType orgUnitType = orgUnitTypes.Single(type => string.Equals(type.Code, "Instituut", StringComparison.OrdinalIgnoreCase));
             var orgUnitToCreate = new OrgUnitCreateData
             {
                 Code = "HR-FIT",
@@ -193,7 +193,7 @@ namespace HR.BrightspaceConnector.Tests
             Assert.IsNotNull(topLevelOrgUnit.Identifier);
             Assert.AreEqual(orgUnitToCreate.Code, topLevelOrgUnit.Code);
 
-            orgUnitType = orgUnitTypes.Single(type => type.Name?.StartsWith("Opleidingen", StringComparison.OrdinalIgnoreCase) == true);
+            orgUnitType = orgUnitTypes.Single(type => string.Equals(type.Code, "Opleiding", StringComparison.OrdinalIgnoreCase));
             orgUnitToCreate = new OrgUnitCreateData
             {
                 Code = "HR-FIT-TAB",
