@@ -15,8 +15,8 @@ namespace HR.BrightspaceConnector.Features.Common.Commands
         }
 
         public static MarkAsHandled Successfully(int eventId, int id) => new(eventId, success: true, id, message: null);
-        public static MarkAsHandled Unsuccessfully(int eventId, string? message = null) => new(eventId, success: true, id: null, message);
-        public static MarkAsHandled Unsuccessfully(int eventId, int id, string? message = null) => new(eventId, success: true, id, message);
+        public static MarkAsHandled Unsuccessfully(int eventId, string? message = null) => new(eventId, success: false, id: null, message);
+        public static MarkAsHandled Unsuccessfully(int eventId, int id, string? message = null) => new(eventId, success: false, id, message);
 
         public int EventId { get; }
         public bool Success { get; }
