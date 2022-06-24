@@ -46,10 +46,11 @@ internal class Startup
             Validator.ValidateObject(batchSettings, new ValidationContext(batchSettings), validateAllProperties: true);
         });
 
-        services.Configure<ApiSettings>(Configuration.GetSection(nameof(ApiSettings))).PostConfigure<ApiSettings>(apiSettings =>
+        services.Configure<ApiClientSettings>(Configuration.GetSection(nameof(ApiSettings))).PostConfigure<ApiClientSettings>(apiSettings =>
         {
             Validator.ValidateObject(apiSettings, new ValidationContext(apiSettings), validateAllProperties: true);
         });
+        services.AddSingleton<IOptions<ApiSettings>>(serviceProvider => serviceProvider.GetRequiredService<IOptions<ApiClientSettings>>());
 
         services.Configure<OAuthSettings>(Configuration.GetSection(nameof(OAuthSettings))).PostConfigure<OAuthSettings>(oAuthSettings =>
         {
@@ -80,10 +81,10 @@ internal class Startup
         {
             return HttpPolicyExtensions.HandleTransientHttpError().WaitAndRetryAsync(retryCount: 4, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));
         });
-
         services.AddScoped<ITokenManager>(serviceProvider => serviceProvider.GetRequiredService<ICachingTokenManager>());
 
-        services.AddHttpClient<IApiClient, ApiClient>((IServiceProvider serviceProvider, HttpClient httpClient) =>
+        services.AddMemoryCache();
+        services.AddHttpClient<ApiClient>((IServiceProvider serviceProvider, HttpClient httpClient) =>
         {
             var apiSettings = serviceProvider.GetRequiredService<IOptions<ApiSettings>>().Value;
             httpClient.BaseAddress = apiSettings.BaseAddress;
@@ -94,6 +95,7 @@ internal class Startup
             var recoverySettings = serviceProvider.GetRequiredService<IOptionsSnapshot<RecoverySettings>>().Get(RecoverySettings.Names.TransientHttpFault);
             return HttpPolicyExtensions.HandleTransientHttpError().WaitAndRetryAsync(recoverySettings.RetryAttempts, attempt => recoverySettings.CalculateRetryDelay(attempt));
         });
+        services.AddScoped<IApiClient, CachingApiClient>();
 
         services.AddSingleton<IClock, SystemClock>();
 
