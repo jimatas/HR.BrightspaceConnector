@@ -79,7 +79,8 @@ internal class Startup
             httpClient.DefaultRequestHeaders.UserAgent.TryParseAdd(userAgentString);
         }).AddPolicyHandler((serviceProvider, httpRequest) =>
         {
-            return HttpPolicyExtensions.HandleTransientHttpError().WaitAndRetryAsync(retryCount: 4, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));
+            var recoverySettings = serviceProvider.GetRequiredService<IOptionsSnapshot<RecoverySettings>>().Get(RecoverySettings.Names.TransientHttpFault);
+            return HttpPolicyExtensions.HandleTransientHttpError().WaitAndRetryAsync(recoverySettings.RetryAttempts, attempt => recoverySettings.CalculateRetryDelay(attempt));
         });
         services.AddScoped<ITokenManager>(serviceProvider => serviceProvider.GetRequiredService<ICachingTokenManager>());
 
