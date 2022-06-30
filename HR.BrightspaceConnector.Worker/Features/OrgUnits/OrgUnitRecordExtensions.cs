@@ -15,6 +15,13 @@ namespace HR.BrightspaceConnector.Features.OrgUnits
             };
         }
 
+        /// <summary>
+        /// This async overload looks up the correct orgunit type ID to return in the <see cref="OrgUnitCreateData"/> object, by using the type code that is provided in addition to the (possibly erroneous) type ID in the source <see cref="OrgUnitRecord"/> object.
+        /// </summary>
+        /// <param name="orgUnitRecord"></param>
+        /// <param name="apiClient"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         public static async Task<OrgUnitCreateData> ToOrgUnitCreateDataAsync(this OrgUnitRecord orgUnitRecord, IApiClient apiClient, CancellationToken cancellationToken = default)
         {
             var orgUnitCreateData = orgUnitRecord.ToOrgUnitCreateData();
@@ -40,6 +47,29 @@ namespace HR.BrightspaceConnector.Features.OrgUnits
                     Code = orgUnitRecord.TypeCode
                 }
             };
+        }
+
+        /// <summary>
+        /// This async overload looks up the correct orgunit type ID to return in the <see cref="OrgUnitProperties"/> object, by using the type code that is provided in addition to the (possibly erroneous) type ID in the source <see cref="OrgUnitRecord"/> object.
+        /// </summary>
+        /// <param name="orgUnitRecord"></param>
+        /// <param name="apiClient"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public static async Task<OrgUnitProperties> ToOrgUnitPropertiesAsync(this OrgUnitRecord orgUnitRecord, IApiClient apiClient, CancellationToken cancellationToken = default)
+        {
+            var orgUnitProperties = orgUnitRecord.ToOrgUnitProperties();
+            if (orgUnitProperties.Type is not null)
+            {
+                var orgUnitTypes = await apiClient.GetOrgUnitTypes(cancellationToken).WithoutCapturingContext();
+                var orgUnitType = orgUnitTypes.SingleOrDefault(type => string.Equals(type.Code, orgUnitRecord.TypeCode, StringComparison.OrdinalIgnoreCase));
+                if (orgUnitType is not null && (orgUnitProperties.Type.Id != orgUnitType.Id || !string.Equals(orgUnitProperties.Type.Code, orgUnitType.Code, StringComparison.Ordinal)))
+                {
+                    orgUnitProperties.Type.Id = orgUnitType.Id;
+                    orgUnitProperties.Type.Code = orgUnitType.Code;
+                }
+            }
+            return orgUnitProperties;
         }
     }
 }
