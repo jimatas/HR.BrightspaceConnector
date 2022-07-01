@@ -8,6 +8,7 @@ namespace HR.BrightspaceConnector.Features.OrgUnits
         public string? TypeCode { get; set; }
         public string? Code { get; set; }
         public string? Name { get; set; }
+        public string? Path { get; set; }
         public IEnumerable<int> Parents { get; set; } = Enumerable.Empty<int>();
     }
 }

@@ -91,6 +91,11 @@ namespace HR.BrightspaceConnector.Infrastructure
                 }).WithoutCapturingContext();
         }
 
+        public Task<PagedResultSet<OrgUnitProperties>> GetOrgUnitsAsync(OrgUnitQueryParameters? queryParameters, CancellationToken cancellationToken = default)
+        {
+            return apiClient.GetOrgUnitsAsync(queryParameters, cancellationToken);
+        }
+
         public Task<PagedResultSet<OrgUnit>> GetChildOrgUnitsAsync(int parentOrgUnitId, CancellationToken cancellationToken = default)
         {
             return apiClient.GetChildOrgUnitsAsync(parentOrgUnitId, cancellationToken);

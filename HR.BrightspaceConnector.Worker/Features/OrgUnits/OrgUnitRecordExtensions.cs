@@ -45,7 +45,8 @@ namespace HR.BrightspaceConnector.Features.OrgUnits
                 {
                     Id = orgUnitRecord.Type,
                     Code = orgUnitRecord.TypeCode
-                }
+                },
+                Path = orgUnitRecord.Path
             };
         }
 

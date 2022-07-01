@@ -107,6 +107,26 @@ namespace HR.BrightspaceConnector
         Task<IEnumerable<OrgUnitType>> GetOrgUnitTypesAsync(CancellationToken cancellationToken = default);
 
         /// <summary>
+        /// Retrieve properties for all org units.
+        /// </summary>
+        /// <remarks>
+        /// Input. You can use the orgUnitType, orgUnitCode, and orgUnitName query parameters as filters to further narrow the list of org units this action retrieves. 
+        /// Note that for orgUnitType, the back-end service expects to receive a valid org unit type ID value. 
+        /// Note that orgUnitCode and orgUnitName both will search for matches that contain your parameter value.
+        /// <para>
+        /// You can use the exactOrgUnitCode and exactOrgUnitName query parameters as more precise filters for narrowing down the list of org units.
+        /// If you already know the exact code or name of the org unit in question, we recommend you use these filters instead of the more general ones.
+        /// </para>
+        /// <para>
+        /// Oauth2 Scopes: <c>organizations:organization:read</c>
+        /// </para>
+        /// </remarks>
+        /// <param name="queryParameters"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        Task<PagedResultSet<OrgUnitProperties>> GetOrgUnitsAsync(OrgUnitQueryParameters? queryParameters, CancellationToken cancellationToken = default);
+
+        /// <summary>
         /// Retrieve a list of child-units for a provided org unit.
         /// </summary>
         /// <remarks>
