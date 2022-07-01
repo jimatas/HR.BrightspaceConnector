@@ -93,5 +93,87 @@ namespace HR.BrightspaceConnector.Tests
             // Assert
             Assert.AreEqual(102, orgUnitCreateData.Type);
         }
+
+        [TestMethod]
+        public void ToOrgUnitProperties_ByDefault_CopiesAllProperties()
+        {
+            // Arrange
+            var orgUnitRecord = new OrgUnitRecord
+            {
+                Code = "HR-FIT",
+                Name = "Dienst FIT",
+                Type = 102,
+                TypeCode = "Instituut",
+                Parents = new[] { 6606 }
+            };
+
+            // Act
+            var orgUnitProperties = orgUnitRecord.ToOrgUnitProperties();
+
+            // Assert
+            Assert.IsNotNull(orgUnitProperties);
+            Assert.AreEqual("HR-FIT", orgUnitProperties.Code);
+            Assert.AreEqual("Dienst FIT", orgUnitProperties.Name);
+            Assert.IsNotNull(orgUnitProperties.Type);
+            Assert.AreEqual(102, orgUnitProperties.Type.Id);
+            Assert.AreEqual("Instituut", orgUnitProperties.Type.Code);
+        }
+
+        [TestMethod]
+        public async Task ToOrgUnitPropertiesAsync_ByDefault_CopiesAllProperties()
+        {
+            // Arrange
+            var orgUnitRecord = new OrgUnitRecord
+            {
+                Code = "HR-FIT",
+                Name = "Dienst FIT",
+                Type = 102,
+                TypeCode = "Instituut",
+                Parents = new[] { 6606 }
+            };
+
+            mockedApiClient.Setup(apiClient => apiClient.GetOrgUnitTypesAsync(default)).ReturnsAsync(new[] {
+                new OrgUnitType { Code = "Instituut", Id = 102, },
+                new OrgUnitType { Code = "Opleiding", Id = 103, },
+                new OrgUnitType { Code = "Semester", Id = 104 }
+            });
+
+            // Act
+            var orgUnitProperties = await orgUnitRecord.ToOrgUnitPropertiesAsync(mockedApiClient.Object);
+
+            // Assert
+            Assert.IsNotNull(orgUnitProperties);
+            Assert.AreEqual("HR-FIT", orgUnitProperties.Code);
+            Assert.AreEqual("Dienst FIT", orgUnitProperties.Name);
+            Assert.IsNotNull(orgUnitProperties.Type);
+            Assert.AreEqual(102, orgUnitProperties.Type.Id);
+            Assert.AreEqual("Instituut", orgUnitProperties.Type.Code);
+        }
+
+        [TestMethod]
+        public async Task ToOrgUnitPropertiesAsync_WithIncorrectOrgUnitTypeId_CorrectsIt()
+        {
+            // Arrange
+            var orgUnitRecord = new OrgUnitRecord
+            {
+                Code = "HR-FIT",
+                Name = "Dienst FIT",
+                Type = 100, // Erroneous, should be 102.
+                TypeCode = "Instituut",
+                Parents = new[] { 6606 }
+            };
+
+            mockedApiClient.Setup(apiClient => apiClient.GetOrgUnitTypesAsync(default)).ReturnsAsync(new[] {
+                new OrgUnitType { Code = "Instituut", Id = 102, },
+                new OrgUnitType { Code = "Opleiding", Id = 103, },
+                new OrgUnitType { Code = "Semester", Id = 104 }
+            });
+
+            // Act
+            var orgUnitProperties = await orgUnitRecord.ToOrgUnitPropertiesAsync(mockedApiClient.Object);
+
+            // Assert
+            Assert.AreEqual(102, orgUnitProperties.Type?.Id);
+        }
     }
 }
