@@ -107,17 +107,6 @@ namespace HR.BrightspaceConnector
         Task<IEnumerable<OrgUnitType>> GetOrgUnitTypesAsync(CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// Retrieve the properties for a provided org unit.
-        /// </summary>
-        /// <remarks>
-        /// Oauth2 Scopes: <c>organizations:organization:read</c>
-        /// </remarks>
-        /// <param name="orgUnitId"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns>This action returns a OrgUnit JSON structure containing the properties for the provided org unit.</returns>
-        Task<OrgUnitProperties> GetOrgUnitAsync(int orgUnitId, CancellationToken cancellationToken = default);
-
-        /// <summary>
         /// Retrieve a list of child-units for a provided org unit.
         /// </summary>
         /// <remarks>

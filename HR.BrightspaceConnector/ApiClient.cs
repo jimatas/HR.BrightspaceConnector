@@ -164,18 +164,6 @@ namespace HR.BrightspaceConnector
             return orgUnitTypes!;
         }
 
-        public async Task<OrgUnitProperties> GetOrgUnitAsync(int orgUnitId, CancellationToken cancellationToken = default)
-        {
-            using var httpRequest = new HttpRequestMessage(HttpMethod.Get, $"lp/{apiSettings.LearningPlatformVersion}/orgstructure/{orgUnitId}");
-            await SetAuthorizationHeaderAsync(httpRequest, cancellationToken).WithoutCapturingContext();
-
-            using var httpResponse = await httpClient.SendAsync(httpRequest, cancellationToken).WithoutCapturingContext();
-            await CheckResponseForErrorAsync(httpResponse, cancellationToken).WithoutCapturingContext();
-
-            var orgUnit = await httpResponse.Content.ReadFromJsonAsync<OrgUnitProperties>(jsonOptions, cancellationToken).WithoutCapturingContext();
-            return orgUnit!;
-        }
-
         public async Task<PagedResultSet<OrgUnit>> GetChildOrgUnitsAsync(int parentOrgUnitId, CancellationToken cancellationToken = default)
         {
             using var httpRequest = new HttpRequestMessage(HttpMethod.Get, $"lp/{apiSettings.LearningPlatformVersion}/orgstructure/{parentOrgUnitId}/children/paged/");

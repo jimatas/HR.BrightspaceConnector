@@ -214,43 +214,5 @@ namespace HR.BrightspaceConnector.Tests
             await apiClient.DeleteOrgUnitAsync((int)childOrgUnit.Identifier, permanently: true);
             await apiClient.DeleteOrgUnitAsync((int)topLevelOrgUnit.Identifier!, permanently: true);
         }
-
-        [TestMethod]
-        public async Task GetOrgUnitAsync_GivenValidOrgUnitId_ReturnsOrgUnitProperties()
-        {
-            IApiClient apiClient = CreateApiClient();
-
-            Organization rootOrganization = await apiClient.GetOrganizationAsync();
-
-            IEnumerable<OrgUnitType> orgUnitTypes = await apiClient.GetOrgUnitTypesAsync();
-            OrgUnitType orgUnitType = orgUnitTypes.Single(type => string.Equals(type.Code, "Instituut", StringComparison.OrdinalIgnoreCase));
-            var orgUnitToCreate = new OrgUnitCreateData
-            {
-                Code = "HR-FIT",
-                Name = "Dienst FIT",
-                Type = orgUnitType.Id,
-                Parents = new[] { (int)rootOrganization.Identifier! }
-            };
-
-            OrgUnit newOrgUnit = await apiClient.CreateOrgUnitAsync(orgUnitToCreate);
-            int orgUnitId = (int)newOrgUnit.Identifier!;
-
-            OrgUnitProperties orgUnitProperties = await apiClient.GetOrgUnitAsync(orgUnitId);
-            Assert.AreEqual(orgUnitId, orgUnitProperties.Identifier);
-
-            await apiClient.DeleteOrgUnitAsync(orgUnitId, permanently: true);
-        }
-
-        [TestMethod]
-        public async Task GetOrgUnitAsync_GivenInvalidOrgUnitId_ThrowsException()
-        {
-            IApiClient apiClient = CreateApiClient();
-
-            int nonExistentOrgUnitId = int.MaxValue;
-            Task<OrgUnitProperties> action() => apiClient.GetOrgUnitAsync(nonExistentOrgUnitId);
-
-            var exception = await Assert.ThrowsExceptionAsync<ApiException>(action);
-            Assert.AreEqual(HttpStatusCode.NotFound, exception.StatusCode);
-        }
     }
 }
