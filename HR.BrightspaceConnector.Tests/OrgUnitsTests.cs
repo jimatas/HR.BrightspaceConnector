@@ -56,7 +56,7 @@ namespace HR.BrightspaceConnector.Tests
         {
             IApiClient apiClient = CreateApiClient();
 
-            var orgUnitTypes = await apiClient.GetOrgUnitTypes();
+            var orgUnitTypes = await apiClient.GetOrgUnitTypesAsync();
 
             Assert.IsNotNull(orgUnitTypes);
             Assert.IsTrue(orgUnitTypes.Any(), "orgUnitTypes.Any()");
@@ -94,7 +94,7 @@ namespace HR.BrightspaceConnector.Tests
 
             Organization rootOrganization = await apiClient.GetOrganizationAsync();
 
-            IEnumerable<OrgUnitType> orgUnitTypes = await apiClient.GetOrgUnitTypes();
+            IEnumerable<OrgUnitType> orgUnitTypes = await apiClient.GetOrgUnitTypesAsync();
             OrgUnitType orgUnitType = orgUnitTypes.Single(type => string.Equals(type.Code, "Instituut", StringComparison.OrdinalIgnoreCase));
 
             var orgUnitToCreate = new OrgUnitCreateData
@@ -119,7 +119,7 @@ namespace HR.BrightspaceConnector.Tests
 
             Organization rootOrganization = await apiClient.GetOrganizationAsync();
 
-            IEnumerable<OrgUnitType> orgUnitTypes = await apiClient.GetOrgUnitTypes();
+            IEnumerable<OrgUnitType> orgUnitTypes = await apiClient.GetOrgUnitTypesAsync();
             OrgUnitType orgUnitType = orgUnitTypes.Single(type => string.Equals(type.Code, "Instituut", StringComparison.OrdinalIgnoreCase));
             var orgUnitToCreate = new OrgUnitCreateData
             {
@@ -155,7 +155,7 @@ namespace HR.BrightspaceConnector.Tests
 
             Organization rootOrganization = await apiClient.GetOrganizationAsync();
 
-            IEnumerable<OrgUnitType> orgUnitTypes = await apiClient.GetOrgUnitTypes();
+            IEnumerable<OrgUnitType> orgUnitTypes = await apiClient.GetOrgUnitTypesAsync();
             OrgUnitType orgUnitType = orgUnitTypes.Single(type => string.Equals(type.Code, "Instituut", StringComparison.OrdinalIgnoreCase));
             var orgUnitToCreate = new OrgUnitCreateData
             {
@@ -179,7 +179,7 @@ namespace HR.BrightspaceConnector.Tests
 
             Organization rootOrganization = await apiClient.GetOrganizationAsync();
 
-            IEnumerable<OrgUnitType> orgUnitTypes = await apiClient.GetOrgUnitTypes();
+            IEnumerable<OrgUnitType> orgUnitTypes = await apiClient.GetOrgUnitTypesAsync();
             OrgUnitType orgUnitType = orgUnitTypes.Single(type => string.Equals(type.Code, "Instituut", StringComparison.OrdinalIgnoreCase));
             var orgUnitToCreate = new OrgUnitCreateData
             {

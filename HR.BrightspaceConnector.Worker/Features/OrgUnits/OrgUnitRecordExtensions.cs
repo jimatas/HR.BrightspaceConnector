@@ -25,7 +25,7 @@ namespace HR.BrightspaceConnector.Features.OrgUnits
         public static async Task<OrgUnitCreateData> ToOrgUnitCreateDataAsync(this OrgUnitRecord orgUnitRecord, IApiClient apiClient, CancellationToken cancellationToken = default)
         {
             var orgUnitCreateData = orgUnitRecord.ToOrgUnitCreateData();
-            var orgUnitTypes = await apiClient.GetOrgUnitTypes(cancellationToken).WithoutCapturingContext();
+            var orgUnitTypes = await apiClient.GetOrgUnitTypesAsync(cancellationToken).WithoutCapturingContext();
             var orgUnitType = orgUnitTypes.SingleOrDefault(type => string.Equals(type.Code, orgUnitRecord.TypeCode, StringComparison.OrdinalIgnoreCase));
             if (orgUnitType is not null && orgUnitCreateData.Type != orgUnitType.Id)
             {
@@ -61,7 +61,7 @@ namespace HR.BrightspaceConnector.Features.OrgUnits
             var orgUnitProperties = orgUnitRecord.ToOrgUnitProperties();
             if (orgUnitProperties.Type is not null)
             {
-                var orgUnitTypes = await apiClient.GetOrgUnitTypes(cancellationToken).WithoutCapturingContext();
+                var orgUnitTypes = await apiClient.GetOrgUnitTypesAsync(cancellationToken).WithoutCapturingContext();
                 var orgUnitType = orgUnitTypes.SingleOrDefault(type => string.Equals(type.Code, orgUnitRecord.TypeCode, StringComparison.OrdinalIgnoreCase));
                 if (orgUnitType is not null && (orgUnitProperties.Type.Id != orgUnitType.Id || !string.Equals(orgUnitProperties.Type.Code, orgUnitType.Code, StringComparison.Ordinal)))
                 {

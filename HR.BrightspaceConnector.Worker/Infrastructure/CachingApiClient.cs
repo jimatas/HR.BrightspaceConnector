@@ -80,14 +80,14 @@ namespace HR.BrightspaceConnector.Infrastructure
                 }).WithoutCapturingContext();
         }
 
-        public async Task<IEnumerable<OrgUnitType>> GetOrgUnitTypes(CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<OrgUnitType>> GetOrgUnitTypesAsync(CancellationToken cancellationToken = default)
         {
             return await memoryCache.GetOrCreateAsync(
-                GenerateCacheKey(nameof(GetOrgUnitTypes)),
+                GenerateCacheKey(nameof(GetOrgUnitTypesAsync)),
                 async cacheEntry =>
                 {
                     cacheEntry.AbsoluteExpirationRelativeToNow = CacheDuration;
-                    return await apiClient.GetOrgUnitTypes(cancellationToken).WithoutCapturingContext();
+                    return await apiClient.GetOrgUnitTypesAsync(cancellationToken).WithoutCapturingContext();
                 }).WithoutCapturingContext();
         }
 

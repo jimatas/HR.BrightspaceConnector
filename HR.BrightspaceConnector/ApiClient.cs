@@ -33,7 +33,7 @@ namespace HR.BrightspaceConnector
         public async Task<IEnumerable<Role>> GetRolesAsync(CancellationToken cancellationToken = default)
         {
             using var httpRequest = new HttpRequestMessage(HttpMethod.Get, $"lp/{apiSettings.LearningPlatformVersion}/roles/");
-            await SetAuthorizationHeader(httpRequest, cancellationToken).WithoutCapturingContext();
+            await SetAuthorizationHeaderAsync(httpRequest, cancellationToken).WithoutCapturingContext();
 
             using var httpResponse = await httpClient.SendAsync(httpRequest, cancellationToken).WithoutCapturingContext();
             await CheckResponseForErrorAsync(httpResponse, cancellationToken).WithoutCapturingContext();
@@ -45,7 +45,7 @@ namespace HR.BrightspaceConnector
         public async Task<IEnumerable<UserData>> GetUsersAsync(UserQueryParameters? queryParameters, CancellationToken cancellationToken = default)
         {
             using var httpRequest = new HttpRequestMessage(HttpMethod.Get, $"lp/{apiSettings.LearningPlatformVersion}/users/{queryParameters?.ToQueryString(jsonOptions.PropertyNamingPolicy)}");
-            await SetAuthorizationHeader(httpRequest, cancellationToken).WithoutCapturingContext();
+            await SetAuthorizationHeaderAsync(httpRequest, cancellationToken).WithoutCapturingContext();
 
             using var httpResponse = await httpClient.SendAsync(httpRequest, cancellationToken).WithoutCapturingContext();
 
@@ -87,7 +87,7 @@ namespace HR.BrightspaceConnector
         public async Task<UserData> CreateUserAsync(CreateUserData user, CancellationToken cancellationToken = default)
         {
             using var httpRequest = new HttpRequestMessage(HttpMethod.Post, $"lp/{apiSettings.LearningPlatformVersion}/users/") { Content = JsonContent.Create(user, mediaType: null, jsonOptions) };
-            await SetAuthorizationHeader(httpRequest, cancellationToken).WithoutCapturingContext();
+            await SetAuthorizationHeaderAsync(httpRequest, cancellationToken).WithoutCapturingContext();
 
             using var httpResponse = await httpClient.SendAsync(httpRequest, cancellationToken).WithoutCapturingContext();
             await CheckResponseForErrorAsync(httpResponse, cancellationToken).WithoutCapturingContext();
@@ -99,7 +99,7 @@ namespace HR.BrightspaceConnector
         public async Task<UserData> UpdateUserAsync(int userId, UpdateUserData user, CancellationToken cancellationToken = default)
         {
             using var httpRequest = new HttpRequestMessage(HttpMethod.Put, $"lp/{apiSettings.LearningPlatformVersion}/users/{userId}") { Content = JsonContent.Create(user, mediaType: null, jsonOptions) };
-            await SetAuthorizationHeader(httpRequest, cancellationToken).WithoutCapturingContext();
+            await SetAuthorizationHeaderAsync(httpRequest, cancellationToken).WithoutCapturingContext();
 
             using var httpResponse = await httpClient.SendAsync(httpRequest, cancellationToken).WithoutCapturingContext();
             await CheckResponseForErrorAsync(httpResponse, cancellationToken).WithoutCapturingContext();
@@ -111,7 +111,7 @@ namespace HR.BrightspaceConnector
         public async Task DeleteUserAsync(int userId, CancellationToken cancellationToken = default)
         {
             using var httpRequest = new HttpRequestMessage(HttpMethod.Delete, $"lp/{apiSettings.LearningPlatformVersion}/users/{userId}");
-            await SetAuthorizationHeader(httpRequest, cancellationToken).WithoutCapturingContext();
+            await SetAuthorizationHeaderAsync(httpRequest, cancellationToken).WithoutCapturingContext();
 
             using var httpResponse = await httpClient.SendAsync(httpRequest, cancellationToken).WithoutCapturingContext();
             await CheckResponseForErrorAsync(httpResponse, cancellationToken).WithoutCapturingContext();
@@ -120,7 +120,7 @@ namespace HR.BrightspaceConnector
         public async Task<LegalPreferredNames> GetLegalPreferredNamesAsync(int userId, CancellationToken cancellationToken = default)
         {
             using var httpRequest = new HttpRequestMessage(HttpMethod.Get, $"lp/{apiSettings.LearningPlatformVersion}/users/{userId}/names");
-            await SetAuthorizationHeader(httpRequest, cancellationToken).WithoutCapturingContext();
+            await SetAuthorizationHeaderAsync(httpRequest, cancellationToken).WithoutCapturingContext();
 
             using var httpResponse = await httpClient.SendAsync(httpRequest, cancellationToken).WithoutCapturingContext();
             await CheckResponseForErrorAsync(httpResponse, cancellationToken).WithoutCapturingContext();
@@ -132,7 +132,7 @@ namespace HR.BrightspaceConnector
         public async Task<LegalPreferredNames> UpdateLegalPreferredNamesAsync(int userId, LegalPreferredNames userNames, CancellationToken cancellationToken = default)
         {
             using var httpRequest = new HttpRequestMessage(HttpMethod.Put, $"lp/{apiSettings.LearningPlatformVersion}/users/{userId}/names") { Content = JsonContent.Create(userNames, mediaType: null, jsonOptions) };
-            await SetAuthorizationHeader(httpRequest, cancellationToken).WithoutCapturingContext();
+            await SetAuthorizationHeaderAsync(httpRequest, cancellationToken).WithoutCapturingContext();
 
             using var httpResponse = await httpClient.SendAsync(httpRequest, cancellationToken).WithoutCapturingContext();
             await CheckResponseForErrorAsync(httpResponse, cancellationToken).WithoutCapturingContext();
@@ -152,10 +152,10 @@ namespace HR.BrightspaceConnector
             return organization!;
         }
 
-        public async Task<IEnumerable<OrgUnitType>> GetOrgUnitTypes(CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<OrgUnitType>> GetOrgUnitTypesAsync(CancellationToken cancellationToken = default)
         {
             using var httpRequest = new HttpRequestMessage(HttpMethod.Get, $"lp/{apiSettings.LearningPlatformVersion}/outypes/");
-            await SetAuthorizationHeader(httpRequest, cancellationToken).WithoutCapturingContext();
+            await SetAuthorizationHeaderAsync(httpRequest, cancellationToken).WithoutCapturingContext();
 
             using var httpResponse = await httpClient.SendAsync(httpRequest, cancellationToken).WithoutCapturingContext();
             await CheckResponseForErrorAsync(httpResponse, cancellationToken).WithoutCapturingContext();
@@ -167,7 +167,7 @@ namespace HR.BrightspaceConnector
         public async Task<PagedResultSet<OrgUnit>> GetChildOrgUnitsAsync(int parentOrgUnitId, CancellationToken cancellationToken = default)
         {
             using var httpRequest = new HttpRequestMessage(HttpMethod.Get, $"lp/{apiSettings.LearningPlatformVersion}/orgstructure/{parentOrgUnitId}/children/paged/");
-            await SetAuthorizationHeader(httpRequest, cancellationToken).WithoutCapturingContext();
+            await SetAuthorizationHeaderAsync(httpRequest, cancellationToken).WithoutCapturingContext();
 
             using var httpResponse = await httpClient.SendAsync(httpRequest, cancellationToken).WithoutCapturingContext();
             await CheckResponseForErrorAsync(httpResponse, cancellationToken).WithoutCapturingContext();
@@ -179,7 +179,7 @@ namespace HR.BrightspaceConnector
         public async Task<PagedResultSet<OrgUnit>> GetDescendantOrgUnitsAsync(int ancestorOrgUnitId, CancellationToken cancellationToken = default)
         {
             using var httpRequest = new HttpRequestMessage(HttpMethod.Get, $"lp/{apiSettings.LearningPlatformVersion}/orgstructure/{ancestorOrgUnitId}/descendants/paged/");
-            await SetAuthorizationHeader(httpRequest, cancellationToken).WithoutCapturingContext();
+            await SetAuthorizationHeaderAsync(httpRequest, cancellationToken).WithoutCapturingContext();
 
             using var httpResponse = await httpClient.SendAsync(httpRequest, cancellationToken).WithoutCapturingContext();
             await CheckResponseForErrorAsync(httpResponse, cancellationToken).WithoutCapturingContext();
@@ -191,7 +191,7 @@ namespace HR.BrightspaceConnector
         public async Task<OrgUnit> CreateOrgUnitAsync(OrgUnitCreateData orgUnit, CancellationToken cancellationToken = default)
         {
             using var httpRequest = new HttpRequestMessage(HttpMethod.Post, $"lp/{apiSettings.LearningPlatformVersion}/orgstructure/") { Content = JsonContent.Create(orgUnit, mediaType: null, jsonOptions) };
-            await SetAuthorizationHeader(httpRequest, cancellationToken).WithoutCapturingContext();
+            await SetAuthorizationHeaderAsync(httpRequest, cancellationToken).WithoutCapturingContext();
 
             using var httpResponse = await httpClient.SendAsync(httpRequest, cancellationToken).WithoutCapturingContext();
             await CheckResponseForErrorAsync(httpResponse, cancellationToken).WithoutCapturingContext();
@@ -203,7 +203,7 @@ namespace HR.BrightspaceConnector
         public async Task<OrgUnitProperties> UpdateOrgUnitAsync(int orgUnitId, OrgUnitProperties orgUnit, CancellationToken cancellationToken = default)
         {
             using var httpRequest = new HttpRequestMessage(HttpMethod.Put, $"lp/{apiSettings.LearningPlatformVersion}/orgstructure/{orgUnitId}") { Content = JsonContent.Create(orgUnit, mediaType: null, jsonOptions) };
-            await SetAuthorizationHeader(httpRequest, cancellationToken).WithoutCapturingContext();
+            await SetAuthorizationHeaderAsync(httpRequest, cancellationToken).WithoutCapturingContext();
 
             using var httpResponse = await httpClient.SendAsync(httpRequest, cancellationToken).WithoutCapturingContext();
             await CheckResponseForErrorAsync(httpResponse, cancellationToken).WithoutCapturingContext();
@@ -224,7 +224,7 @@ namespace HR.BrightspaceConnector
         public async Task MoveOrgUnitToRecycleBinAsync(int orgUnitId, CancellationToken cancellationToken = default)
         {
             using var httpRequest = new HttpRequestMessage(HttpMethod.Post, $"lp/{apiSettings.LearningPlatformVersion}/orgstructure/recyclebin/{orgUnitId}/recycle");
-            await SetAuthorizationHeader(httpRequest, cancellationToken).WithoutCapturingContext();
+            await SetAuthorizationHeaderAsync(httpRequest, cancellationToken).WithoutCapturingContext();
 
             using var httpResponse = await httpClient.SendAsync(httpRequest, cancellationToken).WithoutCapturingContext();
             await CheckResponseForErrorAsync(httpResponse, cancellationToken).WithoutCapturingContext();
@@ -233,14 +233,14 @@ namespace HR.BrightspaceConnector
         public async Task DeleteOrgUnitFromRecycleBinAsync(int orgUnitId, CancellationToken cancellationToken = default)
         {
             using var httpRequest = new HttpRequestMessage(HttpMethod.Delete, $"lp/{apiSettings.LearningPlatformVersion}/orgstructure/recyclebin/{orgUnitId}");
-            await SetAuthorizationHeader(httpRequest, cancellationToken).WithoutCapturingContext();
+            await SetAuthorizationHeaderAsync(httpRequest, cancellationToken).WithoutCapturingContext();
 
             using var httpResponse = await httpClient.SendAsync(httpRequest, cancellationToken).WithoutCapturingContext();
             await CheckResponseForErrorAsync(httpResponse, cancellationToken).WithoutCapturingContext();
         }
         #endregion
 
-        private async Task SetAuthorizationHeader(HttpRequestMessage httpRequest, CancellationToken cancellationToken)
+        private async Task SetAuthorizationHeaderAsync(HttpRequestMessage httpRequest, CancellationToken cancellationToken)
         {
             var oAuthToken = await tokenManager.GetTokenAsync(cancellationToken).WithoutCapturingContext();
             httpRequest.Headers.Authorization = new AuthenticationHeaderValue(oAuthToken.TokenType ?? TokenResponse.DefaultTokenType, oAuthToken.AccessToken);

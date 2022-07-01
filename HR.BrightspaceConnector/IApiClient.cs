@@ -104,7 +104,7 @@ namespace HR.BrightspaceConnector
         /// </summary>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<IEnumerable<OrgUnitType>> GetOrgUnitTypes(CancellationToken cancellationToken = default);
+        Task<IEnumerable<OrgUnitType>> GetOrgUnitTypesAsync(CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Retrieve a list of child-units for a provided org unit.
