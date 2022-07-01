@@ -1,5 +1,6 @@
 ﻿using HR.BrightspaceConnector.Features.OrgUnits;
 using HR.BrightspaceConnector.Features.OrgUnits.Commands;
+using HR.BrightspaceConnector.Infrastructure;
 using HR.BrightspaceConnector.Infrastructure.Persistence;
 using HR.Common.Cqrs.Commands;
 
@@ -294,6 +295,7 @@ namespace HR.BrightspaceConnector.Tests
             mockedDatabase.Setup(database => database.GetNextCustomOrgUnitAsync(default)).ReturnsAsync(orgUnitRecord);
             mockedDatabase.Setup(database => database.MarkAsHandledAsync(eventId, true, orgUnitId, null, default));
 
+            mockedApiClient.Setup(apiClient => apiClient.GetOrgUnitsAsync(It.IsAny<OrgUnitQueryParameters>(), default)).ReturnsAsync(new PagedResultSet<OrgUnitProperties>());
             mockedApiClient.Setup(apiClient => apiClient.UpdateOrgUnitAsync(orgUnitId, It.Is<OrgUnitProperties>(orgUnitProperties => Assert.That.AreEqual(orgUnitRecord.ToOrgUnitProperties(), orgUnitProperties)), default)).ReturnsAsync(() => new OrgUnitProperties
             {
                 Code = "HR-FIT",
@@ -342,6 +344,7 @@ namespace HR.BrightspaceConnector.Tests
             mockedDatabase.Setup(database => database.GetNextDepartmentAsync(default)).ReturnsAsync(orgUnitRecord);
             mockedDatabase.Setup(database => database.MarkAsHandledAsync(eventId, true, orgUnitId, null, default));
 
+            mockedApiClient.Setup(apiClient => apiClient.GetOrgUnitsAsync(It.IsAny<OrgUnitQueryParameters>(), default)).ReturnsAsync(new PagedResultSet<OrgUnitProperties>());
             mockedApiClient.Setup(apiClient => apiClient.UpdateOrgUnitAsync(orgUnitId, It.Is<OrgUnitProperties>(orgUnitProperties => Assert.That.AreEqual(orgUnitRecord.ToOrgUnitProperties(), orgUnitProperties)), default)).ReturnsAsync(() => new OrgUnitProperties
             {
                 Code = "HR-FIT-TAB",
