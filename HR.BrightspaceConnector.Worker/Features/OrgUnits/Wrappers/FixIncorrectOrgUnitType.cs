@@ -18,27 +18,22 @@ namespace HR.BrightspaceConnector.Features.OrgUnits.Wrappers
 
         public async Task HandleAsync(CreateOrgUnit command, HandlerDelegate next, CancellationToken cancellationToken)
         {
-            OrgUnitRecord orgUnitToCreate = command.OrgUnit;
-            var orgUnitTypes = await apiClient.GetOrgUnitTypesAsync(cancellationToken).WithoutCapturingContext();
-            var orgUnitType = orgUnitTypes.SingleOrDefault(type => string.Equals(type.Code, orgUnitToCreate.TypeCode, StringComparison.OrdinalIgnoreCase));
-            if (orgUnitType is not null && (orgUnitToCreate.Type != orgUnitType.Id || !string.Equals(orgUnitToCreate.TypeCode, orgUnitType.Code, StringComparison.Ordinal)))
-            {
-                orgUnitToCreate.Type = orgUnitType.Id;
-                orgUnitToCreate.TypeCode = orgUnitType.Code;
-            }
-
-            await next().WithoutCapturingContext();
+            await HandleInternalAsync(command.OrgUnit, next, cancellationToken).WithoutCapturingContext();
         }
 
         public async Task HandleAsync(UpdateOrgUnit command, HandlerDelegate next, CancellationToken cancellationToken)
         {
-            OrgUnitRecord orgUnitToUpdate = command.OrgUnit;
+            await HandleInternalAsync(command.OrgUnit, next, cancellationToken).WithoutCapturingContext();
+        }
+
+        private async Task HandleInternalAsync(OrgUnitRecord orgUnit, HandlerDelegate next, CancellationToken cancellationToken)
+        {
             var orgUnitTypes = await apiClient.GetOrgUnitTypesAsync(cancellationToken).WithoutCapturingContext();
-            var orgUnitType = orgUnitTypes.SingleOrDefault(type => string.Equals(type.Code, orgUnitToUpdate.TypeCode, StringComparison.OrdinalIgnoreCase));
-            if (orgUnitType is not null && (orgUnitToUpdate.Type != orgUnitType.Id || !string.Equals(orgUnitToUpdate.TypeCode, orgUnitType.Code, StringComparison.Ordinal)))
+            var orgUnitType = orgUnitTypes.SingleOrDefault(type => string.Equals(type.Code, orgUnit.TypeCode, StringComparison.OrdinalIgnoreCase));
+            if (orgUnitType is not null && (orgUnit.Type != orgUnitType.Id || !string.Equals(orgUnit.TypeCode, orgUnitType.Code, StringComparison.Ordinal)))
             {
-                orgUnitToUpdate.Type = orgUnitType.Id;
-                orgUnitToUpdate.TypeCode = orgUnitType.Code;
+                orgUnit.Type = orgUnitType.Id;
+                orgUnit.TypeCode = orgUnitType.Code;
             }
 
             await next().WithoutCapturingContext();
