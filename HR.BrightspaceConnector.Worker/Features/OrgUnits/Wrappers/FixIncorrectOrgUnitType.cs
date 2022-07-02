@@ -5,8 +5,8 @@ using HR.Common.Utilities;
 
 namespace HR.BrightspaceConnector.Features.OrgUnits.Wrappers
 {
-    public class FixIncorrectOrgUnitType : 
-        ICommandHandlerWrapper<CreateOrgUnit>, 
+    public class FixIncorrectOrgUnitType :
+        ICommandHandlerWrapper<CreateOrgUnit>,
         ICommandHandlerWrapper<UpdateOrgUnit>
     {
         private readonly IApiClient apiClient;
@@ -21,9 +21,10 @@ namespace HR.BrightspaceConnector.Features.OrgUnits.Wrappers
             OrgUnitRecord orgUnitToCreate = command.OrgUnit;
             var orgUnitTypes = await apiClient.GetOrgUnitTypesAsync(cancellationToken).WithoutCapturingContext();
             var orgUnitType = orgUnitTypes.SingleOrDefault(type => string.Equals(type.Code, orgUnitToCreate.TypeCode, StringComparison.OrdinalIgnoreCase));
-            if (orgUnitType is not null && orgUnitToCreate.Type != orgUnitType.Id)
+            if (orgUnitType is not null && (orgUnitToCreate.Type != orgUnitType.Id || !string.Equals(orgUnitToCreate.TypeCode, orgUnitType.Code, StringComparison.Ordinal)))
             {
                 orgUnitToCreate.Type = orgUnitType.Id;
+                orgUnitToCreate.TypeCode = orgUnitType.Code;
             }
 
             await next().WithoutCapturingContext();
