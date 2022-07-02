@@ -5,13 +5,13 @@ using HR.Common.Utilities;
 
 namespace HR.BrightspaceConnector.Features.OrgUnits.Wrappers
 {
-    public class EnsureCorrectOrgUnitType : 
+    public class FixIncorrectOrgUnitType : 
         ICommandHandlerWrapper<CreateOrgUnit>, 
         ICommandHandlerWrapper<UpdateOrgUnit>
     {
         private readonly IApiClient apiClient;
 
-        public EnsureCorrectOrgUnitType(IApiClient apiClient)
+        public FixIncorrectOrgUnitType(IApiClient apiClient)
         {
             this.apiClient = apiClient;
         }
