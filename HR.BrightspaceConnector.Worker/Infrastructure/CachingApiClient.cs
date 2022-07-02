@@ -7,6 +7,9 @@ using Microsoft.Extensions.Options;
 
 namespace HR.BrightspaceConnector.Infrastructure
 {
+    /// <summary>
+    /// An <see cref="IApiClient"/> implementation that wraps another <see cref="ApiClient"/> object in order to cache the results returned by some of its methods.
+    /// </summary>
     public class CachingApiClient : IApiClient
     {
         private readonly ApiClient apiClient;
