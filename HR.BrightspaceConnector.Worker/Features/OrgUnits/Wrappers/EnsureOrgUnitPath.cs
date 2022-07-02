@@ -17,11 +17,11 @@ namespace HR.BrightspaceConnector.Features.OrgUnits.Wrappers
 
         public async Task HandleAsync(UpdateOrgUnit command, HandlerDelegate next, CancellationToken cancellationToken)
         {
-            OrgUnitRecord orgUnit = command.OrgUnit;
-            if (string.IsNullOrEmpty(orgUnit.Path))
+            OrgUnitRecord orgUnitToUpdate = command.OrgUnit;
+            if (string.IsNullOrEmpty(orgUnitToUpdate.Path))
             {
-                int orgUnitId = Convert.ToInt32(orgUnit.SyncExternalKey);
-                var queryParams = new OrgUnitQueryParameters { ExactOrgUnitCode = orgUnit.Code };
+                int orgUnitId = Convert.ToInt32(orgUnitToUpdate.SyncExternalKey);
+                var queryParams = new OrgUnitQueryParameters { ExactOrgUnitCode = orgUnitToUpdate.Code };
                 PagedResultSet<OrgUnitProperties> existingOrgUnits;
                 do
                 {
@@ -29,7 +29,7 @@ namespace HR.BrightspaceConnector.Features.OrgUnits.Wrappers
                     var existingOrgUnit = existingOrgUnits.FirstOrDefault(ou => ou.Identifier == orgUnitId);
                     if (existingOrgUnit is not null)
                     {
-                        orgUnit.Path = existingOrgUnit.Path;
+                        orgUnitToUpdate.Path = existingOrgUnit.Path;
                         break;
                     }
                     queryParams.Bookmark = existingOrgUnits.PagingInfo.Bookmark;
