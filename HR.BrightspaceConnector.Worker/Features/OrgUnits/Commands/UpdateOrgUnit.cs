@@ -38,8 +38,7 @@ namespace HR.BrightspaceConnector.Features.OrgUnits.Commands
 
             try
             {
-                var orgUnitProperties = await orgUnit.ToOrgUnitPropertiesAsync(apiClient, cancellationToken).WithoutCapturingContext();
-                var updatedOrgUnit = await apiClient.UpdateOrgUnitAsync(orgUnitId, orgUnitProperties, cancellationToken).WithoutCapturingContext();
+                var updatedOrgUnit = await apiClient.UpdateOrgUnitAsync(orgUnitId, orgUnit.ToOrgUnitProperties(), cancellationToken).WithoutCapturingContext();
                 logger.LogInformation("Org unit was successfully updated.");
 
                 await commandDispatcher.DispatchAsync(MarkAsHandled.Successfully(eventId, orgUnitId), cancellationToken).WithoutCapturingContext();
