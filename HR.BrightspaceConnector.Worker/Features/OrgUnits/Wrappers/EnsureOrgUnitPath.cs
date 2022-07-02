@@ -21,17 +21,20 @@ namespace HR.BrightspaceConnector.Features.OrgUnits.Wrappers
             if (string.IsNullOrEmpty(orgUnit.Path))
             {
                 int orgUnitId = Convert.ToInt32(orgUnit.SyncExternalKey);
+                var queryParams = new OrgUnitQueryParameters { ExactOrgUnitCode = orgUnit.Code };
                 PagedResultSet<OrgUnitProperties> existingOrgUnits;
                 do
                 {
-                    existingOrgUnits = await apiClient.GetOrgUnitsAsync(new OrgUnitQueryParameters { ExactOrgUnitCode = orgUnit.Code }, cancellationToken).WithoutCapturingContext();
+                    existingOrgUnits = await apiClient.GetOrgUnitsAsync(queryParams, cancellationToken).WithoutCapturingContext();
                     var existingOrgUnit = existingOrgUnits.FirstOrDefault(ou => ou.Identifier == orgUnitId);
                     if (existingOrgUnit is not null)
                     {
                         orgUnit.Path = existingOrgUnit.Path;
                         break;
                     }
-                } while (existingOrgUnits.PagingInfo.HasMoreItems);
+                    queryParams.Bookmark = existingOrgUnits.PagingInfo.Bookmark;
+                }
+                while (existingOrgUnits.PagingInfo.HasMoreItems);
             }
 
             await next().WithoutCapturingContext();
