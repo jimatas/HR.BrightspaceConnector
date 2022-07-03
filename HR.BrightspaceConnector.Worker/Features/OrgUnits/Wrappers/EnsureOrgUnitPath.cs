@@ -17,32 +17,27 @@ namespace HR.BrightspaceConnector.Features.OrgUnits.Wrappers
 
         public async Task HandleAsync(UpdateOrgUnit command, HandlerDelegate next, CancellationToken cancellationToken)
         {
-            OrgUnitRecord orgUnit = command.OrgUnit;
-            if (string.IsNullOrEmpty(orgUnit.Path))
+            OrgUnitRecord orgUnitToUpdate = command.OrgUnit;
+            if (string.IsNullOrEmpty(orgUnitToUpdate.Path))
             {
-                await CopyPathFromExistingOrgUnitAsync(orgUnit, cancellationToken).WithoutCapturingContext();
+                int orgUnitId = Convert.ToInt32(orgUnitToUpdate.SyncExternalKey);
+                var queryParams = new OrgUnitQueryParameters { ExactOrgUnitCode = orgUnitToUpdate.Code };
+                PagedResultSet<OrgUnitProperties> existingOrgUnits;
+                do
+                {
+                    existingOrgUnits = await apiClient.GetOrgUnitsAsync(queryParams, cancellationToken).WithoutCapturingContext();
+                    var existingOrgUnit = existingOrgUnits.FirstOrDefault(ou => ou.Identifier == orgUnitId);
+                    if (existingOrgUnit is not null)
+                    {
+                        orgUnitToUpdate.Path = existingOrgUnit.Path;
+                        break;
+                    }
+                    queryParams.Bookmark = existingOrgUnits.PagingInfo.Bookmark;
+                }
+                while (existingOrgUnits.PagingInfo.HasMoreItems);
             }
 
             await next().WithoutCapturingContext();
-        }
-
-        private async Task CopyPathFromExistingOrgUnitAsync(OrgUnitRecord orgUnit, CancellationToken cancellationToken)
-        {
-            int orgUnitId = Convert.ToInt32(orgUnit.SyncExternalKey);
-            var queryParams = new OrgUnitQueryParameters { ExactOrgUnitCode = orgUnit.Code };
-            PagedResultSet<OrgUnitProperties> existingOrgUnits;
-            do
-            {
-                existingOrgUnits = await apiClient.GetOrgUnitsAsync(queryParams, cancellationToken).WithoutCapturingContext();
-                var existingOrgUnit = existingOrgUnits.FirstOrDefault(ou => ou.Identifier == orgUnitId);
-                if (existingOrgUnit is not null)
-                {
-                    orgUnit.Path = existingOrgUnit.Path;
-                    break;
-                }
-                queryParams.Bookmark = existingOrgUnits.PagingInfo.Bookmark;
-            }
-            while (existingOrgUnits.PagingInfo.HasMoreItems);
         }
     }
 }
