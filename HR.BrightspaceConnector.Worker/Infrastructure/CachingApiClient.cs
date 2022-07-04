@@ -1,4 +1,5 @@
-﻿using HR.BrightspaceConnector.Features.OrgUnits;
+﻿using HR.BrightspaceConnector.Features.Courses;
+using HR.BrightspaceConnector.Features.OrgUnits;
 using HR.BrightspaceConnector.Features.Users;
 using HR.Common.Utilities;
 
@@ -117,6 +118,18 @@ namespace HR.BrightspaceConnector.Infrastructure
         public Task<OrgUnitProperties> UpdateOrgUnitAsync(int orgUnitId, OrgUnitProperties orgUnit, CancellationToken cancellationToken = default)
         {
             return apiClient.UpdateOrgUnitAsync(orgUnitId, orgUnit, cancellationToken);
+        }
+        #endregion
+
+        #region Courses
+        public Task<CourseTemplate> CreateCourseTemplateAsync(CreateCourseTemplate courseTemplate, CancellationToken cancellationToken = default)
+        {
+            return apiClient.CreateCourseTemplateAsync(courseTemplate, cancellationToken);
+        }
+
+        public Task DeleteCourseTemplateAsync(int orgUnitId, CancellationToken cancellationToken = default)
+        {
+            return apiClient.DeleteCourseTemplateAsync(orgUnitId, cancellationToken);
         }
         #endregion
 

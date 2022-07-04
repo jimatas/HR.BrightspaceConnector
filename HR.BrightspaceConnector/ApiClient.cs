@@ -1,4 +1,5 @@
-﻿using HR.BrightspaceConnector.Features.OrgUnits;
+﻿using HR.BrightspaceConnector.Features.Courses;
+using HR.BrightspaceConnector.Features.OrgUnits;
 using HR.BrightspaceConnector.Features.Users;
 using HR.BrightspaceConnector.Infrastructure;
 using HR.BrightspaceConnector.Security;
@@ -244,6 +245,29 @@ namespace HR.BrightspaceConnector
         public async Task DeleteOrgUnitFromRecycleBinAsync(int orgUnitId, CancellationToken cancellationToken = default)
         {
             using var httpRequest = new HttpRequestMessage(HttpMethod.Delete, $"lp/{apiSettings.LearningPlatformVersion}/orgstructure/recyclebin/{orgUnitId}");
+            await SetAuthorizationHeaderAsync(httpRequest, cancellationToken).WithoutCapturingContext();
+
+            using var httpResponse = await httpClient.SendAsync(httpRequest, cancellationToken).WithoutCapturingContext();
+            await CheckResponseForErrorAsync(httpResponse, cancellationToken).WithoutCapturingContext();
+        }
+        #endregion
+
+        #region Courses
+        public async Task<CourseTemplate> CreateCourseTemplateAsync(CreateCourseTemplate courseTemplate, CancellationToken cancellationToken = default)
+        {
+            using var httpRequest = new HttpRequestMessage(HttpMethod.Post, $"lp/{apiSettings.LearningPlatformVersion}/coursetemplates/") { Content = JsonContent.Create(courseTemplate, mediaType: null, jsonOptions) };
+            await SetAuthorizationHeaderAsync(httpRequest, cancellationToken).WithoutCapturingContext();
+
+            using var httpResponse = await httpClient.SendAsync(httpRequest, cancellationToken).WithoutCapturingContext();
+            await CheckResponseForErrorAsync(httpResponse, cancellationToken).WithoutCapturingContext();
+
+            var newCourseTemplate = await httpResponse.Content.ReadFromJsonAsync<CourseTemplate>(jsonOptions, cancellationToken).WithoutCapturingContext();
+            return newCourseTemplate!;
+        }
+
+        public async Task DeleteCourseTemplateAsync(int orgUnitId, CancellationToken cancellationToken = default)
+        {
+            using var httpRequest = new HttpRequestMessage(HttpMethod.Delete, $"lp/{apiSettings.LearningPlatformVersion}/coursetemplates/{orgUnitId}");
             await SetAuthorizationHeaderAsync(httpRequest, cancellationToken).WithoutCapturingContext();
 
             using var httpResponse = await httpClient.SendAsync(httpRequest, cancellationToken).WithoutCapturingContext();

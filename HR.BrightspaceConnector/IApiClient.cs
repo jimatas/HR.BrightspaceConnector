@@ -1,4 +1,5 @@
-﻿using HR.BrightspaceConnector.Features.OrgUnits;
+﻿using HR.BrightspaceConnector.Features.Courses;
+using HR.BrightspaceConnector.Features.OrgUnits;
 using HR.BrightspaceConnector.Features.Users;
 using HR.BrightspaceConnector.Infrastructure;
 
@@ -188,6 +189,31 @@ namespace HR.BrightspaceConnector
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         Task DeleteOrgUnitAsync(int orgUnitId, bool permanently = false, CancellationToken cancellationToken = default);
+        #endregion
+
+        #region Courses
+        /// <summary>
+        /// Create a new course template.
+        /// </summary>
+        /// <remarks>
+        /// Oauth2 Scopes: <c>orgunits:coursetemplate:create</c>
+        /// </remarks>
+        /// <param name="courseTemplate"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns>This action returns a CourseTemplate JSON block containing the data for the new course template.</returns>
+        Task<CourseTemplate> CreateCourseTemplateAsync(CreateCourseTemplate courseTemplate, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Delete a course template.
+        /// </summary>
+        /// <remarks>
+        /// Using this action is equivalent to using the route to send an org unit to the recycle bin. 
+        /// You can restore the course template from the recycle bin, if needed.
+        /// </remarks>
+        /// <param name="orgUnitId"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        Task DeleteCourseTemplateAsync(int orgUnitId, CancellationToken cancellationToken = default);
         #endregion
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace HR.BrightspaceConnector.Features.Courses
 {
-    public class CreateCourseTemplate
+    public class CreateCourseTemplate : CourseTemplateInfo
     {
         /// <summary>
         /// The root path to use for this course template's course content. 
