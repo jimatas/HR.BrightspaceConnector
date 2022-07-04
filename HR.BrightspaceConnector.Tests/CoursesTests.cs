@@ -1,5 +1,4 @@
 ﻿using HR.BrightspaceConnector.Features.Courses;
-using HR.Common.Utilities;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -11,7 +10,7 @@ namespace HR.BrightspaceConnector.Tests
     public class CoursesTests : IntegrationTestsBase
     {
         [TestMethod]
-        public async Task CreateAndDeleteCourseTemplateAsync_UnderRootOrganization_CreatesAndDeletesCourseTemplate()
+        public async Task CompleteCourseTemplateLifecycleIntegrationTest()
         {
             IApiClient apiClient = CreateApiClient();
             var rootOrganization = await apiClient.GetOrganizationAsync();
@@ -24,9 +23,23 @@ namespace HR.BrightspaceConnector.Tests
             });
 
             Assert.IsNotNull(newCourseTemplate);
-            Assert.IsTrue(!newCourseTemplate.Identifier.IsNullOrDefault(), "!newCourseTemplate.Identifier.IsNullOrDefault()");
 
-            await apiClient.DeleteCourseTemplateAsync((int)newCourseTemplate.Identifier!);
+            var courseTemplateId = newCourseTemplate.Identifier;
+            Assert.IsNotNull(courseTemplateId);
+
+            await apiClient.UpdateCourseTemplateAsync((int)courseTemplateId, new CourseTemplateInfo
+            {
+                Code = "HR-SampleCourseTemplate-v2",
+                Name = "Sample course template updated by a unit test"
+            });
+
+            var updatedCourseTemplate = await apiClient.GetCourseTemplateAsync((int)courseTemplateId);
+
+            Assert.IsNotNull(updatedCourseTemplate);
+            Assert.AreEqual("HR-SampleCourseTemplate-v2", updatedCourseTemplate.Code);
+            Assert.AreEqual("Sample course template updated by a unit test", updatedCourseTemplate.Name);
+
+            await apiClient.DeleteCourseTemplateAsync((int)courseTemplateId, permanently: true);
         }
     }
 }

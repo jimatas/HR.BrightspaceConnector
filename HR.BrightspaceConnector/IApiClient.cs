@@ -22,7 +22,7 @@ namespace HR.BrightspaceConnector
         /// Retrieve data for one or more users.
         /// </summary>
         /// <remarks>
-        /// Input. You can use this action in a number of different ways, depending upon the query parameters you provide. 
+        /// You can use this action in a number of different ways, depending upon the query parameters you provide. 
         /// If you provide more than one of these parameters, this action selects among them in this order, regardless of the order you provide them in your URL:
         /// <list type="number">
         ///   <item>orgDefinedId. Find all users that have this org-defined ID string. Fetch the results in a JSON array.</item>
@@ -111,7 +111,7 @@ namespace HR.BrightspaceConnector
         /// Retrieve properties for all org units.
         /// </summary>
         /// <remarks>
-        /// Input. You can use the orgUnitType, orgUnitCode, and orgUnitName query parameters as filters to further narrow the list of org units this action retrieves. 
+        /// You can use the orgUnitType, orgUnitCode, and orgUnitName query parameters as filters to further narrow the list of org units this action retrieves. 
         /// Note that for orgUnitType, the back-end service expects to receive a valid org unit type ID value. 
         /// Note that orgUnitCode and orgUnitName both will search for matches that contain your parameter value.
         /// <para>
@@ -193,6 +193,14 @@ namespace HR.BrightspaceConnector
 
         #region Courses
         /// <summary>
+        /// Retrieve a course template.
+        /// </summary>
+        /// <param name="orgUnitId"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns>This action returns a CourseTemplate JSON block.</returns>
+        Task<CourseTemplate> GetCourseTemplateAsync(int orgUnitId, CancellationToken cancellationToken = default);
+
+        /// <summary>
         /// Create a new course template.
         /// </summary>
         /// <remarks>
@@ -204,6 +212,18 @@ namespace HR.BrightspaceConnector
         Task<CourseTemplate> CreateCourseTemplateAsync(CreateCourseTemplate courseTemplate, CancellationToken cancellationToken = default);
 
         /// <summary>
+        /// Update the information for a course template.
+        /// </summary>
+        /// <remarks>
+        /// This action uses the data in your provided block to completely replace the associated course template's data on the service.
+        /// </remarks>
+        /// <param name="orgUnitId"></param>
+        /// <param name="courseTemplate"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        Task UpdateCourseTemplateAsync(int orgUnitId, CourseTemplateInfo courseTemplate, CancellationToken cancellationToken = default);
+
+        /// <summary>
         /// Delete a course template.
         /// </summary>
         /// <remarks>
@@ -211,9 +231,10 @@ namespace HR.BrightspaceConnector
         /// You can restore the course template from the recycle bin, if needed.
         /// </remarks>
         /// <param name="orgUnitId"></param>
+        /// <param name="permanently">Permanently delete the course template?</param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task DeleteCourseTemplateAsync(int orgUnitId, CancellationToken cancellationToken = default);
+        Task DeleteCourseTemplateAsync(int orgUnitId, bool permanently = false, CancellationToken cancellationToken = default);
         #endregion
     }
 }

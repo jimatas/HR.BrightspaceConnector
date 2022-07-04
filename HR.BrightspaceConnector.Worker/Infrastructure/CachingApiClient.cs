@@ -122,14 +122,24 @@ namespace HR.BrightspaceConnector.Infrastructure
         #endregion
 
         #region Courses
+        public Task<CourseTemplate> GetCourseTemplateAsync(int orgUnitId, CancellationToken cancellationToken = default)
+        {
+            return apiClient.GetCourseTemplateAsync(orgUnitId, cancellationToken);
+        }
+
         public Task<CourseTemplate> CreateCourseTemplateAsync(CreateCourseTemplate courseTemplate, CancellationToken cancellationToken = default)
         {
             return apiClient.CreateCourseTemplateAsync(courseTemplate, cancellationToken);
         }
 
-        public Task DeleteCourseTemplateAsync(int orgUnitId, CancellationToken cancellationToken = default)
+        public Task UpdateCourseTemplateAsync(int orgUnitId, CourseTemplateInfo courseTemplate, CancellationToken cancellationToken = default)
         {
-            return apiClient.DeleteCourseTemplateAsync(orgUnitId, cancellationToken);
+            return apiClient.UpdateCourseTemplateAsync(orgUnitId, courseTemplate, cancellationToken);
+        }
+
+        public Task DeleteCourseTemplateAsync(int orgUnitId, bool permanently = false, CancellationToken cancellationToken = default)
+        {
+            return apiClient.DeleteCourseTemplateAsync(orgUnitId, permanently, cancellationToken);
         }
         #endregion
 

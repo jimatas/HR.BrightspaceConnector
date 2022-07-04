@@ -253,6 +253,18 @@ namespace HR.BrightspaceConnector
         #endregion
 
         #region Courses
+        public async Task<CourseTemplate> GetCourseTemplateAsync(int orgUnitId, CancellationToken cancellationToken = default)
+        {
+            using var httpRequest = new HttpRequestMessage(HttpMethod.Get, $"lp/{apiSettings.LearningPlatformVersion}/coursetemplates/{orgUnitId}");
+            await SetAuthorizationHeaderAsync(httpRequest, cancellationToken).WithoutCapturingContext();
+
+            using var httpResponse = await httpClient.SendAsync(httpRequest, cancellationToken).WithoutCapturingContext();
+            await CheckResponseForErrorAsync(httpResponse, cancellationToken).WithoutCapturingContext();
+
+            var courseTemplate = await httpResponse.Content.ReadFromJsonAsync<CourseTemplate>(jsonOptions, cancellationToken).WithoutCapturingContext();
+            return courseTemplate!;
+        }
+
         public async Task<CourseTemplate> CreateCourseTemplateAsync(CreateCourseTemplate courseTemplate, CancellationToken cancellationToken = default)
         {
             using var httpRequest = new HttpRequestMessage(HttpMethod.Post, $"lp/{apiSettings.LearningPlatformVersion}/coursetemplates/") { Content = JsonContent.Create(courseTemplate, mediaType: null, jsonOptions) };
@@ -265,13 +277,18 @@ namespace HR.BrightspaceConnector
             return newCourseTemplate!;
         }
 
-        public async Task DeleteCourseTemplateAsync(int orgUnitId, CancellationToken cancellationToken = default)
+        public async Task UpdateCourseTemplateAsync(int orgUnitId, CourseTemplateInfo courseTemplate, CancellationToken cancellationToken = default)
         {
-            using var httpRequest = new HttpRequestMessage(HttpMethod.Delete, $"lp/{apiSettings.LearningPlatformVersion}/coursetemplates/{orgUnitId}");
+            using var httpRequest = new HttpRequestMessage(HttpMethod.Put, $"lp/{apiSettings.LearningPlatformVersion}/coursetemplates/{orgUnitId}") { Content = JsonContent.Create(courseTemplate, mediaType: null, jsonOptions) };
             await SetAuthorizationHeaderAsync(httpRequest, cancellationToken).WithoutCapturingContext();
 
             using var httpResponse = await httpClient.SendAsync(httpRequest, cancellationToken).WithoutCapturingContext();
             await CheckResponseForErrorAsync(httpResponse, cancellationToken).WithoutCapturingContext();
+        }
+
+        public async Task DeleteCourseTemplateAsync(int orgUnitId, bool permanently = false, CancellationToken cancellationToken = default)
+        {
+            await DeleteOrgUnitAsync(orgUnitId, permanently, cancellationToken).WithoutCapturingContext();
         }
         #endregion
 
