@@ -1,4 +1,5 @@
 ﻿using HR.BrightspaceConnector.Features.Courses;
+using HR.BrightspaceConnector.Infrastructure.Persistence;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -10,6 +11,19 @@ namespace HR.BrightspaceConnector.Tests
     [TestClass]
     public class CoursesTests : IntegrationTestsBase
     {
+        [TestMethod]
+        public async Task GetNextCourseTemplateAsync_ReturnsNextCourseTemplateOrNull()
+        {
+            IDatabase database = CreateDatabase();
+
+            CourseTemplateRecord? courseTemplate = await database.GetNextCourseTemplateAsync();
+
+            if (courseTemplate is not null) // Null is a perfectly valid return value.
+            {
+                Assert.IsNotNull(courseTemplate.SyncEventId);
+            }
+        }
+
         [TestMethod]
         public async Task CompleteCourseTemplateLifecycleIntegrationTest()
         {

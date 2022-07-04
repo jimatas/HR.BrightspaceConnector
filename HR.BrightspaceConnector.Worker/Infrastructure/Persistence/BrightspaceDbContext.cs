@@ -1,4 +1,5 @@
-﻿using HR.BrightspaceConnector.Features.OrgUnits;
+﻿using HR.BrightspaceConnector.Features.Courses;
+using HR.BrightspaceConnector.Features.OrgUnits;
 using HR.BrightspaceConnector.Features.Users;
 
 using Microsoft.EntityFrameworkCore;
@@ -18,5 +19,6 @@ namespace HR.BrightspaceConnector.Infrastructure.Persistence
 
         public DbSet<UserRecord> Users => Set<UserRecord>();
         public DbSet<OrgUnitRecord> OrgUnits => Set<OrgUnitRecord>();
+        public DbSet<CourseTemplateRecord> CourseTemplates => Set<CourseTemplateRecord>();
     }
 }
