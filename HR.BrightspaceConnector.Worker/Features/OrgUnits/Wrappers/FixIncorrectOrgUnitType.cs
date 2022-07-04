@@ -30,10 +30,17 @@ namespace HR.BrightspaceConnector.Features.OrgUnits.Wrappers
         {
             var orgUnitTypes = await apiClient.GetOrgUnitTypesAsync(cancellationToken).WithoutCapturingContext();
             var orgUnitType = orgUnitTypes.SingleOrDefault(type => string.Equals(type.Code, orgUnit.TypeCode, StringComparison.OrdinalIgnoreCase));
-            if (orgUnitType is not null && (orgUnit.Type != orgUnitType.Id || !string.Equals(orgUnit.TypeCode, orgUnitType.Code, StringComparison.Ordinal)))
+            if (orgUnitType is not null)
             {
-                orgUnit.Type = orgUnitType.Id;
-                orgUnit.TypeCode = orgUnitType.Code;
+                if (orgUnit.Type != orgUnitType.Id)
+                {
+                    orgUnit.Type = orgUnitType.Id;
+                }
+
+                if (!string.Equals(orgUnit.TypeCode, orgUnitType.Code, StringComparison.Ordinal))
+                {
+                    orgUnit.TypeCode = orgUnitType.Code;
+                }
             }
 
             await next().WithoutCapturingContext();
