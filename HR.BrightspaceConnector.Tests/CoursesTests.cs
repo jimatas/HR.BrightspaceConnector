@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 
 namespace HR.BrightspaceConnector.Tests
 {
-
     [TestClass]
     public class CoursesTests : IntegrationTestsBase
     {
