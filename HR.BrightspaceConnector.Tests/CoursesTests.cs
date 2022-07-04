@@ -2,6 +2,7 @@
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
+using System.Net;
 using System.Threading.Tasks;
 
 namespace HR.BrightspaceConnector.Tests
@@ -40,6 +41,18 @@ namespace HR.BrightspaceConnector.Tests
             Assert.AreEqual("Sample course template updated by a unit test", updatedCourseTemplate.Name);
 
             await apiClient.DeleteCourseTemplateAsync((int)courseTemplateId, permanently: true);
+        }
+
+        [TestMethod]
+        public async Task GetCourseTemplateAsync_GivenInvalidOrgUnitId_ThrowsException()
+        {
+            IApiClient apiClient = CreateApiClient();
+            int nonExistentOrgUnitId = int.MaxValue;
+
+            Task<CourseTemplate> action() => apiClient.GetCourseTemplateAsync(nonExistentOrgUnitId);
+
+            var exception = await Assert.ThrowsExceptionAsync<ApiException>(action);
+            Assert.AreEqual(HttpStatusCode.NotFound, exception.StatusCode);
         }
     }
 }
