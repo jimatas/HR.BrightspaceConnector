@@ -168,5 +168,69 @@ namespace HR.BrightspaceConnector.Tests
             mockedDatabase.VerifyNoOtherCalls();
             mockedApiClient.VerifyNoOtherCalls();
         }
+
+        [TestMethod]
+        public async Task GivenCourseTemplateToUpdate_UpdatesCourseTemplate()
+        {
+            // Arrange
+            int eventId = Random.Shared.Next(1, int.MaxValue);
+            int courseTemplateId = Random.Shared.Next(1, int.MaxValue);
+
+            CourseTemplateRecord courseTemplateRecord = new CourseTemplateRecord
+            {
+                Code = "HR-SampleCourseTemplate",
+                Name = "Sample course template created by a unit test",
+                ParentOrgUnitIds = new[] { RootOrgId },
+                Path = null,
+                SyncAction = 'u',
+                SyncEventId = eventId,
+                SyncExternalKey = courseTemplateId.ToString(),
+                SyncInternalKey = Guid.NewGuid().ToString()
+            };
+
+            mockedDatabase.Setup(database => database.GetNextCourseTemplateAsync(default)).ReturnsAsync(courseTemplateRecord);
+            mockedDatabase.Setup(database => database.MarkAsHandledAsync(eventId, true, courseTemplateId, null, default));
+
+            mockedApiClient.Setup(apiClient => apiClient.UpdateCourseTemplateAsync(courseTemplateId,
+                It.Is<CourseTemplateInfo>(courseTemplateInfo => Assert.That.AreEqual(courseTemplateRecord.ToCourseTemplateInfo(), courseTemplateInfo)), default));
+
+            IServiceProvider serviceProvider = CreateServiceProvider(mockedDatabase.Object, mockedApiClient.Object);
+            ICommandDispatcher commandDispatcher = serviceProvider.GetRequiredService<ICommandDispatcher>();
+
+            // Act
+            await commandDispatcher.DispatchAsync(new ProcessCourseTemplates(batchSize: 1, isDeleteContext: false));
+
+            // Assert
+            mockedDatabase.VerifyAll();
+            mockedApiClient.VerifyAll();
+        }
+
+        [TestMethod]
+        public async Task GivenCourseTemplateToUpdateInDeleteContext_DoesNothing()
+        {
+            // Arrange
+            mockedDatabase.Setup(database => database.GetNextCourseTemplateAsync(default)).ReturnsAsync(new CourseTemplateRecord
+            {
+                Code = "HR-SampleCourseTemplate",
+                Name = "Sample course template created by a unit test",
+                ParentOrgUnitIds = new[] { RootOrgId },
+                Path = null,
+                SyncAction = 'u',
+                SyncEventId = Random.Shared.Next(1, int.MaxValue),
+                SyncExternalKey = Random.Shared.Next(1, int.MaxValue).ToString(),
+                SyncInternalKey = Guid.NewGuid().ToString()
+            });
+
+            IServiceProvider serviceProvider = CreateServiceProvider(mockedDatabase.Object, mockedApiClient.Object);
+            ICommandDispatcher commandDispatcher = serviceProvider.GetRequiredService<ICommandDispatcher>();
+
+            // Act
+            await commandDispatcher.DispatchAsync(new ProcessCourseTemplates(batchSize: 1, isDeleteContext: true));
+
+            // Assert
+            mockedDatabase.Verify(database => database.GetNextCourseTemplateAsync(default), Times.Once());
+            mockedDatabase.VerifyNoOtherCalls();
+            mockedApiClient.VerifyNoOtherCalls();
+        }
     }
 }

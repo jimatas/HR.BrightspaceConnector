@@ -75,10 +75,17 @@ namespace HR.BrightspaceConnector.Tests
 
         public static bool AreEqual(this Assert _, CreateCourseTemplate expected, CreateCourseTemplate actual)
         {
-            Assert.AreEqual(expected.Name, actual.Name);
-            Assert.AreEqual(expected.Code, actual.Code);
+            Assert.That.AreEqual((CourseTemplateInfo)expected, actual);
             Assert.AreEqual(expected.Path, actual.Path);
             CollectionAssert.AreEqual(expected.ParentOrgUnitIds.ToList(), actual.ParentOrgUnitIds.ToList());
+
+            return true;
+        }
+
+        public static bool AreEqual(this Assert _, CourseTemplateInfo expected, CourseTemplateInfo actual)
+        {
+            Assert.AreEqual(expected.Name, actual.Name);
+            Assert.AreEqual(expected.Code, actual.Code);
 
             return true;
         }
