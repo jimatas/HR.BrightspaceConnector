@@ -25,7 +25,7 @@ namespace HR.BrightspaceConnector.Tests
         static IntegrationTestsBase()
         {
             Configuration = new ConfigurationBuilder()
-                .AddJsonFile("C:\\Development\\HR.BrightspaceConnector\\HR.BrightspaceConnector.Worker\\appsettings.json")
+                .AddJsonFile("appsettings.json")
                 .AddUserSecrets("dotnet-HR.BrightspaceConnector.Worker-DF9AA187-1E6C-4D0A-BFF5-3C5F247DED74")
                 .AddEnvironmentVariables()
                 .Build();
