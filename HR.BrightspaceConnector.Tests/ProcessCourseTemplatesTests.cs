@@ -84,5 +84,89 @@ namespace HR.BrightspaceConnector.Tests
             mockedDatabase.VerifyAll();
             mockedApiClient.VerifyAll();
         }
+
+        [TestMethod]
+        public async Task GivenCourseTemplateToCreateInDeleteContext_DoesNothing()
+        {
+            // Arrange
+            mockedDatabase.Setup(database => database.GetNextCourseTemplateAsync(default)).ReturnsAsync(new CourseTemplateRecord
+            {
+                Code = "HR-SampleCourseTemplate",
+                Name = "Sample course template created by a unit test",
+                ParentOrgUnitIds = new[] { RootOrgId },
+                Path = null,
+                SyncAction = 'c',
+                SyncEventId = Random.Shared.Next(1, int.MaxValue),
+                SyncExternalKey = null,
+                SyncInternalKey = Guid.NewGuid().ToString()
+            });
+
+            IServiceProvider serviceProvider = CreateServiceProvider(mockedDatabase.Object, mockedApiClient.Object);
+            ICommandDispatcher commandDispatcher = serviceProvider.GetRequiredService<ICommandDispatcher>();
+
+            // Act
+            await commandDispatcher.DispatchAsync(new ProcessCourseTemplates(batchSize: 1, isDeleteContext: true));
+
+            // Assert
+            mockedDatabase.Verify(database => database.GetNextCourseTemplateAsync(default), Times.Once());
+            mockedDatabase.VerifyNoOtherCalls();
+            mockedApiClient.VerifyNoOtherCalls();
+        }
+
+        [TestMethod]
+        public async Task GivenCourseTemplateToDelete_DeletesCourseTemplate()
+        {
+            // Arrange
+            int eventId = Random.Shared.Next(1, int.MaxValue);
+            int courseTemplateId = Random.Shared.Next(1, int.MaxValue);
+
+            mockedDatabase.Setup(database => database.GetNextCourseTemplateAsync(default)).ReturnsAsync(new CourseTemplateRecord
+            {
+                SyncAction = 'd',
+                SyncEventId = eventId,
+                SyncExternalKey = courseTemplateId.ToString(),
+                SyncInternalKey = Guid.NewGuid().ToString()
+            });
+            mockedDatabase.Setup(database => database.MarkAsHandledAsync(eventId, true, courseTemplateId, null, default));
+
+            mockedApiClient.Setup(apiClient => apiClient.DeleteCourseTemplateAsync(courseTemplateId, true, default));
+
+            IServiceProvider serviceProvider = CreateServiceProvider(mockedDatabase.Object, mockedApiClient.Object);
+            ICommandDispatcher commandDispatcher = serviceProvider.GetRequiredService<ICommandDispatcher>();
+
+            // Act
+            await commandDispatcher.DispatchAsync(new ProcessCourseTemplates(batchSize: 1, isDeleteContext: true));
+
+            // Assert
+            mockedDatabase.VerifyAll();
+            mockedApiClient.VerifyAll();
+        }
+
+        [TestMethod]
+        public async Task GivenCourseTemplateToDeleteInNonDeleteContext_DoesNothing()
+        {
+            // Arrange
+            int eventId = Random.Shared.Next(1, int.MaxValue);
+            int courseTemplateId = Random.Shared.Next(1, int.MaxValue);
+
+            mockedDatabase.Setup(database => database.GetNextCourseTemplateAsync(default)).ReturnsAsync(new CourseTemplateRecord
+            {
+                SyncAction = 'd',
+                SyncEventId = eventId,
+                SyncExternalKey = courseTemplateId.ToString(),
+                SyncInternalKey = Guid.NewGuid().ToString()
+            });
+
+            IServiceProvider serviceProvider = CreateServiceProvider(mockedDatabase.Object, mockedApiClient.Object);
+            ICommandDispatcher commandDispatcher = serviceProvider.GetRequiredService<ICommandDispatcher>();
+
+            // Act
+            await commandDispatcher.DispatchAsync(new ProcessCourseTemplates(batchSize: 1, isDeleteContext: false));
+
+            // Assert
+            mockedDatabase.Verify(database => database.GetNextCourseTemplateAsync(default), Times.Once());
+            mockedDatabase.VerifyNoOtherCalls();
+            mockedApiClient.VerifyNoOtherCalls();
+        }
     }
 }
