@@ -290,6 +290,18 @@ namespace HR.BrightspaceConnector
         {
             await DeleteOrgUnitAsync(orgUnitId, permanently, cancellationToken).WithoutCapturingContext();
         }
+
+        public async Task<CourseOffering> GetCourseOfferingAsync(int orgUnitId, CancellationToken cancellationToken = default)
+        {
+            using var httpRequest = new HttpRequestMessage(HttpMethod.Get, $"lp/{apiSettings.LearningPlatformVersion}/courses/{orgUnitId}");
+            await SetAuthorizationHeaderAsync(httpRequest, cancellationToken).WithoutCapturingContext();
+
+            using var httpResponse = await httpClient.SendAsync(httpRequest, cancellationToken).WithoutCapturingContext();
+            await CheckResponseForErrorAsync(httpResponse, cancellationToken).WithoutCapturingContext();
+
+            var courseOffering = await httpResponse.Content.ReadFromJsonAsync<CourseOffering>(jsonOptions, cancellationToken).WithoutCapturingContext();
+            return courseOffering!;
+        }
         #endregion
 
         private async Task SetAuthorizationHeaderAsync(HttpRequestMessage httpRequest, CancellationToken cancellationToken)

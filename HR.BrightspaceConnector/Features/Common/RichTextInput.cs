@@ -11,5 +11,12 @@
         /// For the type field, you must provide either the value "Text" or "Html", depending upon the formatting of the content string you are providing to the back-end service.
         /// </summary>
         public TextContentType? Type { get; set; }
+
+        public override string ToString()
+        {
+            return !string.IsNullOrEmpty(Content)
+                ? $"{Type ?? TextContentType.Text}: {Content}"
+                : string.Empty;
+        }
     }
 }

@@ -68,5 +68,15 @@ namespace HR.BrightspaceConnector.Tests
             var exception = await Assert.ThrowsExceptionAsync<ApiException>(action);
             Assert.AreEqual(HttpStatusCode.NotFound, exception.StatusCode);
         }
+
+        [TestMethod]
+        public async Task GetCourseOfferingAsync_ReturnsCourseOffering()
+        {
+            IApiClient apiClient = CreateApiClient();
+
+            CourseOffering courseOffering = await apiClient.GetCourseOfferingAsync(6772);
+
+            Assert.IsNotNull(courseOffering);
+        }
     }
 }

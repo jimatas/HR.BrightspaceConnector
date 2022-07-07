@@ -1,4 +1,6 @@
-﻿namespace HR.BrightspaceConnector.Features.Courses
+﻿using HR.BrightspaceConnector.Features.Common;
+
+namespace HR.BrightspaceConnector.Features.Courses
 {
     /// <summary>
     /// The service's fundamental information block for course offerings. 
@@ -11,5 +13,10 @@
         public BasicOrgUnit? CourseTemplate { get; set; }
         public BasicOrgUnit? Semester { get; set; }
         public BasicOrgUnit? Department { get; set; }
+
+        /// <summary>
+        /// Added with LP API v1.26
+        /// </summary>
+        public new RichText? Description { get; set; }
     }
 }

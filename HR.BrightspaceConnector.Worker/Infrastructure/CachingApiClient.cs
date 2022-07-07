@@ -141,6 +141,11 @@ namespace HR.BrightspaceConnector.Infrastructure
         {
             return apiClient.DeleteCourseTemplateAsync(orgUnitId, permanently, cancellationToken);
         }
+
+        public Task<CourseOffering> GetCourseOfferingAsync(int orgUnitId, CancellationToken cancellationToken = default)
+        {
+            return apiClient.GetCourseOfferingAsync(orgUnitId, cancellationToken);
+        }
         #endregion
 
         private TimeSpan CacheDuration => apiSettings.CacheDuration ?? TimeSpan.Zero;

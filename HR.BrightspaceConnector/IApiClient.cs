@@ -235,6 +235,17 @@ namespace HR.BrightspaceConnector
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         Task DeleteCourseTemplateAsync(int orgUnitId, bool permanently = false, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Retrieve a course offering.
+        /// </summary>
+        /// <remarks>
+        /// Oauth2 Scopes: <c>orgunits:course:read</c>
+        /// </remarks>
+        /// <param name="orgUnitId"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns>This action returns a CourseOffering JSON block with the provided course's information.</returns>
+        Task<CourseOffering> GetCourseOfferingAsync(int orgUnitId, CancellationToken cancellationToken = default);
         #endregion
     }
 }
