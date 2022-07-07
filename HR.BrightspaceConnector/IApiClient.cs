@@ -246,6 +246,33 @@ namespace HR.BrightspaceConnector
         /// <param name="cancellationToken"></param>
         /// <returns>This action returns a CourseOffering JSON block with the provided course's information.</returns>
         Task<CourseOffering> GetCourseOfferingAsync(int orgUnitId, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Create a new course offering.
+        /// </summary>
+        /// <remarks>
+        /// Oauth2 Scopes: <c>orgunits:course:create</c>
+        /// </remarks>
+        /// <param name="courseOffering">New course offering properties.</param>
+        /// <param name="cancellationToken"></param>
+        /// <returns>This action returns a CourseOffering JSON block for the newly created course.</returns>
+        Task<CourseOffering> CreateCourseOfferingAsync(CreateCourseOffering courseOffering, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Delete a course offering.
+        /// </summary>
+        /// <remarks>
+        /// Using this action is equivalent to using the route to send an org unit to the recycle bin. 
+        /// You can restore the course offering from the recycle bin, if needed.
+        /// <para>
+        /// Oauth2 Scopes: <c>orgunits:course:delete</c>
+        /// </para>
+        /// </remarks>
+        /// <param name="orgUnitId"></param>
+        /// <param name="permanently">Permanently delete the course offering?</param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        Task DeleteCourseOfferingAsync(int orgUnitId, bool permanently = false, CancellationToken cancellationToken = default);
         #endregion
     }
 }

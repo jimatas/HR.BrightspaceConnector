@@ -1,4 +1,8 @@
-﻿namespace HR.BrightspaceConnector.Features.Users
+﻿using HR.BrightspaceConnector.Infrastructure;
+
+using System.Text.Json.Serialization;
+
+namespace HR.BrightspaceConnector.Features.Users
 {
     /// <summary>
     /// When you use an action with the User Management service to retrieve a user's data, the service passes you back a data block 
@@ -10,7 +14,10 @@
         public int? UserId { get; set; }
         public string? UniqueIdentifier { get; set; }
         public UserActivationData? Activation { get; set; }
+
+        [JsonConverter(typeof(CustomDateTimeOffsetConverter))]
         public DateTimeOffset? LastAccessedDate { get; set; }
+
         public string? DisplayName { get; set; }
     }
 }

@@ -1,8 +1,11 @@
-﻿using HR.BrightspaceConnector.Features.Courses;
+﻿using HR.BrightspaceConnector.Features.Common;
+using HR.BrightspaceConnector.Features.Courses;
 using HR.BrightspaceConnector.Infrastructure.Persistence;
+using HR.BrightspaceConnector.Utilities;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
+using System;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -70,13 +73,45 @@ namespace HR.BrightspaceConnector.Tests
         }
 
         [TestMethod]
-        public async Task GetCourseOfferingAsync_ReturnsCourseOffering()
+        public async Task CompleteCourseOfferingLifecycleIntegrationTest()
         {
             IApiClient apiClient = CreateApiClient();
 
-            CourseOffering courseOffering = await apiClient.GetCourseOfferingAsync(6772);
+            var rootOrganization = await apiClient.GetOrganizationAsync();
 
+            var newCourseTemplate = await apiClient.CreateCourseTemplateAsync(new CreateCourseTemplate
+            {
+                Code = "HR-SampleCourseTemplate",
+                Name = "Sample course template created by a unit test",
+                ParentOrgUnitIds = new[] { (int)rootOrganization.Identifier! }
+            });
+
+            var newCourseOffering = await apiClient.CreateCourseOfferingAsync(new CreateCourseOffering
+            {
+                Code = "HR-SampleCourseOffering",
+                Name = "Sample course offering created by a unit test",
+                Description = new RichTextInput
+                {
+                    Type = TextContentType.Text,
+                    Content = "This course offering is a sample that was created by a unit test. You can safely ignore it."
+                },
+                CanSelfRegister = true,
+                StartDate = SystemClock.Instance.Now,
+                EndDate = SystemClock.Instance.Now.AddDays(31),
+                CourseTemplateId = newCourseTemplate.Identifier,
+                ForceLocale = true,
+                IsActive = false,
+                ShowAddressBook = true
+            });
+
+            Assert.IsNotNull(newCourseOffering);
+            Assert.IsNotNull(newCourseOffering.Identifier);
+
+            CourseOffering courseOffering = await apiClient.GetCourseOfferingAsync((int)newCourseOffering.Identifier);
             Assert.IsNotNull(courseOffering);
+
+            await apiClient.DeleteCourseOfferingAsync((int)newCourseOffering.Identifier, permanently: true);
+            await apiClient.DeleteCourseTemplateAsync((int)newCourseTemplate.Identifier!, permanently: true);
         }
     }
 }

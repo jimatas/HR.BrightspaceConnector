@@ -1,6 +1,8 @@
 ﻿using HR.BrightspaceConnector.Features.Common;
+using HR.BrightspaceConnector.Infrastructure;
 
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace HR.BrightspaceConnector.Features.Courses
 {
@@ -22,10 +24,15 @@ namespace HR.BrightspaceConnector.Features.Courses
         /// </list>
         /// </summary>
         [StringLength(maximumLength: 50)]
+        
         public string? Code { get; set; }
 
+        [JsonConverter(typeof(CustomDateTimeOffsetConverter))]
         public DateTimeOffset? StartDate { get; set; }
+
+        [JsonConverter(typeof(CustomDateTimeOffsetConverter))]
         public DateTimeOffset? EndDate { get; set; }
+
         public bool IsActive { get; set; }
 
         /// <summary>
