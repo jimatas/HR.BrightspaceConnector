@@ -11,8 +11,8 @@ namespace HR.BrightspaceConnector.Features.Courses
         /// <list type="bullet">
         ///   <item>They cannot be more than 50 characters in length.</item>
         ///   <item>
-        ///     They may not contain these special characters:
-        ///     <code>\ : * ? “ ” &lt; &gt; | ‘  # , % &amp;</code>
+        ///     They may not contain these special characters (or a newline character):
+        ///     <code>\ : * ? " &lt; &gt; | ' # , % &amp;</code>
         ///   </item>
         /// </list>
         /// </summary>
