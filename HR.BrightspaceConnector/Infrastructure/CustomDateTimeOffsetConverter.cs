@@ -15,7 +15,7 @@ namespace HR.BrightspaceConnector.Infrastructure
                 DateTimeFormat,
                 CultureInfo.InvariantCulture,
                 DateTimeStyles.None,
-                out DateTimeOffset value) ? value : throw new JsonException($"The JSON value could not be converted to {typeof(DateTimeOffset)}.");
+                out DateTimeOffset value) ? value.ToLocalTime() : throw new JsonException($"The JSON value could not be converted to {typeof(DateTimeOffset)}.");
         }
 
         public override void Write(Utf8JsonWriter jsonWriter, DateTimeOffset value, JsonSerializerOptions jsonOptions)
