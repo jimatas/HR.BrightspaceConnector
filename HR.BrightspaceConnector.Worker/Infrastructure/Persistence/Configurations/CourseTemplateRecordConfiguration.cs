@@ -11,7 +11,7 @@ namespace HR.BrightspaceConnector.Infrastructure.Persistence.Configurations
         public void Configure(EntityTypeBuilder<CourseTemplateRecord> builder)
         {
             builder.HasNoKey();
-            builder.Property(ct => ct.ParentOrgUnitIds).HasConversion(
+            builder.Property(ct => ct.ParentOrgUnitIds).IsRequired(false).HasConversion(
                 convertToProviderExpression: (IEnumerable<int> values) => values.Any() ? string.Join(',', values) : null,
                 convertFromProviderExpression: (string? value) => !string.IsNullOrEmpty(value) ? value.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries).Select(s => int.Parse(s)) : Enumerable.Empty<int>(),
                 valueComparer: new ValueComparer<IEnumerable<int>>(

@@ -73,6 +73,19 @@ namespace HR.BrightspaceConnector.Tests
         }
 
         [TestMethod]
+        public async Task GetNextCourseOfferingAsync_ReturnsNextCourseOfferingOrNull()
+        {
+            IDatabase database = CreateDatabase();
+
+            CourseOfferingRecord? courseOffering = await database.GetNextCourseOfferingAsync();
+
+            if (courseOffering is not null) // Null is a perfectly valid return value.
+            {
+                Assert.IsNotNull(courseOffering.SyncEventId);
+            }
+        }
+
+        [TestMethod]
         public async Task CompleteCourseOfferingLifecycleIntegrationTest()
         {
             IApiClient apiClient = CreateApiClient();

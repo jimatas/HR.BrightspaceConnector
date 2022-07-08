@@ -12,7 +12,7 @@ namespace HR.BrightspaceConnector.Infrastructure.Persistence.Configurations
         {
             builder.HasNoKey();
             builder.Ignore(ou => ou.Path);
-            builder.Property(ou => ou.Parents).HasConversion(
+            builder.Property(ou => ou.Parents).IsRequired(false).HasConversion(
                 convertToProviderExpression: (IEnumerable<int> values) => values.Any() ? string.Join(',', values) : null,
                 convertFromProviderExpression: (string? value) => !string.IsNullOrEmpty(value) ? value.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries).Select(s => int.Parse(s)) : Enumerable.Empty<int>(),
                 valueComparer: new ValueComparer<IEnumerable<int>>(
