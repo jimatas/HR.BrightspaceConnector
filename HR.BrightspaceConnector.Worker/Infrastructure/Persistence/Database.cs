@@ -57,6 +57,15 @@ namespace HR.BrightspaceConnector.Infrastructure.Persistence
             return courseTemplates.SingleOrDefault();
         }
 
+        public async Task<CourseOfferingRecord?> GetNextCourseOfferingAsync(CancellationToken cancellationToken = default)
+        {
+            var sprocName = $"sync_out_brightspace_{environment.GetStoredProcedureEnvironmentName()}_courseOffering_GetNextEvents";
+            logger.LogDebug("Executing stored procedure '{SprocName}'.", sprocName);
+
+            var courseOfferings = await dbContext.CourseOfferings.FromSqlRaw(sprocName).AsNoTracking().ToListAsync(cancellationToken).WithoutCapturingContext();
+            return courseOfferings.SingleOrDefault();
+        }
+
         public async Task MarkAsHandledAsync(
             int eventId,
             bool success,

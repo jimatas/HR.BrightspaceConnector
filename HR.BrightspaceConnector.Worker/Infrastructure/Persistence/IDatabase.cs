@@ -13,6 +13,7 @@ namespace HR.BrightspaceConnector.Infrastructure.Persistence
         Task<OrgUnitRecord?> GetNextCustomOrgUnitAsync(CancellationToken cancellationToken = default);
         Task<OrgUnitRecord?> GetNextDepartmentAsync(CancellationToken cancellationToken = default);
         Task<CourseTemplateRecord?> GetNextCourseTemplateAsync(CancellationToken cancellationToken = default);
+        Task<CourseOfferingRecord?> GetNextCourseOfferingAsync(CancellationToken cancellationToken = default);
 
         Task MarkAsHandledAsync(
             int eventId,

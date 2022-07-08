@@ -20,5 +20,6 @@ namespace HR.BrightspaceConnector.Infrastructure.Persistence
         public DbSet<UserRecord> Users => Set<UserRecord>();
         public DbSet<OrgUnitRecord> OrgUnits => Set<OrgUnitRecord>();
         public DbSet<CourseTemplateRecord> CourseTemplates => Set<CourseTemplateRecord>();
+        public DbSet<CourseOfferingRecord> CourseOfferings => Set<CourseOfferingRecord>();
     }
 }
