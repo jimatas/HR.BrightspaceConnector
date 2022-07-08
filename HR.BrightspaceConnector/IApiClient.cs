@@ -259,6 +259,21 @@ namespace HR.BrightspaceConnector
         Task<CourseOffering> CreateCourseOfferingAsync(CreateCourseOffering courseOffering, CancellationToken cancellationToken = default);
 
         /// <summary>
+        /// Update a current course offering.
+        /// </summary>
+        /// <remarks>
+        /// This action replaces the associated course offering's data with all the properties you provide.
+        /// <para>
+        /// Oauth2 Scopes: <c>orgunits:course:update</c>
+        /// </para>
+        /// </remarks>
+        /// <param name="orgUnitId"></param>
+        /// <param name="courseOffering">Updated course offering properties.</param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        Task UpdateCourseOfferingAsync(int orgUnitId, CourseOfferingInfo courseOffering, CancellationToken cancellationToken = default);
+
+        /// <summary>
         /// Delete a course offering.
         /// </summary>
         /// <remarks>

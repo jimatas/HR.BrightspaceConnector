@@ -15,7 +15,7 @@
         public override string ToString()
         {
             return !string.IsNullOrEmpty(Content)
-                ? $"{Type ?? TextContentType.Text}: {Content}"
+                ? $"{Type ?? TextContentType.Html}: {Content}"
                 : string.Empty;
         }
     }

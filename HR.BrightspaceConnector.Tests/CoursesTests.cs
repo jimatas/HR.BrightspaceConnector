@@ -107,10 +107,13 @@ namespace HR.BrightspaceConnector.Tests
             Assert.IsNotNull(newCourseOffering);
             Assert.IsNotNull(newCourseOffering.Identifier);
 
-            CourseOffering courseOffering = await apiClient.GetCourseOfferingAsync((int)newCourseOffering.Identifier);
-            Assert.IsNotNull(courseOffering);
+            newCourseOffering.Name = "Sample course offering updated by a unit test";
+            await apiClient.UpdateCourseOfferingAsync((int)newCourseOffering.Identifier!, newCourseOffering);
 
-            await apiClient.DeleteCourseOfferingAsync((int)newCourseOffering.Identifier, permanently: true);
+            CourseOffering updatedCourseOffering = await apiClient.GetCourseOfferingAsync((int)newCourseOffering.Identifier);
+            Assert.AreEqual("Sample course offering updated by a unit test", updatedCourseOffering.Name);
+
+            await apiClient.DeleteCourseOfferingAsync((int)updatedCourseOffering.Identifier!, permanently: true);
             await apiClient.DeleteCourseTemplateAsync((int)newCourseTemplate.Identifier!, permanently: true);
         }
     }

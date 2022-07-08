@@ -17,6 +17,10 @@ namespace HR.BrightspaceConnector.Features.Courses
         /// <summary>
         /// Added with LP API v1.26
         /// </summary>
-        public new RichText? Description { get; set; }
+        public new RichText? Description
+        {
+            get => base.Description?.ToRichText();
+            set => base.Description = value?.ToRichTextInput();
+        }
     }
 }

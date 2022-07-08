@@ -152,6 +152,11 @@ namespace HR.BrightspaceConnector.Infrastructure
             return apiClient.CreateCourseOfferingAsync(courseOffering, cancellationToken);
         }
 
+        public Task UpdateCourseOfferingAsync(int orgUnitId, CourseOfferingInfo courseOffering, CancellationToken cancellationToken = default)
+        {
+            return apiClient.UpdateCourseOfferingAsync(orgUnitId, courseOffering, cancellationToken);
+        }
+
         public Task DeleteCourseOfferingAsync(int orgUnitId, bool permanently = false, CancellationToken cancellationToken = default)
         {
             return apiClient.DeleteCourseOfferingAsync(orgUnitId, permanently, cancellationToken);

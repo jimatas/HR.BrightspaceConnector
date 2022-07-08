@@ -1,4 +1,5 @@
-﻿using HR.BrightspaceConnector.Features.Courses;
+﻿using HR.BrightspaceConnector.Features.Common;
+using HR.BrightspaceConnector.Features.Courses;
 using HR.BrightspaceConnector.Features.OrgUnits;
 using HR.BrightspaceConnector.Features.Users;
 using HR.BrightspaceConnector.Infrastructure;
@@ -313,6 +314,15 @@ namespace HR.BrightspaceConnector
 
             var newCourseOffering = await httpResponse.Content.ReadFromJsonAsync<CourseOffering>(jsonOptions, cancellationToken).WithoutCapturingContext();
             return newCourseOffering!;
+        }
+
+        public async Task UpdateCourseOfferingAsync(int orgUnitId, CourseOfferingInfo courseOffering, CancellationToken cancellationToken = default)
+        {
+            using var httpRequest = new HttpRequestMessage(HttpMethod.Put, $"lp/{apiSettings.LearningPlatformVersion}/courses/{orgUnitId}") { Content = JsonContent.Create(courseOffering, mediaType: null, jsonOptions) };
+            await SetAuthorizationHeaderAsync(httpRequest, cancellationToken).WithoutCapturingContext();
+
+            using var httpResponse = await httpClient.SendAsync(httpRequest, cancellationToken).WithoutCapturingContext();
+            await CheckResponseForErrorAsync(httpResponse, cancellationToken).WithoutCapturingContext();
         }
 
         public async Task DeleteCourseOfferingAsync(int orgUnitId, bool permanently = false, CancellationToken cancellationToken = default)
