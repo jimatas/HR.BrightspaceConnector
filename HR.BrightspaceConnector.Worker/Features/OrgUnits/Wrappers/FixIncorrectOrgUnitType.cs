@@ -1,13 +1,11 @@
-﻿using HR.BrightspaceConnector.Features.OrgUnits.Commands;
+﻿using HR.BrightspaceConnector.Features.OrgUnits.Queries;
 using HR.Common.Cqrs;
-using HR.Common.Cqrs.Commands;
+using HR.Common.Cqrs.Queries;
 using HR.Common.Utilities;
 
 namespace HR.BrightspaceConnector.Features.OrgUnits.Wrappers
 {
-    public class FixIncorrectOrgUnitType :
-        ICommandHandlerWrapper<CreateOrgUnit>,
-        ICommandHandlerWrapper<UpdateOrgUnit>
+    public class FixIncorrectOrgUnitType : IQueryHandlerWrapper<GetNextOrgUnit, OrgUnitRecord?>
     {
         private readonly IApiClient apiClient;
 
@@ -16,34 +14,27 @@ namespace HR.BrightspaceConnector.Features.OrgUnits.Wrappers
             this.apiClient = apiClient;
         }
 
-        public async Task HandleAsync(CreateOrgUnit command, HandlerDelegate next, CancellationToken cancellationToken)
+        public async Task<OrgUnitRecord?> HandleAsync(GetNextOrgUnit query, HandlerDelegate<OrgUnitRecord?> next, CancellationToken cancellationToken)
         {
-            await HandleInternalAsync(command.OrgUnit, next, cancellationToken).WithoutCapturingContext();
-        }
-
-        public async Task HandleAsync(UpdateOrgUnit command, HandlerDelegate next, CancellationToken cancellationToken)
-        {
-            await HandleInternalAsync(command.OrgUnit, next, cancellationToken).WithoutCapturingContext();
-        }
-
-        private async Task HandleInternalAsync(OrgUnitRecord orgUnit, HandlerDelegate next, CancellationToken cancellationToken)
-        {
-            var orgUnitTypes = await apiClient.GetOrgUnitTypesAsync(cancellationToken).WithoutCapturingContext();
-            var orgUnitType = orgUnitTypes.SingleOrDefault(type => string.Equals(type.Code, orgUnit.TypeCode, StringComparison.OrdinalIgnoreCase));
-            if (orgUnitType is not null)
+            OrgUnitRecord? retrievedOrgUnit = await next().WithoutCapturingContext();
+            if (retrievedOrgUnit is not null)
             {
-                if (orgUnit.Type != orgUnitType.Id)
+                var orgUnitTypes = await apiClient.GetOrgUnitTypesAsync(cancellationToken).WithoutCapturingContext();
+                var orgUnitType = orgUnitTypes.SingleOrDefault(type => string.Equals(type.Code, retrievedOrgUnit.TypeCode, StringComparison.OrdinalIgnoreCase));
+                if (orgUnitType is not null)
                 {
-                    orgUnit.Type = orgUnitType.Id;
-                }
+                    if (retrievedOrgUnit.Type != orgUnitType.Id)
+                    {
+                        retrievedOrgUnit.Type = orgUnitType.Id;
+                    }
 
-                if (!string.Equals(orgUnit.TypeCode, orgUnitType.Code, StringComparison.Ordinal))
-                {
-                    orgUnit.TypeCode = orgUnitType.Code;
+                    if (!string.Equals(retrievedOrgUnit.TypeCode, orgUnitType.Code, StringComparison.Ordinal))
+                    {
+                        retrievedOrgUnit.TypeCode = orgUnitType.Code;
+                    }
                 }
             }
-
-            await next().WithoutCapturingContext();
+            return retrievedOrgUnit;
         }
     }
 }
