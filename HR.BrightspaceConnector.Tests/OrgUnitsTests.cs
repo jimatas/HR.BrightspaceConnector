@@ -214,5 +214,23 @@ namespace HR.BrightspaceConnector.Tests
             await apiClient.DeleteOrgUnitAsync((int)childOrgUnit.Identifier, permanently: true);
             await apiClient.DeleteOrgUnitAsync((int)topLevelOrgUnit.Identifier!, permanently: true);
         }
+
+        [TestMethod]
+        public async Task GetOrgUnitsAsync_GivenSemesterByCodeQueryParams_ReturnsIt()
+        {
+            IApiClient apiClient = CreateApiClient();
+
+            var allOrgUnitTypes = await apiClient.GetOrgUnitTypesAsync();
+            var semesterType = allOrgUnitTypes.First(type => type.Code?.Contains("Collegejaar") == true);
+
+            var semesters = await apiClient.GetOrgUnitsAsync(new OrgUnitQueryParameters
+            {
+                ExactOrgUnitCode = "2021",
+                OrgUnitType = semesterType.Id
+            });
+
+            Assert.IsNotNull(semesters);
+            Assert.IsTrue(semesters.Any(), "semesters.Any()");
+        }
     }
 }
