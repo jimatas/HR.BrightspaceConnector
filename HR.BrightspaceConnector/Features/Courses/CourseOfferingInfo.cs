@@ -33,7 +33,7 @@ namespace HR.BrightspaceConnector.Features.Courses
         [JsonConverter(typeof(CustomDateTimeOffsetConverter))]
         public DateTimeOffset? EndDate { get; set; }
 
-        public bool IsActive { get; set; }
+        public bool? IsActive { get; set; }
 
         /// <summary>
         /// Note that this property is optional to include on input for LP API versions 1.25 and earlier; however, if you include it, the contents are ignored. 
