@@ -5,7 +5,6 @@ using HR.BrightspaceConnector.Utilities;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-using System;
 using System.Net;
 using System.Threading.Tasks;
 
