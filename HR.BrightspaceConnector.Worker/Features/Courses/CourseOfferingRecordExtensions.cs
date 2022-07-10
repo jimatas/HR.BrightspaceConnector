@@ -25,5 +25,21 @@ namespace HR.BrightspaceConnector.Features.Courses
                 StartDate = courseOfferingRecord.StartDate
             };
         }
+
+        public static CourseOfferingInfo ToCourseOfferingInfo(this CourseOfferingRecord courseOfferingRecord)
+        {
+            return new CourseOfferingInfo
+            {
+                CanSelfRegister = courseOfferingRecord.CanSelfRegister,
+                Code = courseOfferingRecord.Code,
+                Description = !string.IsNullOrEmpty(courseOfferingRecord.Description)
+                    ? new RichTextInput { Content = courseOfferingRecord.Description, Type = TextContentType.Html }
+                    : null,
+                EndDate = courseOfferingRecord.EndDate,
+                IsActive = courseOfferingRecord.IsActive,
+                Name = courseOfferingRecord.Name,
+                StartDate = courseOfferingRecord.StartDate
+            };
+        }
     }
 }
