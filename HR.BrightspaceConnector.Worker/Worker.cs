@@ -35,6 +35,7 @@ namespace HR.BrightspaceConnector
                     await commandDispatcher.DispatchAsync(new ProcessOrgUnits(batchSettings.BatchSize, isDepartmentType: false, isDeleteContext), stoppingToken).WithoutCapturingContext();
                     await commandDispatcher.DispatchAsync(new ProcessOrgUnits(batchSettings.BatchSize, isDepartmentType: true, isDeleteContext), stoppingToken).WithoutCapturingContext();
                     await commandDispatcher.DispatchAsync(new ProcessCourseTemplates(batchSettings.BatchSize, isDeleteContext), stoppingToken).WithoutCapturingContext();
+                    await commandDispatcher.DispatchAsync(new ProcessCourseOfferings(batchSettings.BatchSize, isDeleteContext), stoppingToken).WithoutCapturingContext();
 
                     logger.LogInformation("Done running batch.");
 
