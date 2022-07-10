@@ -10,6 +10,7 @@ namespace HR.BrightspaceConnector.Infrastructure.Persistence.Configurations
         public void Configure(EntityTypeBuilder<CourseOfferingRecord> builder)
         {
             builder.HasNoKey();
+            builder.Property(co => co.SyncInternalKey).HasConversion<int>();
             builder.Property(co => co.SemesterId).HasConversion<short>();
             builder.Property(co => co.IsActive).HasConversion<int>();
             builder.Property(co => co.ForceLocale).HasConversion<int>();

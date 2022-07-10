@@ -1,5 +1,5 @@
 ﻿using HR.BrightspaceConnector.Features.OrgUnits;
-using HR.BrightspaceConnector.Features.OrgUnits.Commands;
+using HR.BrightspaceConnector.Features.OrgUnits.Queries;
 using HR.BrightspaceConnector.Features.OrgUnits.Wrappers;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -17,7 +17,7 @@ namespace HR.BrightspaceConnector.Tests
         private readonly Mock<IApiClient> mockedApiClient = new();
 
         [TestMethod]
-        public async Task GivenOrgUnitToCreateWithIncorrectTypeId_CorrectsIt()
+        public async Task GivenOrgUnitWithIncorrectTypeId_CorrectsIt()
         {
             // Arrange
             mockedApiClient.Setup(apiClient => apiClient.GetOrgUnitTypesAsync(default)).ReturnsAsync(new[] {
@@ -26,26 +26,34 @@ namespace HR.BrightspaceConnector.Tests
                 new OrgUnitType { Code = "Semester", Id = 104 }
             });
 
-            FixIncorrectOrgUnitType handler = new(mockedApiClient.Object);
-            CreateOrgUnit command = new(new OrgUnitRecord
+            var nextOrgUnit = new OrgUnitRecord
             {
                 Code = "HR-FIT",
                 Name = "Dienst FIT",
                 Type = 100, // Incorrect, should be 102.
                 TypeCode = "Instituut",
                 Parents = new[] { 6606 },
-                SyncAction = 'c'
-            });
+                Path = null,
+                SyncAction = 'c',
+                SyncEventId = Random.Shared.Next(1, int.MaxValue),
+                SyncExternalKey = null,
+                SyncInternalKey = Guid.NewGuid().ToString()
+            };
+
+            FixIncorrectOrgUnitType handler = new(mockedApiClient.Object);
 
             // Act
-            await handler.HandleAsync(command, () => Task.CompletedTask, default);
+            var result = await handler.HandleAsync(
+                query: new GetNextOrgUnit(isDepartmentType: false),
+                next: () => Task.FromResult<OrgUnitRecord?>(nextOrgUnit),
+                cancellationToken: default);
 
             // Assert
-            Assert.AreEqual(102, command.OrgUnit.Type);
+            Assert.AreEqual(102, result!.Type);
         }
 
         [TestMethod]
-        public async Task GivenOrgUnitToCreateWithMiscapitalizedTypeCode_CorrectsIt()
+        public async Task GivenOrgUnitWithMiscapitalizedTypeCode_CorrectsIt()
         {
             // Arrange
             mockedApiClient.Setup(apiClient => apiClient.GetOrgUnitTypesAsync(default)).ReturnsAsync(new[] {
@@ -54,80 +62,30 @@ namespace HR.BrightspaceConnector.Tests
                 new OrgUnitType { Code = "Semester", Id = 104 }
             });
 
-            FixIncorrectOrgUnitType handler = new(mockedApiClient.Object);
-            CreateOrgUnit command = new(new OrgUnitRecord
+            var nextOrgUnit = new OrgUnitRecord
             {
                 Code = "HR-FIT",
                 Name = "Dienst FIT",
                 Type = 102,
-                TypeCode = "instituut", // All lowercase, should be capitalized.
+                TypeCode = "instituut", // All lowercase, first letter should be capitalized.
                 Parents = new[] { 6606 },
-                SyncAction = 'c'
-            });
-
-            // Act
-            await handler.HandleAsync(command, () => Task.CompletedTask, default);
-
-            // Assert
-            Assert.AreEqual("Instituut", command.OrgUnit.TypeCode);
-        }
-
-        [TestMethod]
-        public async Task GivenOrgUnitToUpdateWithIncorrectTypeId_CorrectsIt()
-        {
-            // Arrange
-            mockedApiClient.Setup(apiClient => apiClient.GetOrgUnitTypesAsync(default)).ReturnsAsync(new[] {
-                new OrgUnitType { Code = "Instituut", Id = 102, },
-                new OrgUnitType { Code = "Opleiding", Id = 103, },
-                new OrgUnitType { Code = "Semester", Id = 104 }
-            });
+                Path = null,
+                SyncAction = 'c',
+                SyncEventId = Random.Shared.Next(1, int.MaxValue),
+                SyncExternalKey = null,
+                SyncInternalKey = Guid.NewGuid().ToString()
+            };
 
             FixIncorrectOrgUnitType handler = new(mockedApiClient.Object);
-            UpdateOrgUnit command = new(new OrgUnitRecord
-            {
-                Code = "HR-FIT",
-                Name = "Dienst FIT",
-                Type = 100, // Incorrect, should be 102.
-                TypeCode = "Instituut",
-                Parents = new[] { 6606 },
-                SyncAction = 'u',
-                SyncExternalKey = Random.Shared.Next(1, int.MaxValue).ToString()
-            });
 
             // Act
-            await handler.HandleAsync(command, () => Task.CompletedTask, default);
+            var result = await handler.HandleAsync(
+                query: new GetNextOrgUnit(isDepartmentType: false),
+                next: () => Task.FromResult<OrgUnitRecord?>(nextOrgUnit),
+                cancellationToken: default);
 
             // Assert
-            Assert.AreEqual(102, command.OrgUnit.Type);
-        }
-
-        [TestMethod]
-        public async Task GivenOrgUnitToUpdateWithMiscapitalizedTypeCode_CorrectsIt()
-        {
-            // Arrange
-            mockedApiClient.Setup(apiClient => apiClient.GetOrgUnitTypesAsync(default)).ReturnsAsync(new[] {
-                new OrgUnitType { Code = "Instituut", Id = 102, },
-                new OrgUnitType { Code = "Opleiding", Id = 103, },
-                new OrgUnitType { Code = "Semester", Id = 104 }
-            });
-
-            FixIncorrectOrgUnitType handler = new(mockedApiClient.Object);
-            UpdateOrgUnit command = new(new OrgUnitRecord
-            {
-                Code = "HR-FIT",
-                Name = "Dienst FIT",
-                Type = 102,
-                TypeCode = "instituut", // All lowercase, should be capitalized.
-                Parents = new[] { 6606 },
-                SyncAction = 'u',
-                SyncExternalKey = Random.Shared.Next(1, int.MaxValue).ToString()
-            });
-
-            // Act
-            await handler.HandleAsync(command, () => Task.CompletedTask, default);
-
-            // Assert
-            Assert.AreEqual("Instituut", command.OrgUnit.TypeCode);
+            Assert.AreEqual("Instituut", result!.TypeCode);
         }
     }
 }
