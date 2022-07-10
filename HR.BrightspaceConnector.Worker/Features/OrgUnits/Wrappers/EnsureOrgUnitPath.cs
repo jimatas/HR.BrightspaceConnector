@@ -6,6 +6,10 @@ using HR.Common.Utilities;
 
 namespace HR.BrightspaceConnector.Features.OrgUnits.Wrappers
 {
+    /// <summary>
+    /// Decorates the command to update an orgunit in Brightspace. The orgunit retrieved from the database may not have its path set, while the update route for orgunits expects it to be passed in.
+    /// This decorator will look up the path from Brightspace and update the command with it if necessary.
+    /// </summary>
     public class EnsureOrgUnitPath : ICommandHandlerWrapper<UpdateOrgUnit>
     {
         private readonly IApiClient apiClient;
