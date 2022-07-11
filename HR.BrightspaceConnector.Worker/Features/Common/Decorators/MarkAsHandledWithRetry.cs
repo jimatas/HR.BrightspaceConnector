@@ -7,7 +7,7 @@ using HR.Common.Utilities;
 
 using Microsoft.Extensions.Options;
 
-namespace HR.BrightspaceConnector.Features.Common.Wrappers
+namespace HR.BrightspaceConnector.Features.Common.Decorators
 {
     public class MarkAsHandledWithRetry : ICommandHandlerWrapper<MarkAsHandled>
     {

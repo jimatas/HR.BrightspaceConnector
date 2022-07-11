@@ -4,7 +4,7 @@ using HR.Common.Cqrs;
 using HR.Common.Cqrs.Commands;
 using HR.Common.Utilities;
 
-namespace HR.BrightspaceConnector.Features.OrgUnits.Wrappers
+namespace HR.BrightspaceConnector.Features.OrgUnits.Decorators
 {
     /// <summary>
     /// Decorates the command to update an orgunit in Brightspace. The orgunit retrieved from the database may not have its path set, while the update route for orgunits expects it to be passed in.

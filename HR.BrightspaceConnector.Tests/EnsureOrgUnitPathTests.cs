@@ -1,6 +1,6 @@
 ﻿using HR.BrightspaceConnector.Features.OrgUnits;
 using HR.BrightspaceConnector.Features.OrgUnits.Commands;
-using HR.BrightspaceConnector.Features.OrgUnits.Wrappers;
+using HR.BrightspaceConnector.Features.OrgUnits.Decorators;
 using HR.BrightspaceConnector.Infrastructure;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;

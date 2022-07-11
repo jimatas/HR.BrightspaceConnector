@@ -3,7 +3,7 @@ using HR.Common.Cqrs;
 using HR.Common.Cqrs.Queries;
 using HR.Common.Utilities;
 
-namespace HR.BrightspaceConnector.Features.OrgUnits.Wrappers
+namespace HR.BrightspaceConnector.Features.OrgUnits.Decorators
 {
     /// <summary>
     /// Decorates the query that retrieves the next orgunit record from the database. This record may contain an incorrect orgunit type ID. 

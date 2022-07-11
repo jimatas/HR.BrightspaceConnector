@@ -6,7 +6,7 @@ using HR.Common.Utilities;
 
 using Microsoft.Extensions.Options;
 
-namespace HR.BrightspaceConnector.Features.Common.Wrappers
+namespace HR.BrightspaceConnector.Features.Common.Decorators
 {
     public class HandleQueryWithRetry<TQuery, TResult> : IQueryHandlerWrapper<TQuery, TResult>
         where TQuery : IQuery<TResult>
