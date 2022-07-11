@@ -12,6 +12,7 @@ namespace HR.BrightspaceConnector.Features.Courses
         public DateTimeOffset? EndDate { get; set; }
         public int? CourseTemplateId { get; set; }
         public int? SemesterId { get; set; }
+        public string? SemesterCode { get; set; }
         public int? LocaleId { get; set; }
         public bool? ForceLocale { get; set; }
         public bool? ShowAddressBook { get; set; }

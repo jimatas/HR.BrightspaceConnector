@@ -11,7 +11,6 @@ namespace HR.BrightspaceConnector.Infrastructure.Persistence.Configurations
         {
             builder.HasNoKey();
             builder.Property(co => co.SyncInternalKey).HasConversion<int>();
-            builder.Property(co => co.SemesterId).HasConversion<short>();
             builder.Property(co => co.IsActive).HasConversion<int>();
             builder.Property(co => co.ForceLocale).HasConversion<int>();
             builder.Property(co => co.ShowAddressBook).HasConversion<int>();
