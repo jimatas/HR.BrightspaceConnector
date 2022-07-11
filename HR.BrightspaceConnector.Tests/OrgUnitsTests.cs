@@ -1,6 +1,8 @@
-﻿using HR.BrightspaceConnector.Features.OrgUnits;
+﻿using HR.BrightspaceConnector.Features.Common;
+using HR.BrightspaceConnector.Features.OrgUnits;
 using HR.BrightspaceConnector.Infrastructure.Persistence;
 
+using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using System;
@@ -14,6 +16,9 @@ namespace HR.BrightspaceConnector.Tests
     [TestClass]
     public class OrgUnitsTests : IntegrationTestsBase
     {
+        private static readonly StandardOrgUnitTypeCodes StandardOrgUnitTypeCodes =
+            Configuration!.GetRequiredSection(nameof(StandardOrgUnitTypeCodes)).Get<StandardOrgUnitTypeCodes>();
+
         [TestMethod]
         public async Task GetNextCustomOrgUnitAsync_ReturnsCustomOrgUnitOrNull()
         {
@@ -61,7 +66,7 @@ namespace HR.BrightspaceConnector.Tests
             Assert.IsNotNull(orgUnitTypes);
             Assert.IsTrue(orgUnitTypes.Any(), "orgUnitTypes.Any()");
 
-            var orgUnits = orgUnitTypes.Where(type => string.Equals(type.Code, "Instituut", StringComparison.OrdinalIgnoreCase));
+            var orgUnits = orgUnitTypes.Where(type => string.Equals(type.Code, StandardOrgUnitTypeCodes.CustomOrgUnit, StringComparison.OrdinalIgnoreCase));
             Assert.IsTrue(orgUnits.Any(), "orgUnits.Any()");
         }
 
@@ -95,7 +100,7 @@ namespace HR.BrightspaceConnector.Tests
             Organization rootOrganization = await apiClient.GetOrganizationAsync();
 
             IEnumerable<OrgUnitType> orgUnitTypes = await apiClient.GetOrgUnitTypesAsync();
-            OrgUnitType orgUnitType = orgUnitTypes.Single(type => string.Equals(type.Code, "Instituut", StringComparison.OrdinalIgnoreCase));
+            OrgUnitType orgUnitType = orgUnitTypes.Single(type => string.Equals(type.Code, StandardOrgUnitTypeCodes.CustomOrgUnit, StringComparison.OrdinalIgnoreCase));
 
             var orgUnitToCreate = new OrgUnitCreateData
             {
@@ -120,7 +125,7 @@ namespace HR.BrightspaceConnector.Tests
             Organization rootOrganization = await apiClient.GetOrganizationAsync();
 
             IEnumerable<OrgUnitType> orgUnitTypes = await apiClient.GetOrgUnitTypesAsync();
-            OrgUnitType orgUnitType = orgUnitTypes.Single(type => string.Equals(type.Code, "Instituut", StringComparison.OrdinalIgnoreCase));
+            OrgUnitType orgUnitType = orgUnitTypes.Single(type => string.Equals(type.Code, StandardOrgUnitTypeCodes.CustomOrgUnit, StringComparison.OrdinalIgnoreCase));
             var orgUnitToCreate = new OrgUnitCreateData
             {
                 Code = "HR-FIT",
@@ -156,7 +161,7 @@ namespace HR.BrightspaceConnector.Tests
             Organization rootOrganization = await apiClient.GetOrganizationAsync();
 
             IEnumerable<OrgUnitType> orgUnitTypes = await apiClient.GetOrgUnitTypesAsync();
-            OrgUnitType orgUnitType = orgUnitTypes.Single(type => string.Equals(type.Code, "Instituut", StringComparison.OrdinalIgnoreCase));
+            OrgUnitType orgUnitType = orgUnitTypes.Single(type => string.Equals(type.Code, StandardOrgUnitTypeCodes.CustomOrgUnit, StringComparison.OrdinalIgnoreCase));
             var orgUnitToCreate = new OrgUnitCreateData
             {
                 Code = "HR-FIT",
@@ -180,7 +185,7 @@ namespace HR.BrightspaceConnector.Tests
             Organization rootOrganization = await apiClient.GetOrganizationAsync();
 
             IEnumerable<OrgUnitType> orgUnitTypes = await apiClient.GetOrgUnitTypesAsync();
-            OrgUnitType orgUnitType = orgUnitTypes.Single(type => string.Equals(type.Code, "Instituut", StringComparison.OrdinalIgnoreCase));
+            OrgUnitType orgUnitType = orgUnitTypes.Single(type => string.Equals(type.Code, StandardOrgUnitTypeCodes.CustomOrgUnit, StringComparison.OrdinalIgnoreCase));
             var orgUnitToCreate = new OrgUnitCreateData
             {
                 Code = "HR-FIT",
@@ -193,7 +198,7 @@ namespace HR.BrightspaceConnector.Tests
             Assert.IsNotNull(topLevelOrgUnit.Identifier);
             Assert.AreEqual(orgUnitToCreate.Code, topLevelOrgUnit.Code);
 
-            orgUnitType = orgUnitTypes.Single(type => string.Equals(type.Code, "Opleiding", StringComparison.OrdinalIgnoreCase));
+            orgUnitType = orgUnitTypes.Single(type => string.Equals(type.Code, StandardOrgUnitTypeCodes.Department, StringComparison.OrdinalIgnoreCase));
             orgUnitToCreate = new OrgUnitCreateData
             {
                 Code = "HR-FIT-TAB",
@@ -221,7 +226,7 @@ namespace HR.BrightspaceConnector.Tests
             IApiClient apiClient = CreateApiClient();
 
             var allOrgUnitTypes = await apiClient.GetOrgUnitTypesAsync();
-            var semesterType = allOrgUnitTypes.First(type => type.Code?.Contains("Collegejaar") == true);
+            var semesterType = allOrgUnitTypes.First(type => string.Equals(type.Code, StandardOrgUnitTypeCodes.Semester, StringComparison.OrdinalIgnoreCase));
 
             var semesters = await apiClient.GetOrgUnitsAsync(new OrgUnitQueryParameters
             {

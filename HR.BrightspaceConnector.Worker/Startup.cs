@@ -1,4 +1,5 @@
 ﻿using HR.BrightspaceConnector;
+using HR.BrightspaceConnector.Features.Common;
 using HR.BrightspaceConnector.Infrastructure;
 using HR.BrightspaceConnector.Infrastructure.Persistence;
 using HR.BrightspaceConnector.Security;
@@ -68,6 +69,8 @@ internal class Startup
         {
             Validator.ValidateObject(recoverySettings, new ValidationContext(recoverySettings), validateAllProperties: true);
         });
+
+        services.Configure<StandardOrgUnitTypeCodes>(Configuration.GetSection(nameof(StandardOrgUnitTypeCodes)));
 
         string? userAgentString = Configuration["UserAgentString"];
 

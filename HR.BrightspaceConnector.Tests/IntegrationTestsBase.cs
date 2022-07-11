@@ -31,7 +31,7 @@ namespace HR.BrightspaceConnector.Tests
                 .Build();
         }
 
-        protected static IConfiguration Configuration { get; }
+        protected static IConfiguration? Configuration { get; }
 
         protected IApiClient CreateApiClient()
         {
@@ -49,7 +49,7 @@ namespace HR.BrightspaceConnector.Tests
             {
                 var httpClient = new HttpClient { BaseAddress = baseAddress };
                 httpClient.DefaultRequestHeaders.Accept.TryParseAdd(MediaTypeNames.Application.Json);
-                httpClient.DefaultRequestHeaders.UserAgent.TryParseAdd(Configuration["UserAgentString"]);
+                httpClient.DefaultRequestHeaders.UserAgent.TryParseAdd(Configuration!["UserAgentString"]);
 
                 return httpClient;
             }
