@@ -146,14 +146,11 @@ namespace HR.BrightspaceConnector.Tests
         public async Task GivenCourseTemplateToDeleteInNonDeleteContext_DoesNothing()
         {
             // Arrange
-            int eventId = Random.Shared.Next(1, int.MaxValue);
-            int courseTemplateId = Random.Shared.Next(1, int.MaxValue);
-
             mockedDatabase.Setup(database => database.GetNextCourseTemplateAsync(default)).ReturnsAsync(new CourseTemplateRecord
             {
                 SyncAction = 'd',
-                SyncEventId = eventId,
-                SyncExternalKey = courseTemplateId.ToString(),
+                SyncEventId = Random.Shared.Next(1, int.MaxValue),
+                SyncExternalKey = Random.Shared.Next(1, int.MaxValue).ToString(),
                 SyncInternalKey = Guid.NewGuid().ToString()
             });
 
