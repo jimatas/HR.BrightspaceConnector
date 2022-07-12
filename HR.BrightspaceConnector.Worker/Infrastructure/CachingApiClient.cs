@@ -1,4 +1,5 @@
 ﻿using HR.BrightspaceConnector.Features.Courses;
+using HR.BrightspaceConnector.Features.Enrollments;
 using HR.BrightspaceConnector.Features.OrgUnits;
 using HR.BrightspaceConnector.Features.Users;
 using HR.Common.Utilities;
@@ -160,6 +161,18 @@ namespace HR.BrightspaceConnector.Infrastructure
         public Task DeleteCourseOfferingAsync(int orgUnitId, bool permanently = false, CancellationToken cancellationToken = default)
         {
             return apiClient.DeleteCourseOfferingAsync(orgUnitId, permanently, cancellationToken);
+        }
+        #endregion
+
+        #region Enrollments
+        public Task<EnrollmentData> CreateOrUpdateEnrollmentAsync(CreateEnrollmentData enrollment, CancellationToken cancellationToken = default)
+        {
+            return apiClient.CreateOrUpdateEnrollmentAsync(enrollment, cancellationToken);
+        }
+
+        public Task<EnrollmentData> DeleteEnrollmentAsync(int userId, int orgUnitId, CancellationToken cancellationToken = default)
+        {
+            return apiClient.DeleteEnrollmentAsync(userId, orgUnitId, cancellationToken);
         }
         #endregion
 

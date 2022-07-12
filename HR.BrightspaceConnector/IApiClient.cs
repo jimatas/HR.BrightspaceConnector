@@ -1,4 +1,5 @@
 ﻿using HR.BrightspaceConnector.Features.Courses;
+using HR.BrightspaceConnector.Features.Enrollments;
 using HR.BrightspaceConnector.Features.OrgUnits;
 using HR.BrightspaceConnector.Features.Users;
 using HR.BrightspaceConnector.Infrastructure;
@@ -288,6 +289,35 @@ namespace HR.BrightspaceConnector
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         Task DeleteCourseOfferingAsync(int orgUnitId, bool permanently = false, CancellationToken cancellationToken = default);
+        #endregion
+
+        #region Enrollments
+        /// <summary>
+        /// Create or update a new enrollment for a user.
+        /// </summary>
+        /// <remarks>
+        /// If the user doesn't already have an enrollment in the applicable org unit, this action creates a new enrollment; 
+        /// if the user does already have an enrollment in the org unit, this action updates the enrollment in place to use the new role.
+        /// <para>
+        /// Oauth2 Scopes: <c>enrollment:orgunit:create</c>
+        /// </para>
+        /// </remarks>
+        /// <param name="enrollment"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns>This action returns an EnrollmentData JSON block for the newly enrolled user.</returns>
+        Task<EnrollmentData> CreateOrUpdateEnrollmentAsync(CreateEnrollmentData enrollment, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Delete a user's enrollment in a provided org unit.
+        /// </summary>
+        /// <remarks>
+        /// Oauth2 Scopes: <c>enrollment:orgunit:delete</c>
+        /// </remarks>
+        /// <param name="userId"></param>
+        /// <param name="orgUnitId"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns>Unlike most delete actions, this action returns an EnrollmentData JSON block showing the enrollment status just before this action deleted the user's enrollment.</returns>
+        Task<EnrollmentData> DeleteEnrollmentAsync(int userId, int orgUnitId, CancellationToken cancellationToken = default);
         #endregion
     }
 }

@@ -1,5 +1,6 @@
 ﻿using HR.BrightspaceConnector.Features.Common;
 using HR.BrightspaceConnector.Features.Courses;
+using HR.BrightspaceConnector.Features.Enrollments;
 using HR.BrightspaceConnector.Features.OrgUnits;
 using HR.BrightspaceConnector.Features.Users;
 using HR.BrightspaceConnector.Infrastructure;
@@ -328,6 +329,32 @@ namespace HR.BrightspaceConnector
         public async Task DeleteCourseOfferingAsync(int orgUnitId, bool permanently = false, CancellationToken cancellationToken = default)
         {
             await DeleteOrgUnitAsync(orgUnitId, permanently, cancellationToken).WithoutCapturingContext();
+        }
+        #endregion
+
+        #region Enrollments
+        public async Task<EnrollmentData> CreateOrUpdateEnrollmentAsync(CreateEnrollmentData enrollment, CancellationToken cancellationToken = default)
+        {
+            using var httpRequest = new HttpRequestMessage(HttpMethod.Post, $"lp/{apiSettings.LearningPlatformVersion}/enrollments/") { Content = JsonContent.Create(enrollment, mediaType: null, jsonOptions) };
+            await SetAuthorizationHeaderAsync(httpRequest, cancellationToken).WithoutCapturingContext();
+
+            using var httpResponse = await httpClient.SendAsync(httpRequest, cancellationToken).WithoutCapturingContext();
+            await CheckResponseForErrorAsync(httpResponse, cancellationToken).WithoutCapturingContext();
+
+            var newEnrollment = await httpResponse.Content.ReadFromJsonAsync<EnrollmentData>(jsonOptions, cancellationToken).WithoutCapturingContext();
+            return newEnrollment!;
+        }
+
+        public async Task<EnrollmentData> DeleteEnrollmentAsync(int userId, int orgUnitId, CancellationToken cancellationToken = default)
+        {
+            using var httpRequest = new HttpRequestMessage(HttpMethod.Delete, $"lp/{apiSettings.LearningPlatformVersion}/enrollments/users/{userId}/orgUnits/{orgUnitId}");
+            await SetAuthorizationHeaderAsync(httpRequest, cancellationToken).WithoutCapturingContext();
+
+            using var httpResponse = await httpClient.SendAsync(httpRequest, cancellationToken).WithoutCapturingContext();
+            await CheckResponseForErrorAsync(httpResponse, cancellationToken).WithoutCapturingContext();
+
+            var deletedEnrollment = await httpResponse.Content.ReadFromJsonAsync<EnrollmentData>(jsonOptions, cancellationToken).WithoutCapturingContext();
+            return deletedEnrollment!;
         }
         #endregion
 
