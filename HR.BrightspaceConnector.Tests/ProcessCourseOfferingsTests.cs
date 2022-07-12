@@ -179,5 +179,73 @@ namespace HR.BrightspaceConnector.Tests
             mockedDatabase.VerifyNoOtherCalls();
             mockedApiClient.VerifyNoOtherCalls();
         }
+
+        [TestMethod]
+        public async Task GivenCourseOfferingToUpdate_UpdatesIt()
+        {
+            // Arrange
+            int eventId = Random.Shared.Next(1, int.MaxValue);
+            int courseOfferingId = Random.Shared.Next(1, int.MaxValue);
+
+            var courseOfferingRecord = new CourseOfferingRecord
+            {
+                Code = "HR-SampleCourseOffering",
+                Name = "Sample course offering updated by a unit test",
+                CourseTemplateId = Random.Shared.Next(1, int.MaxValue),
+                Description = "This course offering is a sample that was created and then updated by a unit test. You can safely ignore it.",
+                SemesterCode = "2021",
+                SemesterId = Random.Shared.Next(1, int.MaxValue),
+                SyncAction = 'u',
+                SyncEventId = eventId,
+                SyncExternalKey = courseOfferingId.ToString(),
+                SyncInternalKey = Guid.NewGuid().ToString()
+            };
+
+            mockedDatabase.Setup(database => database.GetNextCourseOfferingAsync(default)).ReturnsAsync(courseOfferingRecord);
+            mockedDatabase.Setup(database => database.MarkAsHandledAsync(eventId, true, courseOfferingId, null, default));
+
+            mockedApiClient.Setup(apiClient => apiClient.UpdateCourseOfferingAsync(courseOfferingId,
+                It.Is<CourseOfferingInfo>(courseOfferingInfo => Assert.That.AreEqual(courseOfferingRecord.ToCourseOfferingInfo(), courseOfferingInfo)), default));
+
+            IServiceProvider serviceProvider = CreateServiceProvider(mockedDatabase.Object, mockedApiClient.Object);
+            ICommandDispatcher commandDispatcher = serviceProvider.GetRequiredService<ICommandDispatcher>();
+
+            // Act
+            await commandDispatcher.DispatchAsync(new ProcessCourseOfferings(batchSize: 1, isDeleteContext: false));
+
+            // Assert
+            mockedDatabase.VerifyAll();
+            mockedApiClient.VerifyAll();
+        }
+
+        [TestMethod]
+        public async Task GivenCourseOfferingToUpdateInDeleteContext_DoesNothing()
+        {
+            // Arrange
+            mockedDatabase.Setup(database => database.GetNextCourseOfferingAsync(default)).ReturnsAsync(new CourseOfferingRecord
+            {
+                Code = "HR-SampleCourseOffering",
+                Name = "Sample course offering updated by a unit test",
+                CourseTemplateId = Random.Shared.Next(1, int.MaxValue),
+                Description = "This course offering is a sample that was created and then updated by a unit test. You can safely ignore it.",
+                SemesterCode = "2021",
+                SemesterId = Random.Shared.Next(1, int.MaxValue),
+                SyncAction = 'u',
+                SyncEventId = Random.Shared.Next(1, int.MaxValue),
+                SyncExternalKey = Random.Shared.Next(1, int.MaxValue).ToString(),
+                SyncInternalKey = Guid.NewGuid().ToString()
+            });
+
+            IServiceProvider serviceProvider = CreateServiceProvider(mockedDatabase.Object, mockedApiClient.Object);
+            ICommandDispatcher commandDispatcher = serviceProvider.GetRequiredService<ICommandDispatcher>();
+
+            // Act
+            await commandDispatcher.DispatchAsync(new ProcessCourseOfferings(batchSize: 1, isDeleteContext: true));
+
+            // Assert
+            mockedDatabase.Verify(database => database.GetNextCourseOfferingAsync(default), Times.Once());
+            mockedDatabase.VerifyNoOtherCalls();
+            mockedApiClient.VerifyNoOtherCalls();
+        }
     }
 }
