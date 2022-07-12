@@ -308,6 +308,18 @@ namespace HR.BrightspaceConnector
         Task<EnrollmentData> CreateOrUpdateEnrollmentAsync(CreateEnrollmentData enrollment, CancellationToken cancellationToken = default);
 
         /// <summary>
+        /// Retrieve enrollment details in an org unit for the provided user.
+        /// </summary>
+        /// <remarks>
+        /// Oauth2 Scopes: <c>enrollment:orgunit:read</c>
+        /// </remarks>
+        /// <param name="userId"></param>
+        /// <param name="orgUnitId"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns>This action returns an EnrollmentData JSON block.</returns>
+        Task<EnrollmentData> GetEnrollmentAsync(int userId, int orgUnitId, CancellationToken cancellationToken = default);
+
+        /// <summary>
         /// Delete a user's enrollment in a provided org unit.
         /// </summary>
         /// <remarks>

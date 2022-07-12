@@ -345,6 +345,18 @@ namespace HR.BrightspaceConnector
             return newEnrollment!;
         }
 
+        public async Task<EnrollmentData> GetEnrollmentAsync(int userId, int orgUnitId, CancellationToken cancellationToken = default)
+        {
+            using var httpRequest = new HttpRequestMessage(HttpMethod.Get, $"lp/{apiSettings.LearningPlatformVersion}/enrollments/users/{userId}/orgUnits/{orgUnitId}");
+            await SetAuthorizationHeaderAsync(httpRequest, cancellationToken).WithoutCapturingContext();
+
+            using var httpResponse = await httpClient.SendAsync(httpRequest, cancellationToken).WithoutCapturingContext();
+            await CheckResponseForErrorAsync(httpResponse, cancellationToken).WithoutCapturingContext();
+
+            var enrollment = await httpResponse.Content.ReadFromJsonAsync<EnrollmentData>(jsonOptions, cancellationToken).WithoutCapturingContext();
+            return enrollment!;
+        }
+
         public async Task<EnrollmentData> DeleteEnrollmentAsync(int userId, int orgUnitId, CancellationToken cancellationToken = default)
         {
             using var httpRequest = new HttpRequestMessage(HttpMethod.Delete, $"lp/{apiSettings.LearningPlatformVersion}/enrollments/users/{userId}/orgUnits/{orgUnitId}");

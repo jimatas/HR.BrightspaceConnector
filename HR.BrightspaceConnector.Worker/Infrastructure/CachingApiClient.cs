@@ -170,6 +170,11 @@ namespace HR.BrightspaceConnector.Infrastructure
             return apiClient.CreateOrUpdateEnrollmentAsync(enrollment, cancellationToken);
         }
 
+        public Task<EnrollmentData> GetEnrollmentAsync(int userId, int orgUnitId, CancellationToken cancellationToken = default)
+        {
+            return apiClient.GetEnrollmentAsync(userId, orgUnitId, cancellationToken);
+        }
+
         public Task<EnrollmentData> DeleteEnrollmentAsync(int userId, int orgUnitId, CancellationToken cancellationToken = default)
         {
             return apiClient.DeleteEnrollmentAsync(userId, orgUnitId, cancellationToken);
