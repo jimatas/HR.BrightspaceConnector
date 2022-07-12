@@ -1,4 +1,5 @@
 ﻿using HR.BrightspaceConnector.Features.Courses;
+using HR.BrightspaceConnector.Features.Enrollments;
 using HR.BrightspaceConnector.Features.OrgUnits;
 using HR.BrightspaceConnector.Features.Users;
 
@@ -21,5 +22,6 @@ namespace HR.BrightspaceConnector.Infrastructure.Persistence
         public DbSet<OrgUnitRecord> OrgUnits => Set<OrgUnitRecord>();
         public DbSet<CourseTemplateRecord> CourseTemplates => Set<CourseTemplateRecord>();
         public DbSet<CourseOfferingRecord> CourseOfferings => Set<CourseOfferingRecord>();
+        public DbSet<EnrollmentRecord> CourseOfferingEnrollments => Set<EnrollmentRecord>();
     }
 }

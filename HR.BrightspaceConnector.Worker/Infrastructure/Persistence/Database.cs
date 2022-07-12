@@ -1,4 +1,5 @@
 ﻿using HR.BrightspaceConnector.Features.Courses;
+using HR.BrightspaceConnector.Features.Enrollments;
 using HR.BrightspaceConnector.Features.OrgUnits;
 using HR.BrightspaceConnector.Features.Users;
 using HR.BrightspaceConnector.Infrastructure.Hosting;
@@ -64,6 +65,15 @@ namespace HR.BrightspaceConnector.Infrastructure.Persistence
 
             var courseOfferings = await dbContext.CourseOfferings.FromSqlRaw(sprocName).AsNoTracking().ToListAsync(cancellationToken).WithoutCapturingContext();
             return courseOfferings.SingleOrDefault();
+        }
+
+        public async Task<EnrollmentRecord?> GetNextCourseOfferingEnrollmentAsync(CancellationToken cancellationToken = default)
+        {
+            var sprocName = $"sync_out_brightspace_{environment.GetStoredProcedureEnvironmentName()}_courseOfferingEnrollment_GetNextEvents";
+            logger.LogDebug("Executing stored procedure '{SprocName}'.", sprocName);
+
+            var courseOfferingEnrollments = await dbContext.CourseOfferingEnrollments.FromSqlRaw(sprocName).AsNoTracking().ToListAsync(cancellationToken).WithoutCapturingContext();
+            return courseOfferingEnrollments.SingleOrDefault();
         }
 
         public async Task MarkAsHandledAsync(

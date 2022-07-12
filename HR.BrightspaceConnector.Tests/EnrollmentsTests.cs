@@ -2,6 +2,7 @@
 using HR.BrightspaceConnector.Features.Courses;
 using HR.BrightspaceConnector.Features.Enrollments;
 using HR.BrightspaceConnector.Features.Users;
+using HR.BrightspaceConnector.Infrastructure.Persistence;
 using HR.BrightspaceConnector.Utilities;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -14,6 +15,19 @@ namespace HR.BrightspaceConnector.Tests
     [TestClass]
     public class EnrollmentsTests : IntegrationTestsBase
     {
+        [TestMethod]
+        public async Task GetNextCourseOfferingEnrollmentAsync_ReturnsNextEnrollmentOrNull()
+        {
+            IDatabase database = CreateDatabase();
+
+            EnrollmentRecord? enrollment = await database.GetNextCourseOfferingEnrollmentAsync();
+
+            if (enrollment is not null) // Null is a perfectly valid return value.
+            {
+                Assert.IsNotNull(enrollment.SyncEventId);
+            }
+        }
+
         [TestMethod]
         public async Task CompleteEnrollmentLifecycleTest()
         {

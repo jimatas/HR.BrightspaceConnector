@@ -1,4 +1,5 @@
 ﻿using HR.BrightspaceConnector.Features.Courses;
+using HR.BrightspaceConnector.Features.Enrollments;
 using HR.BrightspaceConnector.Features.OrgUnits;
 using HR.BrightspaceConnector.Features.Users;
 
@@ -14,6 +15,7 @@ namespace HR.BrightspaceConnector.Infrastructure.Persistence
         Task<OrgUnitRecord?> GetNextDepartmentAsync(CancellationToken cancellationToken = default);
         Task<CourseTemplateRecord?> GetNextCourseTemplateAsync(CancellationToken cancellationToken = default);
         Task<CourseOfferingRecord?> GetNextCourseOfferingAsync(CancellationToken cancellationToken = default);
+        Task<EnrollmentRecord?> GetNextCourseOfferingEnrollmentAsync(CancellationToken cancellationToken = default);
 
         Task MarkAsHandledAsync(
             int eventId,
