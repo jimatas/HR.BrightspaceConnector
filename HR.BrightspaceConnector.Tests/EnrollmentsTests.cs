@@ -59,7 +59,9 @@ namespace HR.BrightspaceConnector.Tests
                 ShowAddressBook = true
             });
 
-            var learnerRole = (await apiClient.GetRolesAsync()).Single(role => role.DisplayName == "Learner");
+            var allRoles = await apiClient.GetRolesAsync();
+            var learnerRole = allRoles.Single(role => role.DisplayName == "Learner");
+            
             var newUser = await apiClient.CreateUserAsync(new CreateUserData
             {
                 FirstName = "Jim",
@@ -76,6 +78,15 @@ namespace HR.BrightspaceConnector.Tests
             {
                 OrgUnitId = newCourseOffering.Identifier,
                 RoleId = learnerRole.Identifier,
+                UserId = newUser.UserId
+            });
+
+            var instructorRole = allRoles.Single(role => role.DisplayName == "Instructor");
+
+            var updatedEnrollment = await apiClient.CreateOrUpdateEnrollmentAsync(new CreateEnrollmentData
+            {
+                OrgUnitId = newCourseOffering.Identifier,
+                RoleId = instructorRole.Identifier,
                 UserId = newUser.UserId
             });
 
