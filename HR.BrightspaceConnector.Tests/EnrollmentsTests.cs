@@ -102,12 +102,23 @@ namespace HR.BrightspaceConnector.Tests
         {
             IApiClient apiClient = CreateApiClient();
 
+            var orgUnits = await apiClient.GetOrgUnitsAsync(new Features.OrgUnits.OrgUnitQueryParameters
+            {
+                ExactOrgUnitName = "Sandbox - Demo.Instructor"
+            });
+
+            Assert.IsTrue(orgUnits.Any());
+            int orgUnitId = (int)orgUnits.First().Identifier!;
+
             var allRoles = await apiClient.GetRolesAsync();
             var learnerRole = allRoles.Single(role => string.Equals(role.DisplayName, "Learner", StringComparison.OrdinalIgnoreCase));
             var instructorRole = allRoles.Single(role => string.Equals(role.DisplayName, "Instructor", StringComparison.OrdinalIgnoreCase));
 
-            var enrolledLearners = await apiClient.GetEnrolledUsersAsync(8483, new EnrolledUserQueryParameters { RoleId = learnerRole.Identifier });
-            var enrolledInstructors = await apiClient.GetEnrolledUsersAsync(8483, new EnrolledUserQueryParameters { RoleId = instructorRole.Identifier });
+            var enrolledLearners = await apiClient.GetEnrolledUsersAsync(orgUnitId, new EnrolledUserQueryParameters { RoleId = learnerRole.Identifier });
+            Assert.IsTrue(enrolledLearners.Any());
+
+            var enrolledInstructors = await apiClient.GetEnrolledUsersAsync(orgUnitId, new EnrolledUserQueryParameters { RoleId = instructorRole.Identifier });
+            Assert.IsTrue(enrolledInstructors.Any());
         }
     }
 }
