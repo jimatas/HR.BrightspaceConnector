@@ -39,7 +39,7 @@ namespace HR.BrightspaceConnector
         /// <param name="queryParameters"></param>
         /// <param name="cancellationToken"></param>
         /// <returns>A (possibly empty) <see cref="IEnumerable{UserData}"/> over the results. For the default and 'bookmark' cases, this IEnumerable will be of type <see cref="PagedResultSet{UserData}"/>.</returns>
-        Task<IEnumerable<UserData>> GetUsersAsync(UserQueryParameters? queryParameters, CancellationToken cancellationToken = default);
+        Task<IEnumerable<UserData>> GetUsersAsync(UserQueryParameters? queryParameters = null, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Create a new user entity.
@@ -126,7 +126,7 @@ namespace HR.BrightspaceConnector
         /// <param name="queryParameters"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<PagedResultSet<OrgUnitProperties>> GetOrgUnitsAsync(OrgUnitQueryParameters? queryParameters, CancellationToken cancellationToken = default);
+        Task<PagedResultSet<OrgUnitProperties>> GetOrgUnitsAsync(OrgUnitQueryParameters? queryParameters = null, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Retrieve a list of child-units for a provided org unit.
@@ -318,6 +318,21 @@ namespace HR.BrightspaceConnector
         /// <param name="cancellationToken"></param>
         /// <returns>This action returns an EnrollmentData JSON block.</returns>
         Task<EnrollmentData> GetEnrollmentAsync(int userId, int orgUnitId, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Retrieve the collection of users enrolled in the identified org unit.
+        /// </summary>
+        /// <remarks>
+        /// You can use a bookmark query parameter as a paging offset, to indicate that the service should return the segment of results immediately following your bookmark.
+        /// <para>
+        /// Oauth2 Scopes: <c>enrollment:orgunit:read</c>
+        /// </para>
+        /// </remarks>
+        /// <param name="orgUnitId"></param>
+        /// <param name="queryParameters"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns> This action returns a paged result set containing the resulting OrgUnitUser data blocks for the segment following your bookmark parameter (or the first segment if the parameter is empty or missing).</returns>
+        Task<PagedResultSet<OrgUnitUser>> GetEnrolledUsersAsync(int orgUnitId, EnrolledUserQueryParameters? queryParameters = null, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Delete a user's enrollment in a provided org unit.

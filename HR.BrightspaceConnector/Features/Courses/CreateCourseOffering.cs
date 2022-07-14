@@ -1,9 +1,11 @@
-﻿namespace HR.BrightspaceConnector.Features.Courses
+﻿using HR.BrightspaceConnector.Features.Common;
+
+namespace HR.BrightspaceConnector.Features.Courses
 {
     /// <summary>
     /// Block used to create a course.
     /// </summary>
-    public class CreateCourseOffering : CourseOfferingInfo
+    public class CreateCourseOffering : CourseOfferingBase
     {
         /// <summary>
         /// The root path to use for this course offering's course content. 
@@ -29,5 +31,12 @@
         /// Determines if the email tool's address book groups together the users enrolled in the course together.
         /// </summary>
         public bool? ShowAddressBook { get; set; }
+
+        /// <summary>
+        /// Note that this property is optional to include on input for LP API versions 1.25 and earlier; however, if you include it, the contents are ignored. 
+        /// Note also that this property uses the RichTextInput structure type.
+        /// Added with LP API v1.26
+        /// </summary>
+        public RichTextInput? Description { get; set; }
     }
 }

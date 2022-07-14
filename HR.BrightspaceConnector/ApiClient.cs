@@ -1,5 +1,4 @@
-﻿using HR.BrightspaceConnector.Features.Common;
-using HR.BrightspaceConnector.Features.Courses;
+﻿using HR.BrightspaceConnector.Features.Courses;
 using HR.BrightspaceConnector.Features.Enrollments;
 using HR.BrightspaceConnector.Features.OrgUnits;
 using HR.BrightspaceConnector.Features.Users;
@@ -45,7 +44,7 @@ namespace HR.BrightspaceConnector
             return roles!;
         }
 
-        public async Task<IEnumerable<UserData>> GetUsersAsync(UserQueryParameters? queryParameters, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<UserData>> GetUsersAsync(UserQueryParameters? queryParameters = null, CancellationToken cancellationToken = default)
         {
             using var httpRequest = new HttpRequestMessage(HttpMethod.Get, $"lp/{apiSettings.LearningPlatformVersion}/users/{queryParameters?.ToQueryString(jsonOptions.PropertyNamingPolicy)}");
             await SetAuthorizationHeaderAsync(httpRequest, cancellationToken).WithoutCapturingContext();
@@ -167,7 +166,7 @@ namespace HR.BrightspaceConnector
             return orgUnitTypes!;
         }
 
-        public async Task<PagedResultSet<OrgUnitProperties>> GetOrgUnitsAsync(OrgUnitQueryParameters? queryParameters, CancellationToken cancellationToken = default)
+        public async Task<PagedResultSet<OrgUnitProperties>> GetOrgUnitsAsync(OrgUnitQueryParameters? queryParameters = null, CancellationToken cancellationToken = default)
         {
             using var httpRequest = new HttpRequestMessage(HttpMethod.Get, $"lp/{apiSettings.LearningPlatformVersion}/orgstructure/{queryParameters?.ToQueryString(jsonOptions.PropertyNamingPolicy)}");
             await SetAuthorizationHeaderAsync(httpRequest, cancellationToken).WithoutCapturingContext();
@@ -355,6 +354,18 @@ namespace HR.BrightspaceConnector
 
             var enrollment = await httpResponse.Content.ReadFromJsonAsync<EnrollmentData>(jsonOptions, cancellationToken).WithoutCapturingContext();
             return enrollment!;
+        }
+
+        public async Task<PagedResultSet<OrgUnitUser>> GetEnrolledUsersAsync(int orgUnitId, EnrolledUserQueryParameters? queryParameters = null, CancellationToken cancellationToken = default)
+        {
+            using var httpRequest = new HttpRequestMessage(HttpMethod.Get, $"lp/{apiSettings.LearningPlatformVersion}/enrollments/orgUnits/{orgUnitId}/users/{queryParameters?.ToQueryString(jsonOptions.PropertyNamingPolicy)}");
+            await SetAuthorizationHeaderAsync(httpRequest, cancellationToken).WithoutCapturingContext();
+
+            using var httpResponse = await httpClient.SendAsync(httpRequest, cancellationToken).WithoutCapturingContext();
+            await CheckResponseForErrorAsync(httpResponse, cancellationToken).WithoutCapturingContext();
+
+            var classlistUsers = await httpResponse.Content.ReadFromJsonAsync<PagedResultSet<OrgUnitUser>>(jsonOptions, cancellationToken).WithoutCapturingContext();
+            return classlistUsers!;
         }
 
         public async Task<EnrollmentData> DeleteEnrollmentAsync(int userId, int orgUnitId, CancellationToken cancellationToken = default)

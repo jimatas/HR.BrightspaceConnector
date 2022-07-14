@@ -112,15 +112,22 @@ namespace HR.BrightspaceConnector.Tests
                 EndDate = SystemClock.Instance.Now.AddDays(31),
                 CourseTemplateId = newCourseTemplate.Identifier,
                 ForceLocale = true,
-                IsActive = false,
                 ShowAddressBook = true
             });
 
             Assert.IsNotNull(newCourseOffering);
             Assert.IsNotNull(newCourseOffering.Identifier);
 
-            newCourseOffering.Name = "Sample course offering updated by a unit test";
-            await apiClient.UpdateCourseOfferingAsync((int)newCourseOffering.Identifier!, newCourseOffering);
+            await apiClient.UpdateCourseOfferingAsync((int)newCourseOffering.Identifier!, new CourseOfferingInfo
+            {
+                CanSelfRegister = newCourseOffering.CanSelfRegister,
+                Code = newCourseOffering.Code,
+                Description = newCourseOffering.Description?.ToRichTextInput(),
+                EndDate = newCourseOffering.EndDate,
+                IsActive = newCourseOffering.IsActive,
+                Name = "Sample course offering updated by a unit test",
+                StartDate = newCourseOffering.StartDate
+            });
 
             CourseOffering updatedCourseOffering = await apiClient.GetCourseOfferingAsync((int)newCourseOffering.Identifier);
             Assert.AreEqual("Sample course offering updated by a unit test", updatedCourseOffering.Name);

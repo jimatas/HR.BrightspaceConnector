@@ -46,7 +46,6 @@ namespace HR.BrightspaceConnector.Tests
             Assert.AreEqual(courseOfferingRecord.Description, createCourseOffering.Description?.Content);
             Assert.AreEqual(courseOfferingRecord.EndDate, createCourseOffering.EndDate);
             Assert.AreEqual(courseOfferingRecord.ForceLocale, createCourseOffering.ForceLocale);
-            Assert.AreEqual(courseOfferingRecord.IsActive, createCourseOffering.IsActive);
             Assert.AreEqual(courseOfferingRecord.LocaleId, createCourseOffering.LocaleId);
             Assert.AreEqual(courseOfferingRecord.Name, createCourseOffering.Name);
             Assert.AreEqual(courseOfferingRecord.Path, createCourseOffering.Path);

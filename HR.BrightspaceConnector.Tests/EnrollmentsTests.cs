@@ -7,6 +7,7 @@ using HR.BrightspaceConnector.Utilities;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -55,7 +56,6 @@ namespace HR.BrightspaceConnector.Tests
                 EndDate = SystemClock.Instance.Now.AddDays(31),
                 CourseTemplateId = newCourseTemplate.Identifier,
                 ForceLocale = true,
-                IsActive = false,
                 ShowAddressBook = true
             });
 
@@ -95,6 +95,19 @@ namespace HR.BrightspaceConnector.Tests
             await apiClient.DeleteCourseOfferingAsync((int)newCourseOffering.Identifier, permanently: true);
             await apiClient.DeleteCourseTemplateAsync((int)newCourseTemplate.Identifier!, permanently: true);
             await apiClient.DeleteUserAsync((int)newUser.UserId);
+        }
+
+        [TestMethod]
+        public async Task GetEnrolledUsersAsync_ForGivenOrgUnit_ReturnsUsers()
+        {
+            IApiClient apiClient = CreateApiClient();
+
+            var allRoles = await apiClient.GetRolesAsync();
+            var learnerRole = allRoles.Single(role => string.Equals(role.DisplayName, "Learner", StringComparison.OrdinalIgnoreCase));
+            var instructorRole = allRoles.Single(role => string.Equals(role.DisplayName, "Instructor", StringComparison.OrdinalIgnoreCase));
+
+            var enrolledLearners = await apiClient.GetEnrolledUsersAsync(8483, new EnrolledUserQueryParameters { RoleId = learnerRole.Identifier });
+            var enrolledInstructors = await apiClient.GetEnrolledUsersAsync(8483, new EnrolledUserQueryParameters { RoleId = instructorRole.Identifier });
         }
     }
 }

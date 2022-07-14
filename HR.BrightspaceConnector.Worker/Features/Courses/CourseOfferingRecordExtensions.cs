@@ -16,7 +16,6 @@ namespace HR.BrightspaceConnector.Features.Courses
                     : null,
                 EndDate = courseOfferingRecord.EndDate,
                 ForceLocale = courseOfferingRecord.ForceLocale,
-                IsActive = courseOfferingRecord.IsActive,
                 LocaleId = courseOfferingRecord.LocaleId,
                 Name = courseOfferingRecord.Name,
                 Path = courseOfferingRecord.Path,

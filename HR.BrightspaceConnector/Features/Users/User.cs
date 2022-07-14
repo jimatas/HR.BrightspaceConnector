@@ -1,17 +1,15 @@
 ﻿namespace HR.BrightspaceConnector.Features.Users
 {
-    public abstract class User
+    /// <summary>
+    /// This structure gets used as a composite to include in resource blocks returned by a variety of services (for example, enrollments).
+    /// </summary>
+    public class User
     {
+        public int? Identifier { get; set; }
+        public string? DisplayName { get; set; }
+        public string? EmailAddress { get; set; }
         public string? OrgDefinedId { get; set; }
-        public string? FirstName { get; set; }
-        public string? MiddleName { get; set; }
-        public string? LastName { get; set; }
-        public string? UserName { get; set; }
-        public string? ExternalEmail { get; set; }
-
-        /// <summary>
-        /// Added with LP API v1.33
-        /// </summary>
-        public string? Pronouns { get; set; }
+        public Uri? ProfileBadgeUrl { get; set; }
+        public string? ProfileIdentifier { get; set; }
     }
 }

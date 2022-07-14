@@ -37,7 +37,7 @@ namespace HR.BrightspaceConnector.Infrastructure
                 }).WithoutCapturingContext();
         }
 
-        public Task<IEnumerable<UserData>> GetUsersAsync(UserQueryParameters? queryParameters, CancellationToken cancellationToken = default)
+        public Task<IEnumerable<UserData>> GetUsersAsync(UserQueryParameters? queryParameters = null, CancellationToken cancellationToken = default)
         {
             return apiClient.GetUsersAsync(queryParameters, cancellationToken);
         }
@@ -96,7 +96,7 @@ namespace HR.BrightspaceConnector.Infrastructure
                 }).WithoutCapturingContext();
         }
 
-        public Task<PagedResultSet<OrgUnitProperties>> GetOrgUnitsAsync(OrgUnitQueryParameters? queryParameters, CancellationToken cancellationToken = default)
+        public Task<PagedResultSet<OrgUnitProperties>> GetOrgUnitsAsync(OrgUnitQueryParameters? queryParameters = null, CancellationToken cancellationToken = default)
         {
             return apiClient.GetOrgUnitsAsync(queryParameters, cancellationToken);
         }
@@ -173,6 +173,11 @@ namespace HR.BrightspaceConnector.Infrastructure
         public Task<EnrollmentData> GetEnrollmentAsync(int userId, int orgUnitId, CancellationToken cancellationToken = default)
         {
             return apiClient.GetEnrollmentAsync(userId, orgUnitId, cancellationToken);
+        }
+
+        public Task<PagedResultSet<OrgUnitUser>> GetEnrolledUsersAsync(int orgUnitId, EnrolledUserQueryParameters? queryParameters = null, CancellationToken cancellationToken = default)
+        {
+            return apiClient.GetEnrolledUsersAsync(orgUnitId, queryParameters, cancellationToken);
         }
 
         public Task<EnrollmentData> DeleteEnrollmentAsync(int userId, int orgUnitId, CancellationToken cancellationToken = default)

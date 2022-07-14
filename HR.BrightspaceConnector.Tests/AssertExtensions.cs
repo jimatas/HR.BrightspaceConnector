@@ -90,10 +90,23 @@ namespace HR.BrightspaceConnector.Tests
             return true;
         }
 
+        private static bool AreEqual(this Assert _, CourseOfferingBase expected, CourseOfferingBase actual)
+        {
+            Assert.AreEqual(expected.CanSelfRegister, actual.CanSelfRegister);
+            Assert.AreEqual(expected.Code, actual.Code);
+            Assert.AreEqual(expected.EndDate, actual.EndDate);
+            Assert.AreEqual(expected.Name, actual.Name);
+            Assert.AreEqual(expected.StartDate, actual.StartDate);
+
+            return true;
+        }
+
         public static bool AreEqual(this Assert _, CreateCourseOffering expected, CreateCourseOffering actual)
         {
-            Assert.That.AreEqual((CourseOfferingInfo)expected, actual);
+            Assert.That.AreEqual((CourseOfferingBase)expected, actual);
             Assert.AreEqual(expected.CourseTemplateId, actual.CourseTemplateId);
+            Assert.AreEqual(expected.Description?.Content, actual.Description?.Content);
+            Assert.AreEqual(expected.Description?.Type, actual.Description?.Type);
             Assert.AreEqual(expected.ForceLocale, actual.ForceLocale);
             Assert.AreEqual(expected.LocaleId, actual.LocaleId);
             Assert.AreEqual(expected.Path, actual.Path);
@@ -105,14 +118,10 @@ namespace HR.BrightspaceConnector.Tests
 
         public static bool AreEqual(this Assert _, CourseOfferingInfo expected, CourseOfferingInfo actual)
         {
-            Assert.AreEqual(expected.CanSelfRegister, actual.CanSelfRegister);
-            Assert.AreEqual(expected.Code, actual.Code);
+            Assert.That.AreEqual((CourseOfferingBase)expected, actual);
             Assert.AreEqual(expected.Description?.Content, actual.Description?.Content);
             Assert.AreEqual(expected.Description?.Type, actual.Description?.Type);
-            Assert.AreEqual(expected.EndDate, actual.EndDate);
             Assert.AreEqual(expected.IsActive, actual.IsActive);
-            Assert.AreEqual(expected.Name, actual.Name);
-            Assert.AreEqual(expected.StartDate, actual.StartDate);
 
             return true;
         }
