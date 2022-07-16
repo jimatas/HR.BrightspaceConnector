@@ -23,7 +23,7 @@ namespace HR.BrightspaceConnector.Infrastructure.Persistence.Configurations
 
             builder.Property(co => co.CourseTemplateId).HasConversion(
                 convertToProviderExpression: (int? value) => value != null ? ((int)value).ToString() : null,
-                convertFromProviderExpression: (string? value) => !string.IsNullOrEmpty(value) ? value.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries).Select(s => int.Parse(s)).First() : null);
+                convertFromProviderExpression: (string? value) => !string.IsNullOrEmpty(value) ? value.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries).Select(int.Parse).First() : null);
         }
     }
 }
