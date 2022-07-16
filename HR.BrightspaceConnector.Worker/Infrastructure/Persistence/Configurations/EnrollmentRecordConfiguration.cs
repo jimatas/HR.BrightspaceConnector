@@ -10,6 +10,7 @@ namespace HR.BrightspaceConnector.Infrastructure.Persistence.Configurations
         public void Configure(EntityTypeBuilder<EnrollmentRecord> builder)
         {
             builder.HasNoKey();
+            builder.Property(e => e.SyncInternalKey).HasConversion<int>();
             builder.Property(e => e.OrgUnitId).HasConversion<string>();
             builder.Property(e => e.UserId).HasConversion<string>();
         }
