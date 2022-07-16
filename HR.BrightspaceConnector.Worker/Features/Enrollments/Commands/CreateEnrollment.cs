@@ -32,6 +32,7 @@ namespace HR.BrightspaceConnector.Features.Enrollments.Commands
         {
             EnrollmentRecord enrollment = command.Enrollment;
             int eventId = (int)enrollment.SyncEventId!;
+            _ = ulong.TryParse(enrollment.SyncExternalKey, out var externalKey);
 
             logger.LogInformation("Creating enrollment for user with ID {UserId} in org unit with ID {OrgUnitId} in Brightspace.", enrollment.UserId, enrollment.OrgUnitId);
 
@@ -40,7 +41,7 @@ namespace HR.BrightspaceConnector.Features.Enrollments.Commands
                 var newEnrollment = await apiClient.CreateOrUpdateEnrollmentAsync(enrollment.ToCreateEnrollmentData(), cancellationToken).WithoutCapturingContext();
                 logger.LogInformation("Enrollment was successfully created.");
 
-                await commandDispatcher.DispatchAsync(MarkAsHandled.Successfully(eventId, id: (int)newEnrollment.Identifier()!), cancellationToken).WithoutCapturingContext();
+                await commandDispatcher.DispatchAsync(MarkAsHandled.Successfully(eventId, (int)externalKey), cancellationToken).WithoutCapturingContext();
             }
             catch (ApiException exception)
             {
