@@ -31,7 +31,7 @@ namespace HR.BrightspaceConnector.Features.Common.Decorators
             {
                 return await next().WithoutCapturingContext();
             }
-            catch (Exception ex) when (ex.IsTimeoutException() && retries > 0)
+            catch (Exception exception) when (exception.IsTimeoutException() && retries > 0)
             {
                 var retryDelay = recoverySettings.CalculateRetryDelay(recoverySettings.RetryAttempts - (retries - 1));
 
