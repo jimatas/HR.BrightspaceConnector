@@ -44,7 +44,7 @@ namespace HR.BrightspaceConnector.Features.Users.Commands
                     ((nextUser.IsToBeCreated() || nextUser.IsToBeUpdated()) && command.IsDeleteContext) ||
                     (nextUser.IsToBeDeleted() && !command.IsDeleteContext))
                 {
-                    logger.LogInformation("No more users to {Action}. Ending batch run.", command.IsDeleteContext ? "delete" : "create or update");
+                    logger.LogInformation("No (more) users to {Action}. Ending batch run.", command.IsDeleteContext ? "delete" : "create or update");
                     break;
                 }
 

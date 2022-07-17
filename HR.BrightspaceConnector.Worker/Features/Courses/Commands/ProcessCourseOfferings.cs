@@ -44,7 +44,7 @@ namespace HR.BrightspaceConnector.Features.Courses.Commands
                     ((nextCourseOffering.IsToBeCreated() || nextCourseOffering.IsToBeUpdated()) && command.IsDeleteContext) ||
                     (nextCourseOffering.IsToBeDeleted() && !command.IsDeleteContext))
                 {
-                    logger.LogInformation("No more course offerings to {Action}. Ending batch run.", command.IsDeleteContext ? "delete" : "create or update");
+                    logger.LogInformation("No (more) course offerings to {Action}. Ending batch run.", command.IsDeleteContext ? "delete" : "create or update");
                     break;
                 }
 

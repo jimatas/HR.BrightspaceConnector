@@ -44,7 +44,7 @@ namespace HR.BrightspaceConnector.Features.Courses.Commands
                     ((nextCourseTemplate.IsToBeCreated() || nextCourseTemplate.IsToBeUpdated()) && command.IsDeleteContext) ||
                     (nextCourseTemplate.IsToBeDeleted() && !command.IsDeleteContext))
                 {
-                    logger.LogInformation("No more course templates to {Action}. Ending batch run.", command.IsDeleteContext ? "delete" : "create or update");
+                    logger.LogInformation("No (more) course templates to {Action}. Ending batch run.", command.IsDeleteContext ? "delete" : "create or update");
                     break;
                 }
 

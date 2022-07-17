@@ -46,7 +46,7 @@ namespace HR.BrightspaceConnector.Features.OrgUnits.Commands
                     ((nextOrgUnit.IsToBeCreated() || nextOrgUnit.IsToBeUpdated()) && command.IsDeleteContext) ||
                     (nextOrgUnit.IsToBeDeleted() && !command.IsDeleteContext))
                 {
-                    logger.LogInformation("No more org units to {Action}. Ending batch run.", command.IsDeleteContext ? "delete" : "create or update");
+                    logger.LogInformation("No (more) org units to {Action}. Ending batch run.", command.IsDeleteContext ? "delete" : "create or update");
                     break;
                 }
 
