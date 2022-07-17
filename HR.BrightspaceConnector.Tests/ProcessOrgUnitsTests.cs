@@ -181,7 +181,7 @@ namespace HR.BrightspaceConnector.Tests
             mockedDatabase.Verify(database => database.GetNextCustomOrgUnitAsync(It.IsAny<CancellationToken>()), Times.Once());
             mockedDatabase.VerifyNoOtherCalls();
 
-            mockedApiClient.Verify(apiClient => apiClient.GetOrgUnitTypesAsync(It.IsAny<CancellationToken>()), Times.Once()); // Called to fix incorrect orgunit type.
+            mockedApiClient.Verify(apiClient => apiClient.GetOrgUnitTypesAsync(It.IsAny<CancellationToken>()), Times.Once()); // Called to fix incorrect org unit type.
             mockedApiClient.VerifyNoOtherCalls();
         }
 
@@ -271,7 +271,7 @@ namespace HR.BrightspaceConnector.Tests
             mockedDatabase.Verify(database => database.GetNextCustomOrgUnitAsync(It.IsAny<CancellationToken>()), Times.Once());
             mockedDatabase.VerifyNoOtherCalls();
 
-            mockedApiClient.Verify(apiClient => apiClient.GetOrgUnitTypesAsync(It.IsAny<CancellationToken>()), Times.Once()); // Called to fix incorrect orgunit type.
+            mockedApiClient.Verify(apiClient => apiClient.GetOrgUnitTypesAsync(It.IsAny<CancellationToken>()), Times.Once()); // Called to fix incorrect org unit type.
             mockedApiClient.VerifyNoOtherCalls();
         }
 
@@ -398,7 +398,7 @@ namespace HR.BrightspaceConnector.Tests
             mockedDatabase.Verify(database => database.GetNextCustomOrgUnitAsync(It.IsAny<CancellationToken>()), Times.Once());
             mockedDatabase.VerifyNoOtherCalls();
 
-            mockedApiClient.Verify(apiClient => apiClient.GetOrgUnitTypesAsync(It.IsAny<CancellationToken>()), Times.Once()); // Called to fix incorrect orgunit type.
+            mockedApiClient.Verify(apiClient => apiClient.GetOrgUnitTypesAsync(It.IsAny<CancellationToken>()), Times.Once()); // Called to fix incorrect org unit type.
             mockedApiClient.VerifyNoOtherCalls();
         }
     }

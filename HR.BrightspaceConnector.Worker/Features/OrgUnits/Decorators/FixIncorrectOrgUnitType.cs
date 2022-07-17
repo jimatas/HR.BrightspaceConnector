@@ -6,8 +6,8 @@ using HR.Common.Utilities;
 namespace HR.BrightspaceConnector.Features.OrgUnits.Decorators
 {
     /// <summary>
-    /// Decorates the query that retrieves the next orgunit record from the database. This record may contain an incorrect orgunit type ID. 
-    /// Using the orgunit type code, which is also included in the record, the correct type ID is looked up from Brightspace and amended in the record before it is returned.
+    /// Decorates the query that retrieves the next org unit record from the database. This record may contain an incorrect org unit type ID. 
+    /// Using the org unit type code, which is also included in the record, the correct type ID is looked up from Brightspace and amended in the record before it is returned.
     /// </summary>
     public class FixIncorrectOrgUnitType : IQueryHandlerWrapper<GetNextOrgUnit, OrgUnitRecord?>
     {
