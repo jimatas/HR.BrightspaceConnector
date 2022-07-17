@@ -86,7 +86,7 @@ namespace HR.BrightspaceConnector.Tests
             // Act & Assert
             try
             {
-                await commandDispatcher.DispatchAsync(new MarkAsHandled(eventId: Random.Shared.Next(1, int.MaxValue), success: true, id: Random.Shared.Next(1, int.MaxValue), message: null));
+                await commandDispatcher.DispatchAsync(MarkAsHandled.Successfully(Random.Shared.Next(1, int.MaxValue), Random.Shared.Next(1, int.MaxValue)));
                 Assert.AreEqual(2, attempt);
             }
             catch (DbException)
@@ -113,7 +113,7 @@ namespace HR.BrightspaceConnector.Tests
             ICommandDispatcher commandDispatcher = serviceProvider.GetRequiredService<ICommandDispatcher>();
 
             // Act
-            await commandDispatcher.DispatchAsync(new MarkAsHandled(eventId: Random.Shared.Next(1, int.MaxValue), success: true, id: Random.Shared.Next(1, int.MaxValue), message: null));
+            await commandDispatcher.DispatchAsync(MarkAsHandled.Successfully(Random.Shared.Next(1, int.MaxValue), Random.Shared.Next(1, int.MaxValue)));
         }
     }
 }
