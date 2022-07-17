@@ -53,7 +53,7 @@ namespace HR.BrightspaceConnector.Features.Common.Commands
                 command.Success ? null : command.Message,
                 cancellationToken).WithoutCapturingContext();
 
-            logger.LogInformation("Marked object with id {Id} and event id {EventId} as handled in database.",
+            logger.LogInformation("Marked object with ID {Id} and event ID {EventId} as handled in database.",
                 command.Id?.ToString() ?? "[n/a]",
                 command.EventId);
         }
