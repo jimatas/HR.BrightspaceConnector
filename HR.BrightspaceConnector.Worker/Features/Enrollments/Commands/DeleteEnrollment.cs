@@ -32,7 +32,7 @@ namespace HR.BrightspaceConnector.Features.Enrollments.Commands
         {
             EnrollmentRecord enrollment = command.Enrollment;
             int eventId = (int)enrollment.SyncEventId!;
-            _ = ulong.TryParse(enrollment.SyncExternalKey, out var externalKey);
+            _ = long.TryParse(enrollment.SyncExternalKey, out var enrollmentId);
 
             logger.LogInformation("Deleting enrollment of user with ID {UserId} in org unit with ID {OrgUnitId} from Brightspace.", enrollment.UserId, enrollment.OrgUnitId);
 
@@ -41,13 +41,13 @@ namespace HR.BrightspaceConnector.Features.Enrollments.Commands
                 await apiClient.DeleteEnrollmentAsync((int)enrollment.UserId!, (int)enrollment.OrgUnitId!, cancellationToken).WithoutCapturingContext();
                 logger.LogInformation("Enrollment was successfully deleted.");
 
-                await commandDispatcher.DispatchAsync(MarkAsHandled.Successfully(eventId, (int)externalKey), cancellationToken).WithoutCapturingContext();
+                await commandDispatcher.DispatchAsync(MarkAsHandled.Successfully(eventId, enrollmentId), cancellationToken).WithoutCapturingContext();
             }
             catch (ApiException exception)
             {
                 logger.LogWarning(exception, "Error while deleting enrollment. {ErrorMessage}", exception.GetErrorMessage());
 
-                await commandDispatcher.DispatchAsync(MarkAsHandled.Unsuccessfully(eventId, (int)externalKey, exception.GetErrorMessage()), cancellationToken).WithoutCapturingContext();
+                await commandDispatcher.DispatchAsync(MarkAsHandled.Unsuccessfully(eventId, enrollmentId, exception.GetErrorMessage()), cancellationToken).WithoutCapturingContext();
             }
         }
     }

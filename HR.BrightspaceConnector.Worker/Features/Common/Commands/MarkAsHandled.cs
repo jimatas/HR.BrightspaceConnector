@@ -6,7 +6,7 @@ namespace HR.BrightspaceConnector.Features.Common.Commands
 {
     public class MarkAsHandled : ICommand
     {
-        public MarkAsHandled(int eventId, bool success, int? id, string? message)
+        public MarkAsHandled(int eventId, bool success, long? id, string? message)
         {
             EventId = eventId;
             Success = success;
@@ -14,9 +14,9 @@ namespace HR.BrightspaceConnector.Features.Common.Commands
             Message = message;
         }
 
-        public static MarkAsHandled Successfully(int eventId, int id) => new(eventId, success: true, id, message: null);
+        public static MarkAsHandled Successfully(int eventId, long id) => new(eventId, success: true, id, message: null);
         public static MarkAsHandled Unsuccessfully(int eventId, string? message = null) => new(eventId, success: false, id: null, message);
-        public static MarkAsHandled Unsuccessfully(int eventId, int id, string? message = null) => new(eventId, success: false, id, message);
+        public static MarkAsHandled Unsuccessfully(int eventId, long id, string? message = null) => new(eventId, success: false, id, message);
 
         public int EventId { get; }
         public bool Success { get; }
@@ -25,7 +25,7 @@ namespace HR.BrightspaceConnector.Features.Common.Commands
         /// The unique ID of the object in Brightspace. 
         /// Its value is generated upon successful creation of the object and maps to SyncExternalKey.
         /// </summary>
-        public int? Id { get; }
+        public long? Id { get; }
 
         /// <summary>
         /// Either a HTTP status message that describes an error situation, or any (validation) errors that were returned by the server, flattened to a single error message.
