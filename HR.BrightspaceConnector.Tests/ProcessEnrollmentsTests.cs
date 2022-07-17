@@ -114,5 +114,73 @@ namespace HR.BrightspaceConnector.Tests
             mockedDatabase.VerifyNoOtherCalls();
             mockedApiClient.VerifyNoOtherCalls();
         }
+
+        [TestMethod]
+        public async Task GivenEnrollmentToDelete_DeletesIt()
+        {
+            // Arrange
+            int eventId = Random.Shared.Next(1, int.MaxValue);
+            int orgUnitId = 1322;
+            int userId = 625;
+            string externalKey = "1749631";
+
+            var enrollmentRecord = new EnrollmentRecord
+            {
+                SyncAction = 'd',
+                SyncEventId = eventId,
+                SyncInternalKey = Random.Shared.Next(1, int.MaxValue).ToString(),
+                SyncExternalKey = externalKey
+            };
+
+            mockedDatabase.Setup(database => database.GetNextCourseOfferingEnrollmentAsync(default)).ReturnsAsync(enrollmentRecord);
+            mockedDatabase.Setup(database => database.MarkAsHandledAsync(eventId, true, externalKey, null, default));
+
+            mockedApiClient.Setup(apiClient => apiClient.DeleteEnrollmentAsync(userId, orgUnitId, default))
+                .ReturnsAsync(new EnrollmentData
+                {
+                    OrgUnitId = orgUnitId,
+                    UserId = userId,
+                    RoleId = RoleIds["Learner"]
+                });
+
+            IServiceProvider serviceProvider = CreateServiceProvider(mockedDatabase.Object, mockedApiClient.Object);
+            ICommandDispatcher commandDispatcher = serviceProvider.GetRequiredService<ICommandDispatcher>();
+
+            // Act
+            await commandDispatcher.DispatchAsync(new ProcessEnrollments(batchSize: 1, isDeleteContext: true));
+
+            // Assert
+            mockedDatabase.VerifyAll();
+            mockedApiClient.VerifyAll();
+
+            // Verify decorator has run.
+            Assert.AreEqual(orgUnitId, enrollmentRecord.OrgUnitId);
+            Assert.AreEqual(userId, enrollmentRecord.UserId);
+        }
+
+        [TestMethod]
+        public async Task GivenEnrollmentToDeleteInNonDeleteContext_DoesNothing()
+        {
+            // Arrange
+            mockedDatabase.Setup(database => database.GetNextCourseOfferingEnrollmentAsync(default))
+                .ReturnsAsync(new EnrollmentRecord
+                {
+                    SyncAction = 'd',
+                    SyncEventId = Random.Shared.Next(1, int.MaxValue),
+                    SyncInternalKey = Random.Shared.Next(1, int.MaxValue).ToString(),
+                    SyncExternalKey = Random.Shared.NextInt64(1, long.MaxValue).ToString()
+                });
+
+            IServiceProvider serviceProvider = CreateServiceProvider(mockedDatabase.Object, mockedApiClient.Object);
+            ICommandDispatcher commandDispatcher = serviceProvider.GetRequiredService<ICommandDispatcher>();
+
+            // Act
+            await commandDispatcher.DispatchAsync(new ProcessEnrollments(batchSize: 1, isDeleteContext: false));
+
+            // Assert
+            mockedDatabase.Verify(database => database.GetNextCourseOfferingEnrollmentAsync(default), Times.Once());
+            mockedDatabase.VerifyNoOtherCalls();
+            mockedApiClient.VerifyNoOtherCalls();
+        }
     }
 }
