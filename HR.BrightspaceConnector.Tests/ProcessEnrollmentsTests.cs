@@ -182,5 +182,72 @@ namespace HR.BrightspaceConnector.Tests
             mockedDatabase.VerifyNoOtherCalls();
             mockedApiClient.VerifyNoOtherCalls();
         }
+
+        [TestMethod]
+        public async Task GivenEnrollmentToUpdate_UpdatesIt()
+        {
+            // Arrange
+            int eventId = Random.Shared.Next(1, int.MaxValue);
+            int orgUnitId = 1108;
+            int userId = 2915;
+            string externalKey = "8498333";
+
+            var enrollmentRecord = new EnrollmentRecord
+            {
+                SyncAction = 'u',
+                SyncEventId = eventId,
+                SyncInternalKey = Random.Shared.Next(1, int.MaxValue).ToString(),
+                SyncExternalKey = externalKey,
+                OrgUnitId = orgUnitId,
+                UserId = userId,
+                RoleId = RoleIds["Instructor"]
+            };
+
+            mockedDatabase.Setup(database => database.GetNextCourseOfferingEnrollmentAsync(default)).ReturnsAsync(enrollmentRecord);
+            mockedDatabase.Setup(database => database.MarkAsHandledAsync(eventId, true, externalKey, null, default));
+
+            mockedApiClient.Setup(apiClient => apiClient.CreateOrUpdateEnrollmentAsync(It.Is<CreateEnrollmentData>(createEnrollmentData => Assert.That.AreEqual(enrollmentRecord.ToCreateEnrollmentData(), createEnrollmentData)), default))
+                .ReturnsAsync(new EnrollmentData
+                {
+                    OrgUnitId = orgUnitId,
+                    RoleId = RoleIds["Instructor"],
+                    UserId = userId
+                });
+
+            IServiceProvider serviceProvider = CreateServiceProvider(mockedDatabase.Object, mockedApiClient.Object);
+            ICommandDispatcher commandDispatcher = serviceProvider.GetRequiredService<ICommandDispatcher>();
+
+            // Act
+            await commandDispatcher.DispatchAsync(new ProcessEnrollments(batchSize: 1, isDeleteContext: false));
+
+            // Assert
+            mockedDatabase.VerifyAll();
+            mockedApiClient.VerifyAll();
+        }
+
+        [TestMethod]
+        public async Task GivenEnrollmentToUpdateInDeleteContext_DoesNothing()
+        {
+            // Arrange
+            mockedDatabase.Setup(database => database.GetNextCourseOfferingEnrollmentAsync(default)).ReturnsAsync(
+                new EnrollmentRecord
+                {
+                    SyncAction = 'u',
+                    SyncEventId = Random.Shared.Next(1, int.MaxValue),
+                    SyncInternalKey = Random.Shared.Next(1, int.MaxValue).ToString(),
+                    SyncExternalKey = Random.Shared.NextInt64(1, long.MaxValue).ToString()
+                });
+
+            IServiceProvider serviceProvider = CreateServiceProvider(mockedDatabase.Object, mockedApiClient.Object);
+            ICommandDispatcher commandDispatcher = serviceProvider.GetRequiredService<ICommandDispatcher>();
+
+            // Act
+            await commandDispatcher.DispatchAsync(new ProcessEnrollments(batchSize: 1, isDeleteContext: true));
+
+            // Assert
+            mockedDatabase.Verify(database => database.GetNextCourseOfferingEnrollmentAsync(default), Times.Once());
+            mockedDatabase.VerifyNoOtherCalls();
+            mockedApiClient.VerifyNoOtherCalls();
+        }
     }
 }
