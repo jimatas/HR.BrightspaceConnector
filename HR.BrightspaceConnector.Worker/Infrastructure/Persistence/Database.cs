@@ -79,13 +79,13 @@ namespace HR.BrightspaceConnector.Infrastructure.Persistence
         public async Task MarkAsHandledAsync(
             int eventId,
             bool success,
-            int? id,
+            string? externalKey,
             string? message,
             CancellationToken cancellationToken = default)
         {
             logger.LogDebug("Executing stored procedure 'sync_event_MarkHandled'.");
 
-            await dbContext.Database.ExecuteSqlInterpolatedAsync($"sync_event_MarkHandled {eventId}, {success}, {id?.ToString()}, {message}", cancellationToken).WithoutCapturingContext();
+            await dbContext.Database.ExecuteSqlInterpolatedAsync($"sync_event_MarkHandled {eventId}, {success}, {externalKey}, {message}", cancellationToken).WithoutCapturingContext();
         }
     }
 }

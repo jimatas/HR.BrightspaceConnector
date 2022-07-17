@@ -74,7 +74,7 @@ namespace HR.BrightspaceConnector.Tests
             };
 
             mockedDatabase.Setup(database => database.GetNextUserAsync(default)).ReturnsAsync(userRecord);
-            mockedDatabase.Setup(database => database.MarkAsHandledAsync(eventId, true, userId, null, default));
+            mockedDatabase.Setup(database => database.MarkAsHandledAsync(eventId, true, userId.ToString(), null, default));
 
             mockedApiClient.Setup(apiClient => apiClient.CreateUserAsync(It.Is<CreateUserData>(createUserData => Assert.That.AreEqual(userRecord.ToCreateUserData(), createUserData)), default)).ReturnsAsync(() => new UserData
             {
@@ -127,7 +127,7 @@ namespace HR.BrightspaceConnector.Tests
             };
 
             mockedDatabase.Setup(database => database.GetNextUserAsync(default)).ReturnsAsync(userRecord);
-            mockedDatabase.Setup(database => database.MarkAsHandledAsync(eventId, true, userId, null, default));
+            mockedDatabase.Setup(database => database.MarkAsHandledAsync(eventId, true, userId.ToString(), null, default));
 
             mockedApiClient.Setup(apiClient => apiClient.CreateUserAsync(It.Is<CreateUserData>(createUserData => Assert.That.AreEqual(userRecord.ToCreateUserData(), createUserData)), default)).ReturnsAsync(() => new UserData
             {
@@ -203,7 +203,7 @@ namespace HR.BrightspaceConnector.Tests
                 SyncExternalKey = userId.ToString(),
                 SyncInternalKey = "ja.hstest"
             });
-            mockedDatabase.Setup(database => database.MarkAsHandledAsync(eventId, true, userId, null, default));
+            mockedDatabase.Setup(database => database.MarkAsHandledAsync(eventId, true, userId.ToString(), null, default));
 
             mockedApiClient.Setup(apiClient => apiClient.DeleteUserAsync(userId, default));
 
@@ -232,7 +232,7 @@ namespace HR.BrightspaceConnector.Tests
                 SyncExternalKey = userId.ToString(),
                 SyncInternalKey = "ja.hstest"
             });
-            mockedDatabase.Setup(database => database.MarkAsHandledAsync(eventId, true, userId, null, default));
+            mockedDatabase.Setup(database => database.MarkAsHandledAsync(eventId, true, userId.ToString(), null, default));
 
             mockedApiClient.Setup(apiClient => apiClient.DeleteUserAsync(userId, default));
 
@@ -274,7 +274,7 @@ namespace HR.BrightspaceConnector.Tests
             };
 
             mockedDatabase.Setup(database => database.GetNextUserAsync(default)).ReturnsAsync(userRecord);
-            mockedDatabase.Setup(database => database.MarkAsHandledAsync(eventId, true, userId, null, default));
+            mockedDatabase.Setup(database => database.MarkAsHandledAsync(eventId, true, userId.ToString(), null, default));
 
             mockedApiClient.Setup(apiClient => apiClient.UpdateUserAsync(userId, It.Is<UpdateUserData>(updateUserData => Assert.That.AreEqual(userRecord.ToUpdateUserData(), updateUserData)), default)).ReturnsAsync(() => new UserData
             {
@@ -328,7 +328,7 @@ namespace HR.BrightspaceConnector.Tests
             };
 
             mockedDatabase.Setup(database => database.GetNextUserAsync(default)).ReturnsAsync(userRecord);
-            mockedDatabase.Setup(database => database.MarkAsHandledAsync(eventId, true, userId, null, default));
+            mockedDatabase.Setup(database => database.MarkAsHandledAsync(eventId, true, userId.ToString(), null, default));
 
             mockedApiClient.Setup(apiClient => apiClient.UpdateUserAsync(userId, It.Is<UpdateUserData>(updateUserData => Assert.That.AreEqual(userRecord.ToUpdateUserData(), updateUserData)), default)).ReturnsAsync(() => new UserData
             {

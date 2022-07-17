@@ -63,7 +63,7 @@ namespace HR.BrightspaceConnector.Tests
             };
 
             mockedDatabase.Setup(database => database.GetNextCourseTemplateAsync(default)).ReturnsAsync(courseTemplateRecord);
-            mockedDatabase.Setup(database => database.MarkAsHandledAsync(eventId, true, courseTemplateId, null, default));
+            mockedDatabase.Setup(database => database.MarkAsHandledAsync(eventId, true, courseTemplateId.ToString(), null, default));
 
             mockedApiClient.Setup(apiClient => apiClient.CreateCourseTemplateAsync(It.Is<CreateCourseTemplateData>(createCourseTemplate => Assert.That.AreEqual(courseTemplateRecord.ToCreateCourseTemplate(), createCourseTemplate)), default))
                 .ReturnsAsync(new CourseTemplate
@@ -127,7 +127,7 @@ namespace HR.BrightspaceConnector.Tests
                 SyncExternalKey = courseTemplateId.ToString(),
                 SyncInternalKey = Guid.NewGuid().ToString()
             });
-            mockedDatabase.Setup(database => database.MarkAsHandledAsync(eventId, true, courseTemplateId, null, default));
+            mockedDatabase.Setup(database => database.MarkAsHandledAsync(eventId, true, courseTemplateId.ToString(), null, default));
 
             mockedApiClient.Setup(apiClient => apiClient.DeleteCourseTemplateAsync(courseTemplateId, true, default));
 
@@ -173,7 +173,7 @@ namespace HR.BrightspaceConnector.Tests
             int eventId = Random.Shared.Next(1, int.MaxValue);
             int courseTemplateId = Random.Shared.Next(1, int.MaxValue);
 
-            CourseTemplateRecord courseTemplateRecord = new CourseTemplateRecord
+            var courseTemplateRecord = new CourseTemplateRecord
             {
                 Code = "HR-SampleCourseTemplate",
                 Name = "Sample course template created by a unit test",
@@ -186,7 +186,7 @@ namespace HR.BrightspaceConnector.Tests
             };
 
             mockedDatabase.Setup(database => database.GetNextCourseTemplateAsync(default)).ReturnsAsync(courseTemplateRecord);
-            mockedDatabase.Setup(database => database.MarkAsHandledAsync(eventId, true, courseTemplateId, null, default));
+            mockedDatabase.Setup(database => database.MarkAsHandledAsync(eventId, true, courseTemplateId.ToString(), null, default));
 
             mockedApiClient.Setup(apiClient => apiClient.UpdateCourseTemplateAsync(courseTemplateId,
                 It.Is<CourseTemplateInfo>(courseTemplateInfo => Assert.That.AreEqual(courseTemplateRecord.ToCourseTemplateInfo(), courseTemplateInfo)), default));

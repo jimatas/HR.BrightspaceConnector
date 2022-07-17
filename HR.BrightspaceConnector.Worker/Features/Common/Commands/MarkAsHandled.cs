@@ -49,7 +49,7 @@ namespace HR.BrightspaceConnector.Features.Common.Commands
             await database.MarkAsHandledAsync(
                 command.EventId,
                 command.Success,
-                command.Id,
+                command.Id?.ToString(),
                 command.Success ? null : command.Message,
                 cancellationToken).WithoutCapturingContext();
 

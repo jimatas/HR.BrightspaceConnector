@@ -84,7 +84,7 @@ namespace HR.BrightspaceConnector.Tests
             };
 
             mockedDatabase.Setup(database => database.GetNextCustomOrgUnitAsync(default)).ReturnsAsync(orgUnitRecord);
-            mockedDatabase.Setup(database => database.MarkAsHandledAsync(eventId, true, orgUnitId, null, default));
+            mockedDatabase.Setup(database => database.MarkAsHandledAsync(eventId, true, orgUnitId.ToString(), null, default));
 
             mockedApiClient.Setup(apiClient => apiClient.CreateOrgUnitAsync(It.Is<OrgUnitCreateData>(orUnitCreateData => Assert.That.AreEqual(orgUnitRecord.ToOrgUnitCreateData(), orUnitCreateData)), default)).ReturnsAsync(() => new OrgUnit
             {
@@ -130,7 +130,7 @@ namespace HR.BrightspaceConnector.Tests
             };
 
             mockedDatabase.Setup(database => database.GetNextDepartmentAsync(default)).ReturnsAsync(orgUnitRecord);
-            mockedDatabase.Setup(database => database.MarkAsHandledAsync(eventId, true, orgUnitId, null, default));
+            mockedDatabase.Setup(database => database.MarkAsHandledAsync(eventId, true, orgUnitId.ToString(), null, default));
 
             mockedApiClient.Setup(apiClient => apiClient.CreateOrgUnitAsync(It.Is<OrgUnitCreateData>(orUnitCreateData => Assert.That.AreEqual(orgUnitRecord.ToOrgUnitCreateData(), orUnitCreateData)), default)).ReturnsAsync(() => new OrgUnit
             {
@@ -199,7 +199,7 @@ namespace HR.BrightspaceConnector.Tests
                 SyncExternalKey = orgUnitId.ToString(),
                 SyncInternalKey = Guid.NewGuid().ToString()
             });
-            mockedDatabase.Setup(database => database.MarkAsHandledAsync(eventId, true, orgUnitId, null, default));
+            mockedDatabase.Setup(database => database.MarkAsHandledAsync(eventId, true, orgUnitId.ToString(), null, default));
 
             mockedApiClient.Setup(apiClient => apiClient.DeleteOrgUnitAsync(orgUnitId, true, default));
 
@@ -228,7 +228,7 @@ namespace HR.BrightspaceConnector.Tests
                 SyncExternalKey = orgUnitId.ToString(),
                 SyncInternalKey = Guid.NewGuid().ToString()
             });
-            mockedDatabase.Setup(database => database.MarkAsHandledAsync(eventId, true, orgUnitId, null, default));
+            mockedDatabase.Setup(database => database.MarkAsHandledAsync(eventId, true, orgUnitId.ToString(), null, default));
 
             mockedApiClient.Setup(apiClient => apiClient.DeleteOrgUnitAsync(orgUnitId, true, default));
 
@@ -257,7 +257,7 @@ namespace HR.BrightspaceConnector.Tests
                 SyncExternalKey = orgUnitId.ToString(),
                 SyncInternalKey = Guid.NewGuid().ToString()
             });
-            mockedDatabase.Setup(database => database.MarkAsHandledAsync(eventId, true, orgUnitId, null, default));
+            mockedDatabase.Setup(database => database.MarkAsHandledAsync(eventId, true, orgUnitId.ToString(), null, default));
 
             mockedApiClient.Setup(apiClient => apiClient.DeleteOrgUnitAsync(orgUnitId, true, default));
 
@@ -295,7 +295,7 @@ namespace HR.BrightspaceConnector.Tests
             };
 
             mockedDatabase.Setup(database => database.GetNextCustomOrgUnitAsync(default)).ReturnsAsync(orgUnitRecord);
-            mockedDatabase.Setup(database => database.MarkAsHandledAsync(eventId, true, orgUnitId, null, default));
+            mockedDatabase.Setup(database => database.MarkAsHandledAsync(eventId, true, orgUnitId.ToString(), null, default));
 
             mockedApiClient.Setup(apiClient => apiClient.GetOrgUnitsAsync(It.IsAny<OrgUnitQueryParameters>(), default)).ReturnsAsync(new PagedResultSet<OrgUnitProperties>());
             mockedApiClient.Setup(apiClient => apiClient.UpdateOrgUnitAsync(orgUnitId, It.Is<OrgUnitProperties>(orgUnitProperties => Assert.That.AreEqual(orgUnitRecord.ToOrgUnitProperties(), orgUnitProperties)), default)).ReturnsAsync(() => new OrgUnitProperties
@@ -344,7 +344,7 @@ namespace HR.BrightspaceConnector.Tests
             };
 
             mockedDatabase.Setup(database => database.GetNextDepartmentAsync(default)).ReturnsAsync(orgUnitRecord);
-            mockedDatabase.Setup(database => database.MarkAsHandledAsync(eventId, true, orgUnitId, null, default));
+            mockedDatabase.Setup(database => database.MarkAsHandledAsync(eventId, true, orgUnitId.ToString(), null, default));
 
             mockedApiClient.Setup(apiClient => apiClient.GetOrgUnitsAsync(It.IsAny<OrgUnitQueryParameters>(), default)).ReturnsAsync(new PagedResultSet<OrgUnitProperties>());
             mockedApiClient.Setup(apiClient => apiClient.UpdateOrgUnitAsync(orgUnitId, It.Is<OrgUnitProperties>(orgUnitProperties => Assert.That.AreEqual(orgUnitRecord.ToOrgUnitProperties(), orgUnitProperties)), default)).ReturnsAsync(() => new OrgUnitProperties

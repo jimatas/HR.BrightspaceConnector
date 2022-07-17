@@ -20,7 +20,7 @@ namespace HR.BrightspaceConnector.Infrastructure.Persistence
         Task MarkAsHandledAsync(
             int eventId,
             bool success,
-            int? id,
+            string? externalKey,
             string? message,
             CancellationToken cancellationToken = default);
     }

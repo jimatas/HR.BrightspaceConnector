@@ -72,7 +72,7 @@ namespace HR.BrightspaceConnector.Tests
         {
             // Arrange
             int attempt = 0;
-            mockedDatabase.Setup(database => database.MarkAsHandledAsync(It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<int?>(), It.IsAny<string?>(), It.IsAny<CancellationToken>())).Callback((int _, bool _, int? _, string _, CancellationToken _) =>
+            mockedDatabase.Setup(database => database.MarkAsHandledAsync(It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<string?>(), It.IsAny<string?>(), It.IsAny<CancellationToken>())).Callback((int _, bool _, string? _, string _, CancellationToken _) =>
             {
                 if (++attempt == 1)
                 {
@@ -101,7 +101,7 @@ namespace HR.BrightspaceConnector.Tests
         {
             // Arrange
             int attempt = 0;
-            mockedDatabase.Setup(database => database.MarkAsHandledAsync(It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<int?>(), It.IsAny<string?>(), It.IsAny<CancellationToken>())).Callback((int _, bool _, int? _, string _, CancellationToken _) =>
+            mockedDatabase.Setup(database => database.MarkAsHandledAsync(It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<string?>(), It.IsAny<string?>(), It.IsAny<CancellationToken>())).Callback((int _, bool _, string? _, string _, CancellationToken _) =>
             {
                 if (++attempt == 1)
                 {

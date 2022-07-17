@@ -64,7 +64,7 @@ namespace HR.BrightspaceConnector.Tests
             };
 
             mockedDatabase.Setup(database => database.GetNextCourseOfferingAsync(default)).ReturnsAsync(courseOfferingRecord);
-            mockedDatabase.Setup(database => database.MarkAsHandledAsync(eventId, true, courseOfferingId, null, default));
+            mockedDatabase.Setup(database => database.MarkAsHandledAsync(eventId, true, courseOfferingId.ToString(), null, default));
 
             mockedApiClient.Setup(apiClient => apiClient.CreateCourseOfferingAsync(It.Is<CreateCourseOfferingData>(createCourseOffering => Assert.That.AreEqual(courseOfferingRecord.ToCreateCourseOffering(), createCourseOffering)), default))
                 .ReturnsAsync(new CourseOffering
@@ -141,7 +141,7 @@ namespace HR.BrightspaceConnector.Tests
                 SyncExternalKey = courseOfferingId.ToString(),
                 SyncInternalKey = Guid.NewGuid().ToString()
             });
-            mockedDatabase.Setup(database => database.MarkAsHandledAsync(eventId, true, courseOfferingId, null, default));
+            mockedDatabase.Setup(database => database.MarkAsHandledAsync(eventId, true, courseOfferingId.ToString(), null, default));
 
             mockedApiClient.Setup(apiClient => apiClient.DeleteCourseOfferingAsync(courseOfferingId, true, default));
 
@@ -202,7 +202,7 @@ namespace HR.BrightspaceConnector.Tests
             };
 
             mockedDatabase.Setup(database => database.GetNextCourseOfferingAsync(default)).ReturnsAsync(courseOfferingRecord);
-            mockedDatabase.Setup(database => database.MarkAsHandledAsync(eventId, true, courseOfferingId, null, default));
+            mockedDatabase.Setup(database => database.MarkAsHandledAsync(eventId, true, courseOfferingId.ToString(), null, default));
 
             mockedApiClient.Setup(apiClient => apiClient.UpdateCourseOfferingAsync(courseOfferingId,
                 It.Is<CourseOfferingInfo>(courseOfferingInfo => Assert.That.AreEqual(courseOfferingRecord.ToCourseOfferingInfo(), courseOfferingInfo)), default));
