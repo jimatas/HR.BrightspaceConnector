@@ -1,4 +1,5 @@
 ﻿using HR.BrightspaceConnector.Features.Courses;
+using HR.BrightspaceConnector.Features.Enrollments;
 using HR.BrightspaceConnector.Features.OrgUnits;
 using HR.BrightspaceConnector.Features.Users;
 
@@ -122,6 +123,15 @@ namespace HR.BrightspaceConnector.Tests
             Assert.AreEqual(expected.Description?.Content, actual.Description?.Content);
             Assert.AreEqual(expected.Description?.Type, actual.Description?.Type);
             Assert.AreEqual(expected.IsActive, actual.IsActive);
+
+            return true;
+        }
+
+        public static bool AreEqual(this Assert _, CreateEnrollmentData expected, CreateEnrollmentData actual)
+        {
+            Assert.AreEqual(expected.OrgUnitId, actual.OrgUnitId);
+            Assert.AreEqual(expected.RoleId, actual.RoleId);
+            Assert.AreEqual(expected.UserId, actual.UserId);
 
             return true;
         }
