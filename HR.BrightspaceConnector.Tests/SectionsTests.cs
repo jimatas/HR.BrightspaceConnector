@@ -5,6 +5,7 @@ using HR.BrightspaceConnector.Utilities;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -14,7 +15,7 @@ namespace HR.BrightspaceConnector.Tests
     public class SectionsTests : IntegrationTestsBase
     {
         [TestMethod]
-        public async Task CreateSections()
+        public async Task CompleteLifecycleIntegrationTest()
         {
             var apiClient = CreateApiClient();
 
@@ -25,42 +26,46 @@ namespace HR.BrightspaceConnector.Tests
             {
                 try
                 {
+                    // Will throw 404 if there's no section settings defined for the course.
                     var sectionSettings = await apiClient.GetSectionSettingsAsync((int)courseOffering.Identifier);
                 }
                 catch (ApiException exception) when (exception.StatusCode == HttpStatusCode.NotFound)
                 {
-                    var sectionSettingsToCreate = new CreateSectionSettingsData
-                    {
-                        AutoEnroll = true,
-                        DescriptionsVisibleToEnrollees = true,
-                        EnrollmentQuantity = 3,
-                        EnrollmentStyle = SectionEnrollmentStyle.NumberOfSectionsAutoEnrollment,
-                        RandomizeEnrollments = true
-                    };
-
-                    var newSectionSettings = await apiClient.CreateSectionSettingsAsync((int)courseOffering.Identifier, sectionSettingsToCreate);
-
-                    var sectionSettingsToUpdate = new UpdateSectionSettingsData
-                    {
-                        AutoEnroll = false,
-                        DescriptionsVisibleToEnrollees = false,
-                        RandomizeEnrollments = false,
-                        Name = "MySuperSection",
-                        Description = new RichTextInput
+                    var newSectionSettings = await apiClient.CreateSectionSettingsAsync((int)courseOffering.Identifier,
+                        new CreateSectionSettingsData
                         {
-                            Content = "These are my super sections",
-                            Type = TextContentType.Text
-                        }
-                    };
+                            AutoEnroll = true,
+                            DescriptionsVisibleToEnrollees = true,
+                            EnrollmentQuantity = 3,
+                            EnrollmentStyle = SectionEnrollmentStyle.NumberOfSectionsAutoEnrollment,
+                            RandomizeEnrollments = true
+                        });
 
-                    var newerSectionSettings = await apiClient.UpdateSectionSettingsAsync((int)courseOffering.Identifier, sectionSettingsToUpdate);
+                    // Will have the default name set.
+                    Assert.AreEqual("Sections", newSectionSettings.Name);
+
+                    var newerSectionSettings = await apiClient.UpdateSectionSettingsAsync((int)courseOffering.Identifier,
+                        new UpdateSectionSettingsData
+                        {
+                            AutoEnroll = false,
+                            DescriptionsVisibleToEnrollees = false,
+                            RandomizeEnrollments = false,
+                            Name = "Sample sections",
+                            Description = new RichTextInput
+                            {
+                                Content = "These are sample sections created by a unit test.",
+                                Type = TextContentType.Text
+                            }
+                        });
+
+                    Assert.AreNotEqual(newSectionSettings.Name, newerSectionSettings.Name);
                 }
 
                 var newSection = await apiClient.CreateSectionAsync((int)courseOffering.Identifier,
                     new CreateOrUpdateSectionData
                     {
                         Code = "Section-4",
-                        Name = "Sample Section 4",
+                        Name = "Sample section 4",
                         Description = new RichTextInput
                         {
                             Content = "This sample section was created by a unit test.",
@@ -80,15 +85,13 @@ namespace HR.BrightspaceConnector.Tests
                         }
                     });
 
-                var sectionsToDelete = await apiClient.GetSectionsAsync((int)courseOffering.Identifier);
-                foreach (var sectionToDelete in sectionsToDelete)
-                {
-                    await apiClient.DeleteSectionAsync((int)courseOffering.Identifier, (int)sectionToDelete.SectionId!);
-                }
-            }
-            catch (ApiException exception)
-            {
+                var sections = await apiClient.GetSectionsAsync((int)courseOffering.Identifier);
+                Assert.AreEqual(4, sections.Count());
 
+                foreach (var section in sections)
+                {
+                    await apiClient.DeleteSectionAsync((int)courseOffering.Identifier, (int)section.SectionId!);
+                }
             }
             finally
             {
@@ -96,7 +99,7 @@ namespace HR.BrightspaceConnector.Tests
             }
         }
         
-        private async Task<CourseOffering> CreateCourseOfferingAsync(IApiClient apiClient)
+        private static async Task<CourseOffering> CreateCourseOfferingAsync(IApiClient apiClient)
         {
             var rootOrganization = await apiClient.GetOrganizationAsync();
 
@@ -127,7 +130,7 @@ namespace HR.BrightspaceConnector.Tests
             return newCourseOffering;
         }
 
-        private async Task DeleteCourseOfferingAsync(IApiClient apiClient, CourseOffering courseOffering)
+        private static async Task DeleteCourseOfferingAsync(IApiClient apiClient, CourseOffering courseOffering)
         {
             await apiClient.DeleteCourseOfferingAsync((int)courseOffering.Identifier!, permanently: true);
             await apiClient.DeleteCourseTemplateAsync((int)courseOffering.CourseTemplate!.Identifier!, permanently: true);
