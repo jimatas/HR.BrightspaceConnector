@@ -1,6 +1,7 @@
 ﻿using HR.BrightspaceConnector.Features.Courses;
 using HR.BrightspaceConnector.Features.Enrollments;
 using HR.BrightspaceConnector.Features.OrgUnits;
+using HR.BrightspaceConnector.Features.Sections;
 using HR.BrightspaceConnector.Features.Users;
 using HR.BrightspaceConnector.Infrastructure;
 using HR.BrightspaceConnector.Security;
@@ -332,18 +333,6 @@ namespace HR.BrightspaceConnector
         #endregion
 
         #region Enrollments
-        public async Task<EnrollmentData> CreateOrUpdateEnrollmentAsync(CreateEnrollmentData enrollment, CancellationToken cancellationToken = default)
-        {
-            using var httpRequest = new HttpRequestMessage(HttpMethod.Post, $"lp/{apiSettings.LearningPlatformVersion}/enrollments/") { Content = JsonContent.Create(enrollment, mediaType: null, jsonOptions) };
-            await SetAuthorizationHeaderAsync(httpRequest, cancellationToken).WithoutCapturingContext();
-
-            using var httpResponse = await httpClient.SendAsync(httpRequest, cancellationToken).WithoutCapturingContext();
-            await CheckResponseForErrorAsync(httpResponse, cancellationToken).WithoutCapturingContext();
-
-            var newEnrollment = await httpResponse.Content.ReadFromJsonAsync<EnrollmentData>(jsonOptions, cancellationToken).WithoutCapturingContext();
-            return newEnrollment!;
-        }
-
         public async Task<EnrollmentData> GetEnrollmentAsync(int userId, int orgUnitId, CancellationToken cancellationToken = default)
         {
             using var httpRequest = new HttpRequestMessage(HttpMethod.Get, $"lp/{apiSettings.LearningPlatformVersion}/enrollments/users/{userId}/orgUnits/{orgUnitId}");
@@ -368,6 +357,18 @@ namespace HR.BrightspaceConnector
             return classlistUsers!;
         }
 
+        public async Task<EnrollmentData> CreateOrUpdateEnrollmentAsync(CreateEnrollmentData enrollment, CancellationToken cancellationToken = default)
+        {
+            using var httpRequest = new HttpRequestMessage(HttpMethod.Post, $"lp/{apiSettings.LearningPlatformVersion}/enrollments/") { Content = JsonContent.Create(enrollment, mediaType: null, jsonOptions) };
+            await SetAuthorizationHeaderAsync(httpRequest, cancellationToken).WithoutCapturingContext();
+
+            using var httpResponse = await httpClient.SendAsync(httpRequest, cancellationToken).WithoutCapturingContext();
+            await CheckResponseForErrorAsync(httpResponse, cancellationToken).WithoutCapturingContext();
+
+            var newEnrollment = await httpResponse.Content.ReadFromJsonAsync<EnrollmentData>(jsonOptions, cancellationToken).WithoutCapturingContext();
+            return newEnrollment!;
+        }
+
         public async Task<EnrollmentData> DeleteEnrollmentAsync(int userId, int orgUnitId, CancellationToken cancellationToken = default)
         {
             using var httpRequest = new HttpRequestMessage(HttpMethod.Delete, $"lp/{apiSettings.LearningPlatformVersion}/enrollments/users/{userId}/orgUnits/{orgUnitId}");
@@ -378,6 +379,89 @@ namespace HR.BrightspaceConnector
 
             var deletedEnrollment = await httpResponse.Content.ReadFromJsonAsync<EnrollmentData>(jsonOptions, cancellationToken).WithoutCapturingContext();
             return deletedEnrollment!;
+        }
+        #endregion
+
+        #region Sections
+        public async Task<SectionSettingsData> GetSectionSettingsAsync(int orgUnitId, CancellationToken cancellationToken = default)
+        {
+            using var httpRequest = new HttpRequestMessage(HttpMethod.Get, $"lp/{apiSettings.LearningPlatformVersion}/{orgUnitId}/sections/settings");
+            await SetAuthorizationHeaderAsync(httpRequest, cancellationToken).WithoutCapturingContext();
+
+            using var httpResponse = await httpClient.SendAsync(httpRequest, cancellationToken).WithoutCapturingContext();
+            await CheckResponseForErrorAsync(httpResponse, cancellationToken).WithoutCapturingContext();
+
+            var sectionSettings = await httpResponse.Content.ReadFromJsonAsync<SectionSettingsData>(jsonOptions, cancellationToken).WithoutCapturingContext();
+            return sectionSettings!;
+        }
+
+        public async Task<SectionSettingsData> CreateSectionSettingsAsync(int orgUnitId, CreateSectionSettingsData sectionSettings, CancellationToken cancellationToken = default)
+        {
+            using var httpRequest = new HttpRequestMessage(HttpMethod.Post, $"lp/{apiSettings.LearningPlatformVersion}/{orgUnitId}/sections/settings") { Content = JsonContent.Create(sectionSettings, mediaType: null, jsonOptions) };
+            await SetAuthorizationHeaderAsync(httpRequest, cancellationToken).WithoutCapturingContext();
+
+            using var httpResponse = await httpClient.SendAsync(httpRequest, cancellationToken).WithoutCapturingContext();
+            await CheckResponseForErrorAsync(httpResponse, cancellationToken).WithoutCapturingContext();
+
+            var newSectionSettings = await httpResponse.Content.ReadFromJsonAsync<SectionSettingsData>(jsonOptions, cancellationToken).WithoutCapturingContext();
+            return newSectionSettings!;
+        }
+
+        public async Task<SectionSettingsData> UpdateSectionSettingsAsync(int orgUnitId, UpdateSectionSettingsData sectionSettings, CancellationToken cancellationToken = default)
+        {
+            using var httpRequest = new HttpRequestMessage(HttpMethod.Put, $"lp/{apiSettings.LearningPlatformVersion}/{orgUnitId}/sections/settings") { Content = JsonContent.Create(sectionSettings, mediaType: null, jsonOptions) };
+            await SetAuthorizationHeaderAsync(httpRequest, cancellationToken).WithoutCapturingContext();
+
+            using var httpResponse = await httpClient.SendAsync(httpRequest, cancellationToken).WithoutCapturingContext();
+            await CheckResponseForErrorAsync(httpResponse, cancellationToken).WithoutCapturingContext();
+
+            var newSectionSettings = await httpResponse.Content.ReadFromJsonAsync<SectionSettingsData>(jsonOptions, cancellationToken).WithoutCapturingContext();
+            return newSectionSettings!;
+        }
+
+        public async Task<IEnumerable<SectionData>> GetSectionsAsync(int orgUnitId, CancellationToken cancellationToken = default)
+        {
+            using var httpRequest = new HttpRequestMessage(HttpMethod.Get, $"lp/{apiSettings.LearningPlatformVersion}/{orgUnitId}/sections/");
+            await SetAuthorizationHeaderAsync(httpRequest, cancellationToken).WithoutCapturingContext();
+
+            using var httpResponse = await httpClient.SendAsync(httpRequest, cancellationToken).WithoutCapturingContext();
+            await CheckResponseForErrorAsync(httpResponse, cancellationToken).WithoutCapturingContext();
+
+            var sections = await httpResponse.Content.ReadFromJsonAsync<IEnumerable<SectionData>>(jsonOptions, cancellationToken).WithoutCapturingContext();
+            return sections!;
+        }
+
+        public async Task<SectionData> CreateSectionAsync(int orgUnitId, CreateOrUpdateSectionData section, CancellationToken cancellationToken = default)
+        {
+            using var httpRequest = new HttpRequestMessage(HttpMethod.Post, $"lp/{apiSettings.LearningPlatformVersion}/{orgUnitId}/sections/") { Content = JsonContent.Create(section, mediaType: null, jsonOptions) };
+            await SetAuthorizationHeaderAsync(httpRequest, cancellationToken).WithoutCapturingContext();
+
+            using var httpResponse = await httpClient.SendAsync(httpRequest, cancellationToken).WithoutCapturingContext();
+            await CheckResponseForErrorAsync(httpResponse, cancellationToken).WithoutCapturingContext();
+
+            var newSection = await httpResponse.Content.ReadFromJsonAsync<SectionData>(jsonOptions, cancellationToken).WithoutCapturingContext();
+            return newSection!;
+        }
+
+        public async Task<SectionData> UpdateSectionAsync(int orgUnitId, int sectionId, CreateOrUpdateSectionData section, CancellationToken cancellationToken = default)
+        {
+            using var httpRequest = new HttpRequestMessage(HttpMethod.Put, $"lp/{apiSettings.LearningPlatformVersion}/{orgUnitId}/sections/{sectionId}") { Content = JsonContent.Create(section, mediaType: null, jsonOptions) };
+            await SetAuthorizationHeaderAsync(httpRequest, cancellationToken).WithoutCapturingContext();
+
+            using var httpResponse = await httpClient.SendAsync(httpRequest, cancellationToken).WithoutCapturingContext();
+            await CheckResponseForErrorAsync(httpResponse, cancellationToken).WithoutCapturingContext();
+
+            var updatedSection = await httpResponse.Content.ReadFromJsonAsync<SectionData>(jsonOptions, cancellationToken).WithoutCapturingContext();
+            return updatedSection!;
+        }
+
+        public async Task DeleteSectionAsync(int orgUnitId, int sectionId, CancellationToken cancellationToken = default)
+        {
+            using var httpRequest = new HttpRequestMessage(HttpMethod.Delete, $"lp/{apiSettings.LearningPlatformVersion}/{orgUnitId}/sections/{sectionId}");
+            await SetAuthorizationHeaderAsync(httpRequest, cancellationToken).WithoutCapturingContext();
+
+            using var httpResponse = await httpClient.SendAsync(httpRequest, cancellationToken).WithoutCapturingContext();
+            await CheckResponseForErrorAsync(httpResponse, cancellationToken).WithoutCapturingContext();
         }
         #endregion
 

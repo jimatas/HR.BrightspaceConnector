@@ -1,6 +1,7 @@
 ﻿using HR.BrightspaceConnector.Features.Courses;
 using HR.BrightspaceConnector.Features.Enrollments;
 using HR.BrightspaceConnector.Features.OrgUnits;
+using HR.BrightspaceConnector.Features.Sections;
 using HR.BrightspaceConnector.Features.Users;
 using HR.BrightspaceConnector.Infrastructure;
 
@@ -293,21 +294,6 @@ namespace HR.BrightspaceConnector
 
         #region Enrollments
         /// <summary>
-        /// Create or update a new enrollment for a user.
-        /// </summary>
-        /// <remarks>
-        /// If the user doesn't already have an enrollment in the applicable org unit, this action creates a new enrollment; 
-        /// if the user does already have an enrollment in the org unit, this action updates the enrollment in place to use the new role.
-        /// <para>
-        /// Oauth2 Scopes: <c>enrollment:orgunit:create</c>
-        /// </para>
-        /// </remarks>
-        /// <param name="enrollment"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns>This action returns an EnrollmentData JSON block for the newly enrolled user.</returns>
-        Task<EnrollmentData> CreateOrUpdateEnrollmentAsync(CreateEnrollmentData enrollment, CancellationToken cancellationToken = default);
-
-        /// <summary>
         /// Retrieve enrollment details in an org unit for the provided user.
         /// </summary>
         /// <remarks>
@@ -335,6 +321,21 @@ namespace HR.BrightspaceConnector
         Task<PagedResultSet<OrgUnitUser>> GetEnrolledUsersAsync(int orgUnitId, EnrolledUserQueryParameters? queryParameters = null, CancellationToken cancellationToken = default);
 
         /// <summary>
+        /// Create or update a new enrollment for a user.
+        /// </summary>
+        /// <remarks>
+        /// If the user doesn't already have an enrollment in the applicable org unit, this action creates a new enrollment; 
+        /// if the user does already have an enrollment in the org unit, this action updates the enrollment in place to use the new role.
+        /// <para>
+        /// Oauth2 Scopes: <c>enrollment:orgunit:create</c>
+        /// </para>
+        /// </remarks>
+        /// <param name="enrollment"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns>This action returns an EnrollmentData JSON block for the newly enrolled user.</returns>
+        Task<EnrollmentData> CreateOrUpdateEnrollmentAsync(CreateEnrollmentData enrollment, CancellationToken cancellationToken = default);
+
+        /// <summary>
         /// Delete a user's enrollment in a provided org unit.
         /// </summary>
         /// <remarks>
@@ -345,6 +346,101 @@ namespace HR.BrightspaceConnector
         /// <param name="cancellationToken"></param>
         /// <returns>Unlike most delete actions, this action returns an EnrollmentData JSON block showing the enrollment status just before this action deleted the user's enrollment.</returns>
         Task<EnrollmentData> DeleteEnrollmentAsync(int userId, int orgUnitId, CancellationToken cancellationToken = default);
+        #endregion
+
+        #region Sections
+        /// <summary>
+        /// Retrieve the settings for all sections in an org unit.
+        /// </summary>
+        /// <remarks>
+        /// Oauth2 Scopes: <c>sections:section:read</c>
+        /// </remarks>
+        /// <param name="orgUnitId"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns>This action returns a SectionSettingsData JSON block in the Fetch form.</returns>
+        Task<SectionSettingsData> GetSectionSettingsAsync(int orgUnitId, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Initialize the settings for all sections in a particular org unit.
+        /// </summary>
+        /// <remarks>
+        /// You can only use this action to initialize the settings for all sections in an org unit. Once you've used this action to do so, you must subsequently use
+        /// <list type="bullet">
+        ///   <item><c>PUT /d2l/api/lp/(version)/(orgUnitId)/sections/settings</c> to manage the section settings for the org unit</item>
+        ///   <item><c>POST /d2l/api/lp/(version)/(orgUnitId)/sections/ to create</c> sections as descendants of the org unit</item>
+        /// </list>
+        /// <para>
+        /// Oauth2 Scopes: <c>sections:section:create</c>
+        /// </para>
+        /// </remarks>
+        /// <param name="orgUnitId"></param>
+        /// <param name="sectionSettings">New settings for sections in this org unit.</param>
+        /// <param name="cancellationToken"></param>
+        /// <returns>This action returns the SectionSettingsData JSON block, in its Fetch form, for the org unit's new section properties.</returns>
+        Task<SectionSettingsData> CreateSectionSettingsAsync(int orgUnitId, CreateSectionSettingsData sectionSettings, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Update the section settings for an org unit.
+        /// </summary>
+        /// <remarks>
+        /// Oauth2 Scopes: <c>sections:section:update</c>
+        /// </remarks>
+        /// <param name="orgUnitId"></param>
+        /// <param name="sectionSettings">Updated settings for all sections in this org unit.</param>
+        /// <param name="cancellationToken"></param>
+        /// <returns>This action returns the SectionSettingsData JSON block, in its Fetch form, for the org unit's updated section properties.</returns>
+        Task<SectionSettingsData> UpdateSectionSettingsAsync(int orgUnitId, UpdateSectionSettingsData sectionSettings, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Retrieve all the sections for a provided org unit.
+        /// </summary>
+        /// <remarks>
+        /// Oauth2 Scopes: <c>sections:section:read</c>
+        /// </remarks>
+        /// <param name="orgUnitId"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns>This action returns a JSON array of SectionData blocks in the Fetch form.</returns>
+        Task<IEnumerable<SectionData>> GetSectionsAsync(int orgUnitId, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Create a new section in a particular org unit.
+        /// </summary>
+        /// <remarks>
+        /// You can only use this action to add a section to an org unit that's already been initialized with section settings for the org unit.
+        /// <para>
+        /// Oauth2 Scopes: <c>sections:section:create</c>
+        /// </para>
+        /// </remarks>
+        /// <param name="orgUnitId"></param>
+        /// <param name="section">New section data.</param>
+        /// <param name="cancellationToken"></param>
+        /// <returns>This action returns the SectionData JSON block, in its Fetch form, for the org unit's new section.</returns>
+        Task<SectionData> CreateSectionAsync(int orgUnitId, CreateOrUpdateSectionData section, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Update information for a section in a particular org unit.
+        /// </summary>
+        /// <remarks>
+        /// Oauth2 Scopes: <c>sections:section:update</c>
+        /// </remarks>
+        /// <param name="orgUnitId"></param>
+        /// <param name="sectionId"></param>
+        /// <param name="section">Updated section data.</param>
+        /// <param name="cancellationToken"></param>
+        /// <returns>This action returns the updated SectionData JSON block, in its Fetch form.</returns>
+        Task<SectionData> UpdateSectionAsync(int orgUnitId, int sectionId, CreateOrUpdateSectionData section, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Delete a section from a provided org unit.
+        /// </summary>
+        /// <remarks>
+        /// Oauth2 Scopes: <c>sections:section:delete</c>
+        /// </remarks>
+        /// <param name="orgUnitId"></param>
+        /// <param name="sectionId"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        Task DeleteSectionAsync(int orgUnitId, int sectionId, CancellationToken cancellationToken = default);
         #endregion
     }
 }

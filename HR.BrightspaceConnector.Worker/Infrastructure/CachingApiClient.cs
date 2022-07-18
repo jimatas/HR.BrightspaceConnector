@@ -1,6 +1,7 @@
 ﻿using HR.BrightspaceConnector.Features.Courses;
 using HR.BrightspaceConnector.Features.Enrollments;
 using HR.BrightspaceConnector.Features.OrgUnits;
+using HR.BrightspaceConnector.Features.Sections;
 using HR.BrightspaceConnector.Features.Users;
 using HR.Common.Utilities;
 
@@ -165,11 +166,6 @@ namespace HR.BrightspaceConnector.Infrastructure
         #endregion
 
         #region Enrollments
-        public Task<EnrollmentData> CreateOrUpdateEnrollmentAsync(CreateEnrollmentData enrollment, CancellationToken cancellationToken = default)
-        {
-            return apiClient.CreateOrUpdateEnrollmentAsync(enrollment, cancellationToken);
-        }
-
         public Task<EnrollmentData> GetEnrollmentAsync(int userId, int orgUnitId, CancellationToken cancellationToken = default)
         {
             return apiClient.GetEnrollmentAsync(userId, orgUnitId, cancellationToken);
@@ -180,9 +176,51 @@ namespace HR.BrightspaceConnector.Infrastructure
             return apiClient.GetEnrolledUsersAsync(orgUnitId, queryParameters, cancellationToken);
         }
 
+        public Task<EnrollmentData> CreateOrUpdateEnrollmentAsync(CreateEnrollmentData enrollment, CancellationToken cancellationToken = default)
+        {
+            return apiClient.CreateOrUpdateEnrollmentAsync(enrollment, cancellationToken);
+        }
+
         public Task<EnrollmentData> DeleteEnrollmentAsync(int userId, int orgUnitId, CancellationToken cancellationToken = default)
         {
             return apiClient.DeleteEnrollmentAsync(userId, orgUnitId, cancellationToken);
+        }
+        #endregion
+
+        #region Sections
+        public Task<SectionSettingsData> GetSectionSettingsAsync(int orgUnitId, CancellationToken cancellationToken = default)
+        {
+            return apiClient.GetSectionSettingsAsync(orgUnitId, cancellationToken);
+        }
+
+        public Task<SectionSettingsData> CreateSectionSettingsAsync(int orgUnitId, CreateSectionSettingsData sectionSettings, CancellationToken cancellationToken = default)
+        {
+            return apiClient.CreateSectionSettingsAsync(orgUnitId, sectionSettings, cancellationToken);
+        }
+
+        public Task<SectionSettingsData> UpdateSectionSettingsAsync(int orgUnitId, UpdateSectionSettingsData sectionSettings, CancellationToken cancellationToken = default)
+        {
+            return apiClient.UpdateSectionSettingsAsync(orgUnitId, sectionSettings, cancellationToken);
+        }
+
+        public Task<IEnumerable<SectionData>> GetSectionsAsync(int orgUnitId, CancellationToken cancellationToken = default)
+        {
+            return apiClient.GetSectionsAsync(orgUnitId, cancellationToken);
+        }
+
+        public Task<SectionData> CreateSectionAsync(int orgUnitId, CreateOrUpdateSectionData section, CancellationToken cancellationToken = default)
+        {
+            return apiClient.CreateSectionAsync(orgUnitId, section, cancellationToken);
+        }
+
+        public Task<SectionData> UpdateSectionAsync(int orgUnitId, int sectionId, CreateOrUpdateSectionData section, CancellationToken cancellationToken = default)
+        {
+            return apiClient.UpdateSectionAsync(orgUnitId, sectionId, section, cancellationToken);
+        }
+
+        public Task DeleteSectionAsync(int orgUnitId, int sectionId, CancellationToken cancellationToken = default)
+        {
+            return apiClient.DeleteSectionAsync(orgUnitId, sectionId, cancellationToken);
         }
         #endregion
 
