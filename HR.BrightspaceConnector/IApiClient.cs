@@ -418,6 +418,22 @@ namespace HR.BrightspaceConnector
         Task<SectionData> CreateSectionAsync(int orgUnitId, CreateOrUpdateSectionData section, CancellationToken cancellationToken = default);
 
         /// <summary>
+        /// Enroll a user in a section for a particular org unit.
+        /// </summary>
+        /// <remarks>
+        /// Note that the user provided as input to this action must already be explicitly enrolled into the org unit identified by the action's orgUnitId route parameter.
+        /// <para>
+        /// Oauth2 Scopes: <c>sections:enrollment:create</c>
+        /// </para>
+        /// </remarks>
+        /// <param name="orgUnitId"></param>
+        /// <param name="sectionId"></param>
+        /// <param name="enrollment">Enrollment block for enrollment in the section.</param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        Task CreateSectionEnrollmentAsync(int orgUnitId, int sectionId, SectionEnrollment enrollment, CancellationToken cancellationToken = default);
+
+        /// <summary>
         /// Update information for a section in a particular org unit.
         /// </summary>
         /// <remarks>

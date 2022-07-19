@@ -213,6 +213,11 @@ namespace HR.BrightspaceConnector.Infrastructure
             return apiClient.CreateSectionAsync(orgUnitId, section, cancellationToken);
         }
 
+        public Task CreateSectionEnrollmentAsync(int orgUnitId, int sectionId, SectionEnrollment enrollment, CancellationToken cancellationToken = default)
+        {
+            return apiClient.CreateSectionEnrollmentAsync(orgUnitId, sectionId, enrollment, cancellationToken);
+        }
+
         public Task<SectionData> UpdateSectionAsync(int orgUnitId, int sectionId, CreateOrUpdateSectionData section, CancellationToken cancellationToken = default)
         {
             return apiClient.UpdateSectionAsync(orgUnitId, sectionId, section, cancellationToken);

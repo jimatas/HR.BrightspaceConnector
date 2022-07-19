@@ -443,6 +443,15 @@ namespace HR.BrightspaceConnector
             return newSection!;
         }
 
+        public async Task CreateSectionEnrollmentAsync(int orgUnitId, int sectionId, SectionEnrollment enrollment, CancellationToken cancellationToken = default)
+        {
+            using var httpRequest = new HttpRequestMessage(HttpMethod.Post, $"lp/{apiSettings.LearningPlatformVersion}/{orgUnitId}/sections/{sectionId}/enrollments/") { Content = JsonContent.Create(enrollment, mediaType: null, jsonOptions) };
+            await SetAuthorizationHeaderAsync(httpRequest, cancellationToken).WithoutCapturingContext();
+
+            using var httpResponse = await httpClient.SendAsync(httpRequest, cancellationToken).WithoutCapturingContext();
+            await CheckResponseForErrorAsync(httpResponse, cancellationToken).WithoutCapturingContext();
+        }
+
         public async Task<SectionData> UpdateSectionAsync(int orgUnitId, int sectionId, CreateOrUpdateSectionData section, CancellationToken cancellationToken = default)
         {
             using var httpRequest = new HttpRequestMessage(HttpMethod.Put, $"lp/{apiSettings.LearningPlatformVersion}/{orgUnitId}/sections/{sectionId}") { Content = JsonContent.Create(section, mediaType: null, jsonOptions) };

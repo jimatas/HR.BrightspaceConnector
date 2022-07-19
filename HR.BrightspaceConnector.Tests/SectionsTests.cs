@@ -1,10 +1,12 @@
 ﻿using HR.BrightspaceConnector.Features.Common;
 using HR.BrightspaceConnector.Features.Courses;
+using HR.BrightspaceConnector.Features.Enrollments;
 using HR.BrightspaceConnector.Features.Sections;
 using HR.BrightspaceConnector.Utilities;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
+using System;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -85,8 +87,38 @@ namespace HR.BrightspaceConnector.Tests
                         }
                     });
 
+                var learnerRole = (await apiClient.GetRolesAsync()).Single(role => string.Equals(role.DisplayName, "Learner", StringComparison.OrdinalIgnoreCase));
+                var newLearner = await apiClient.CreateUserAsync(
+                    new Features.Users.CreateUserData
+                    {
+                        FirstName = "Jim",
+                        LastName = "Atas",
+                        OrgDefinedId = "ja.hstest@hro.nl",
+                        ExternalEmail = "ja.hstest@hr.nl",
+                        UserName = "ja.hstest",
+                        RoleId = learnerRole.Identifier,
+                        IsActive = true,
+                        SendCreationEmail = false
+                    });
+
+                await apiClient.CreateOrUpdateEnrollmentAsync(new CreateEnrollmentData
+                {
+                    OrgUnitId = courseOffering.Identifier,
+                    UserId = newLearner.UserId,
+                    RoleId = learnerRole.Identifier
+                });
+
+                await apiClient.CreateSectionEnrollmentAsync(
+                    (int)courseOffering.Identifier,
+                    (int)newerSection.SectionId!,
+                    new SectionEnrollment { UserId = newLearner.UserId });
+
                 var sections = await apiClient.GetSectionsAsync((int)courseOffering.Identifier);
                 Assert.AreEqual(4, sections.Count());
+                Assert.AreEqual(1, sections.Single(sec => sec.Code == "Sectie-4").Enrollments.Count());
+
+                await apiClient.DeleteEnrollmentAsync((int)newLearner.UserId!, (int)courseOffering.Identifier);
+                await apiClient.DeleteUserAsync((int)newLearner.UserId);
 
                 foreach (var section in sections)
                 {
