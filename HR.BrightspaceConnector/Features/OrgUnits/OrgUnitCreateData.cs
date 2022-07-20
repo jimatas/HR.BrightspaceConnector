@@ -5,13 +5,12 @@ namespace HR.BrightspaceConnector.Features.OrgUnits
     /// <summary>
     /// Actions that create or update custom org units should provide data to the service in blocks that look like this.
     /// </summary>
-    public class OrgUnitCreateData
+    public class OrgUnitCreateData : OrgUnitBase
     {
         /// <summary>
         /// D2LID for the org unit's associated org unit type.
         /// </summary>
         public int? Type { get; set; }
-        public string? Name { get; set; }
 
         /// <summary>
         /// Note that org unit code values have these limitations:
@@ -24,7 +23,11 @@ namespace HR.BrightspaceConnector.Features.OrgUnits
         /// </list>
         /// </summary>
         [StringLength(maximumLength: 50)]
-        public string? Code { get; set; }
+        public new string? Code
+        {
+            get => base.Code;
+            set => base.Code = value;
+        }
 
         /// <summary>
         /// JSON array of Org unit IDs that identify this org unit's immediate parent org units.
