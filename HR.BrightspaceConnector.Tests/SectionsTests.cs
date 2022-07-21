@@ -31,6 +31,35 @@ namespace HR.BrightspaceConnector.Tests
         }
 
         [TestMethod]
+        public async Task CreateSectionSettings_WithPropertiesMissing_ThrowsException()
+        {
+            IApiClient apiClient = CreateApiClient();
+
+            CourseOffering courseOffering = await CreateCourseOfferingAsync(apiClient);
+            try
+            {
+                var newSectionSettings = await apiClient.CreateSectionSettingsAsync(
+                    (int)courseOffering.Identifier!,
+                    new CreateSectionSettingsData
+                    {
+                        AutoEnroll = false,
+                        EnrollmentQuantity = null,
+                        EnrollmentStyle = null, // Not specified
+                        RandomizeEnrollments = false, // Not specified
+                        DescriptionsVisibleToEnrollees = true
+                    });
+            }
+            catch (ApiException exception)
+            {
+                Assert.AreEqual(HttpStatusCode.BadRequest, exception.StatusCode);
+            }
+            finally
+            {
+                await DeleteCourseOfferingAsync(apiClient, courseOffering);
+            }
+        }
+
+        [TestMethod]
         public async Task CompleteLifecycleIntegrationTest()
         {
             var apiClient = CreateApiClient();
