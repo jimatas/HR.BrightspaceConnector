@@ -2,6 +2,7 @@
 using HR.BrightspaceConnector.Features.Courses;
 using HR.BrightspaceConnector.Features.Enrollments;
 using HR.BrightspaceConnector.Features.Sections;
+using HR.BrightspaceConnector.Infrastructure.Persistence;
 using HR.BrightspaceConnector.Utilities;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -16,6 +17,19 @@ namespace HR.BrightspaceConnector.Tests
     [TestClass]
     public class SectionsTests : IntegrationTestsBase
     {
+        [TestMethod]
+        public async Task GetNextCourseOfferingSection_ReturnsSectionRecordOrNull()
+        {
+            IDatabase database = CreateDatabase();
+
+            SectionRecord? section = await database.GetNextCourseOfferingSectionAsync();
+            if (section is not null)
+            {
+                Assert.IsNotNull(section.SyncEventId);
+                Assert.IsNotNull(section.SyncInternalKey);
+            }
+        }
+
         [TestMethod]
         public async Task CompleteLifecycleIntegrationTest()
         {
