@@ -7,11 +7,14 @@ using System.Net;
 
 namespace HR.BrightspaceConnector.Features.Sections.Decorators
 {
-    public class InitializeSectionSettings : ICommandHandlerWrapper<CreateSection>
+    /// <summary>
+    /// Handles the on-demand initialization of sections for a course offering.
+    /// </summary>
+    public class CreateSectionSettings : ICommandHandlerWrapper<CreateSection>
     {
         private IApiClient apiClient;
 
-        public InitializeSectionSettings(IApiClient apiClient)
+        public CreateSectionSettings(IApiClient apiClient)
         {
             this.apiClient = apiClient;
         }
@@ -21,7 +24,7 @@ namespace HR.BrightspaceConnector.Features.Sections.Decorators
             try
             {
                 // Request section settings; if sections have not yet been initialized for the current course offering, a 404 will be returned instead.
-                // When that happens, catch the resulting exception and initialize the section settings.
+                // When that happens, catch the resulting exception and create the section settings.
                 await apiClient.GetSectionSettingsAsync((int)command.Section.OrgUnitId!, cancellationToken).WithoutCapturingContext();
             }
             catch (ApiException exception) when (exception.StatusCode == HttpStatusCode.NotFound)
