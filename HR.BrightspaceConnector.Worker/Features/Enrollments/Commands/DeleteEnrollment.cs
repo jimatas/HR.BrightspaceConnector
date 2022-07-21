@@ -12,7 +12,7 @@ namespace HR.BrightspaceConnector.Features.Enrollments.Commands
             Enrollment = enrollment;
         }
 
-        public EnrollmentRecord Enrollment { get; set; }
+        public EnrollmentRecord Enrollment { get; }
     }
 
     public class DeleteEnrollmentHandler : ICommandHandler<DeleteEnrollment>
