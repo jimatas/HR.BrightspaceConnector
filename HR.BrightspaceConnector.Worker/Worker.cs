@@ -1,6 +1,7 @@
 using HR.BrightspaceConnector.Features.Courses.Commands;
 using HR.BrightspaceConnector.Features.Enrollments.Commands;
 using HR.BrightspaceConnector.Features.OrgUnits.Commands;
+using HR.BrightspaceConnector.Features.Sections.Commands;
 using HR.BrightspaceConnector.Features.Users.Commands;
 using HR.BrightspaceConnector.Infrastructure;
 using HR.Common.Cqrs.Commands;
@@ -38,6 +39,7 @@ namespace HR.BrightspaceConnector
                     await commandDispatcher.DispatchAsync(new ProcessCourseTemplates(batchSettings.BatchSize, isDeleteContext), stoppingToken).WithoutCapturingContext();
                     await commandDispatcher.DispatchAsync(new ProcessCourseOfferings(batchSettings.BatchSize, isDeleteContext), stoppingToken).WithoutCapturingContext();
                     await commandDispatcher.DispatchAsync(new ProcessEnrollments(batchSettings.BatchSize, isDeleteContext), stoppingToken).WithoutCapturingContext();
+                    await commandDispatcher.DispatchAsync(new ProcessSections(batchSettings.BatchSize, isDeleteContext), stoppingToken).WithoutCapturingContext();
 
                     logger.LogInformation("Done running batch.");
 
