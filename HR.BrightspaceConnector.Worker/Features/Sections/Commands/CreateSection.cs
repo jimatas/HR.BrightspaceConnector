@@ -31,13 +31,14 @@ namespace HR.BrightspaceConnector.Features.Sections.Commands
         public async Task HandleAsync(CreateSection command, CancellationToken cancellationToken)
         {
             SectionRecord section = command.Section;
+            int orgUnitId = (int)section.OrgUnitId!;
             int eventId = (int)section.SyncEventId!;
 
             logger.LogInformation("Creating section with code \"{SectionCode}\" in Brightspace.", section.Code);
 
             try
             {
-                var newSection = await apiClient.CreateSectionAsync((int)section.OrgUnitId!, section.ToCreateOrUpdateSectionData(), cancellationToken).WithoutCapturingContext();
+                var newSection = await apiClient.CreateSectionAsync(orgUnitId, section.ToCreateOrUpdateSectionData(), cancellationToken).WithoutCapturingContext();
                 logger.LogInformation("Section was successfully created.");
 
                 await commandDispatcher.DispatchAsync(MarkAsHandled.Successfully(eventId, (int)newSection.SectionId!), cancellationToken).WithoutCapturingContext();
