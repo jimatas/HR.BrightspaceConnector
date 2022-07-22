@@ -114,5 +114,64 @@ namespace HR.BrightspaceConnector.Tests
             mockedDatabase.VerifyNoOtherCalls();
             mockedApiClient.VerifyNoOtherCalls();
         }
+
+        [TestMethod]
+        public async Task GivenSectionToDelete_DeletesIt()
+        {
+            // Arrange
+            int eventId = Random.Shared.Next(1, int.MaxValue);
+            int orgUnitId = Random.Shared.Next(1, int.MaxValue);
+            int sectionId = Random.Shared.Next(1, int.MaxValue);
+
+            var sectionRecord = new SectionRecord
+            {
+                OrgUnitId = orgUnitId,
+                SyncAction = 'd',
+                SyncEventId = eventId,
+                SyncExternalKey = sectionId.ToString(),
+                SyncInternalKey = Random.Shared.Next(1, int.MaxValue).ToString()
+            };
+
+            mockedDatabase.Setup(database => database.GetNextCourseOfferingSectionAsync(default)).ReturnsAsync(sectionRecord);
+            mockedDatabase.Setup(database => database.MarkAsHandledAsync(eventId, true, sectionId.ToString(), null, default));
+
+            mockedApiClient.Setup(apiClient => apiClient.DeleteSectionAsync(orgUnitId, sectionId, default));
+
+            IServiceProvider serviceProvider = CreateServiceProvider(mockedDatabase.Object, mockedApiClient.Object);
+            ICommandDispatcher commandDispatcher = serviceProvider.GetRequiredService<ICommandDispatcher>();
+
+            // Act
+            await commandDispatcher.DispatchAsync(new ProcessSections(batchSize: 1, isDeleteContext: true));
+
+            // Assert
+            mockedDatabase.VerifyAll();
+            mockedApiClient.VerifyAll();
+        }
+
+        [TestMethod]
+        public async Task GivenSectionToDeleteInNonDeleteContext_DoesNothing()
+        {
+            // Arrange
+            mockedDatabase.Setup(database => database.GetNextCourseOfferingSectionAsync(default))
+                .ReturnsAsync(new SectionRecord
+                {
+                    OrgUnitId = Random.Shared.Next(1, int.MaxValue),
+                    SyncAction = 'd',
+                    SyncEventId = Random.Shared.Next(1, int.MaxValue),
+                    SyncExternalKey = Random.Shared.Next(1, int.MaxValue).ToString(),
+                    SyncInternalKey = Random.Shared.Next(1, int.MaxValue).ToString()
+                });
+
+            IServiceProvider serviceProvider = CreateServiceProvider(mockedDatabase.Object, mockedApiClient.Object);
+            ICommandDispatcher commandDispatcher = serviceProvider.GetRequiredService<ICommandDispatcher>();
+
+            // Act
+            await commandDispatcher.DispatchAsync(new ProcessSections(batchSize: 1, isDeleteContext: false));
+
+            // Assert
+            mockedDatabase.Verify(database => database.GetNextCourseOfferingSectionAsync(default), Times.Once());
+            mockedDatabase.VerifyNoOtherCalls();
+            mockedApiClient.VerifyNoOtherCalls();
+        }
     }
 }
