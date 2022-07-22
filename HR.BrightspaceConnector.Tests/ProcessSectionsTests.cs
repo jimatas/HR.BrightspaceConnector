@@ -173,5 +173,79 @@ namespace HR.BrightspaceConnector.Tests
             mockedDatabase.VerifyNoOtherCalls();
             mockedApiClient.VerifyNoOtherCalls();
         }
+
+        [TestMethod]
+        public async Task GivenSectionToUpdate_UpdatesIt()
+        {
+            // Arrange
+            int eventId = Random.Shared.Next(1, int.MaxValue);
+            int orgUnitId = Random.Shared.Next(1, int.MaxValue);
+            int sectionId = Random.Shared.Next(1, int.MaxValue);
+
+            var sectionRecord = new SectionRecord
+            {
+                Code = "Section-1",
+                Description = "Section 1, created by a unit test.",
+                Name = "Section 1",
+                OrgUnitId = orgUnitId,
+                SyncAction = 'u',
+                SyncEventId = eventId,
+                SyncExternalKey = sectionId.ToString(),
+                SyncInternalKey = Random.Shared.Next(1, int.MaxValue).ToString()
+            };
+
+            mockedDatabase.Setup(database => database.GetNextCourseOfferingSectionAsync(default)).ReturnsAsync(sectionRecord);
+            mockedDatabase.Setup(database => database.MarkAsHandledAsync(eventId, true, sectionId.ToString(), null, default));
+
+            mockedApiClient.Setup(apiClient => apiClient.UpdateSectionAsync(orgUnitId, sectionId, It.Is<CreateOrUpdateSectionData>(updateSectionData => Assert.That.AreEqual(sectionRecord.ToCreateOrUpdateSectionData(), updateSectionData)), default))
+                .ReturnsAsync(new SectionData
+                {
+                    Code = "Section-1",
+                    Description = new RichText
+                    {
+                        Html = "Section 1, created by a unit test."
+                    },
+                    Name = "Section 1",
+                    SectionId = sectionId
+                });
+
+            IServiceProvider serviceProvider = CreateServiceProvider(mockedDatabase.Object, mockedApiClient.Object);
+            ICommandDispatcher commandDispatcher = serviceProvider.GetRequiredService<ICommandDispatcher>();
+
+            // Act
+            await commandDispatcher.DispatchAsync(new ProcessSections(batchSize: 1, isDeleteContext: false));
+
+            // Assert
+            mockedDatabase.VerifyAll();
+            mockedApiClient.VerifyAll();
+        }
+
+        [TestMethod]
+        public async Task GivenSectionToUpdateInDeleteContext_DoesNothing()
+        {
+            // Arrange
+            mockedDatabase.Setup(database => database.GetNextCourseOfferingSectionAsync(default)).ReturnsAsync(new SectionRecord
+            {
+                Code = "Section-1",
+                Description = "Section 1, created by a unit test.",
+                Name = "Section 1",
+                OrgUnitId = Random.Shared.Next(1, int.MaxValue),
+                SyncAction = 'u',
+                SyncEventId = Random.Shared.Next(1, int.MaxValue),
+                SyncExternalKey = Random.Shared.Next(1, int.MaxValue).ToString(),
+                SyncInternalKey = Random.Shared.Next(1, int.MaxValue).ToString()
+            });
+
+            IServiceProvider serviceProvider = CreateServiceProvider(mockedDatabase.Object, mockedApiClient.Object);
+            ICommandDispatcher commandDispatcher = serviceProvider.GetRequiredService<ICommandDispatcher>();
+
+            // Act
+            await commandDispatcher.DispatchAsync(new ProcessSections(batchSize: 1, isDeleteContext: true));
+
+            // Assert
+            mockedDatabase.Verify(database => database.GetNextCourseOfferingSectionAsync(default), Times.Once());
+            mockedDatabase.VerifyNoOtherCalls();
+            mockedApiClient.VerifyNoOtherCalls();
+        }
     }
 }
